@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Apibim.Tekla.Plugins.BuiltUpColumn.Properties {
+namespace Apibim.Plugins.BuiltUpColumn.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Apibim.Tekla.Plugins.BuiltUpColumn.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Apibim.Tekla.Plugins.BuiltUpColumn.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Apibim.Plugins.BuiltUpColumn.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

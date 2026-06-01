@@ -1,50 +1,58 @@
 ﻿using System;
 using Tekla.Structures.Dialog;
 
-namespace Apibim.Tekla.Plugins.BuiltUpColumn
+namespace Apibim.Plugins.BuiltUpColumn
 {
     public partial class MainWindow : PluginWindowBase
     {
-        public MainWindowViewModel dataViewModel { get; set; }
+        public MainWindowViewModel DataViewModel { get; set; }
 
         public MainWindow(MainWindowViewModel ViewModel)
         {
             InitializeComponent();
-            dataViewModel = ViewModel;
+            DataViewModel = ViewModel;
+            this.DataContext = DataViewModel;
         }
 
-        // --- Стандартные обработчики нижних кнопок Tekla ---
+        // --- ОБРАБОТЧИКИ КАТАЛОГОВ (Встроенная логика Tekla WPF) ---
 
-        private void WpfOkApplyModifyGetOnOffCancel_ApplyClicked(object sender, EventArgs e)
+        private void BranchProfileCatalog_SelectClicked(object sender, EventArgs e)
         {
-            this.Apply();
+            this.BranchProfileCatalog.SelectedProfile = this.DataViewModel.BranchProfile;
         }
-
-        private void WpfOkApplyModifyGetOnOffCancel_CancelClicked(object sender, EventArgs e)
+        private void BranchProfileCatalog_SelectionDone(object sender, EventArgs e)
         {
-            this.Close();
+            this.DataViewModel.BranchProfile = this.BranchProfileCatalog.SelectedProfile;
         }
 
-        private void WpfOkApplyModifyGetOnOffCancel_GetClicked(object sender, EventArgs e)
+        private void LacingProfileCatalog_SelectClicked(object sender, EventArgs e)
         {
-            this.Get();
+            this.LacingProfileCatalog.SelectedProfile = this.DataViewModel.LacingProfile;
         }
-
-        private void WpfOkApplyModifyGetOnOffCancel_ModifyClicked(object sender, EventArgs e)
+        private void LacingProfileCatalog_SelectionDone(object sender, EventArgs e)
         {
-            this.Modify();
+            this.DataViewModel.LacingProfile = this.LacingProfileCatalog.SelectedProfile;
         }
 
+        private void MaterialCatalog_SelectClicked(object sender, EventArgs e)
+        {
+            this.MaterialCatalog.SelectedMaterial = this.DataViewModel.Material;
+        }
+        private void MaterialCatalog_SelectionDone(object sender, EventArgs e)
+        {
+            this.DataViewModel.Material = this.MaterialCatalog.SelectedMaterial;
+        }
+
+        // --- СТАНДАРТНЫЕ ОБРАБОТЧИКИ КНОПОК ---
+        private void WpfOkApplyModifyGetOnOffCancel_ApplyClicked(object sender, EventArgs e) => this.Apply();
+        private void WpfOkApplyModifyGetOnOffCancel_CancelClicked(object sender, EventArgs e) => this.Close();
+        private void WpfOkApplyModifyGetOnOffCancel_GetClicked(object sender, EventArgs e) => this.Get();
+        private void WpfOkApplyModifyGetOnOffCancel_ModifyClicked(object sender, EventArgs e) => this.Modify();
         private void WpfOkApplyModifyGetOnOffCancel_OkClicked(object sender, EventArgs e)
         {
-            this.SaveValues();
             this.Apply();
             this.Close();
         }
-
-        private void WpfOkApplyModifyGetOnOffCancel_OnOffClicked(object sender, EventArgs e)
-        {
-            this.ToggleSelection();
-        }
+        private void WpfOkApplyModifyGetOnOffCancel_OnOffClicked(object sender, EventArgs e) => this.ToggleSelection();
     }
 }
