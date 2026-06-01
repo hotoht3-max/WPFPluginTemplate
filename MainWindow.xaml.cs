@@ -54,5 +54,22 @@ namespace Apibim.Plugins.BuiltUpColumn
             this.Close();
         }
         private void WpfOkApplyModifyGetOnOffCancel_OnOffClicked(object sender, EventArgs e) => this.ToggleSelection();
+        private void StrutProfileCatalog_SelectClicked(object sender, EventArgs e)
+        {
+            this.StrutProfileCatalog.SelectedProfile = this.DataViewModel.S_Profile;
+        }
+        private void StrutProfileCatalog_SelectionDone(object sender, EventArgs e)
+        {
+            this.DataViewModel.S_Profile = this.StrutProfileCatalog.SelectedProfile;
+        }
+
+        private void StrutMaterialCatalog_SelectClicked(object sender, EventArgs e)
+        {
+            this.StrutMaterialCatalog.SelectedMaterial = this.DataViewModel.S_Material;
+        }
+        private void StrutMaterialCatalog_SelectionDone(object sender, EventArgs e)
+        {
+            this.DataViewModel.S_Material = this.StrutMaterialCatalog.SelectedMaterial;
+        }
     }
 }

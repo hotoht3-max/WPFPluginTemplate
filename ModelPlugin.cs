@@ -12,14 +12,27 @@ namespace Apibim.Plugins.BuiltUpColumn
 {
     public class PluginData
     {
+        [StructuresField("Bcol")] public double Bcol = 500.0;
+        [StructuresField("Br_Rot")] public double Br_Rot = 90.0;
         [StructuresField("Hcol_1")] public double Hcol_1 = 10000.0;
         [StructuresField("Hcol_e1")] public double Hcol_e1 = 500.0;
         [StructuresField("Hcol_e2")] public double Hcol_e2 = 600.0;
         [StructuresField("Hcol_e3")] public double Hcol_e3 = 600.0;
         [StructuresField("Hr_base")] public double Hr_base = 1200.0;
+
+        [StructuresField("L_Type")] public int L_Type = 1;
+        [StructuresField("L_Preset")] public int L_Preset = 1;
+        [StructuresField("L_Offset")] public double L_Offset = 0.0;
+        [StructuresField("L_Rasc")] public double L_Rasc = 50.0;
+
+        [StructuresField("S_Preset")] public int S_Preset = 1;
+
         [StructuresField("BranchProfile")] public string BranchProfile = "I20K1_57837_2017";
         [StructuresField("LacingProfile")] public string LacingProfile = "L75X6_8509_93";
+        [StructuresField("S_Profile")] public string S_Profile = "16P_8240_97";
+
         [StructuresField("Material")] public string Material = "C355Б";
+        [StructuresField("S_Material")] public string S_Material = "C245";
     }
 
     [Plugin("Apibim_BuiltUpColumn")]
@@ -39,10 +52,8 @@ namespace Apibim.Plugins.BuiltUpColumn
             {
                 Picker picker = new Picker();
                 List<InputDefinition> inputs = new List<InputDefinition>();
-                Point p1 = picker.PickPoint("Укажите базовую точку первой ветви");
-                Point p2 = picker.PickPoint("Укажите базовую точку второй ветви");
-                inputs.Add(new InputDefinition(p1));
-                inputs.Add(new InputDefinition(p2));
+                inputs.Add(new InputDefinition(picker.PickPoint("Укажите ось первой ветви (Точка 1)")));
+                inputs.Add(new InputDefinition(picker.PickPoint("Укажите направление колонны (Точка 2)")));
                 return inputs;
             }
             catch (Exception)
@@ -55,102 +66,192 @@ namespace Apibim.Plugins.BuiltUpColumn
         {
             try
             {
-                Logger.Write("=== ЗАПУСК ГЕНЕРАЦИИ КОЛОННЫ ===", LogLevel.Info);
-
-                if (Input == null || Input.Count < 2)
-                {
-                    Logger.Write("Недостаточно входных точек.", LogLevel.Error);
-                    return false;
-                }
+                if (Input == null || Input.Count < 2) return false;
 
                 Point p1 = (Point)Input[0].GetInput();
-                Point p2 = (Point)Input[1].GetInput();
+                Point p2Temp = (Point)Input[1].GetInput();
+                p2Temp = p2Temp.ResetZ(p1.Z);
 
-                p2 = p2.ResetZ(p1.Z);
-                Logger.Write($"Базовые точки: P1({p1.X}, {p1.Y}, {p1.Z}), P2({p2.X}, {p2.Y}, {p2.Z})", LogLevel.Info);
+                double dx = p2Temp.X - p1.X;
+                double dy = p2Temp.Y - p1.Y;
+                double length = Math.Sqrt(dx * dx + dy * dy);
 
-                if (Distance.PointToPoint(p1, p2) < 10.0)
-                {
-                    Tekla.Structures.Model.Operations.Operation.DisplayPrompt("Ошибка: Точки совпадают или находятся на одной вертикали!");
-                    Logger.Write("Точки совпадают (расстояние < 10мм).", LogLevel.Warning);
-                    return false;
-                }
+                if (length < 10.0) return false;
 
-                // Вычисление локальной плоскости колонны
-                double dx = p2.X - p1.X;
-                double dy = p2.Y - p1.Y;
-                double planeAngleRad = Math.Atan2(dy, dx);
-                double planeAngleDeg = planeAngleRad * (180.0 / Math.PI);
-                Logger.Write($"Угол локальной плоскости: {planeAngleDeg:F2} градусов", LogLevel.Info);
+                Vector localX = new Vector(dx / length, dy / length, 0);
+                Vector localY = new Vector(-localX.Y, localX.X, 0);
+                double planeAngleDeg = Math.Atan2(localX.Y, localX.X) * (180.0 / Math.PI);
 
-                // Если вдруг макро-буфер пуст, предотвращаем краш API
-                if (string.IsNullOrWhiteSpace(Data.BranchProfile) || string.IsNullOrWhiteSpace(Data.LacingProfile))
-                {
-                    Logger.Write("Ошибка: Не заданы профили. Загрузите файл standard или введите данные в UI.", LogLevel.Error);
-                    return false;
-                }
+                Point p2 = new Point(p1.X + localX.X * Data.Bcol, p1.Y + localX.Y * Data.Bcol, p1.Z);
 
-                // Чистая передача данных
                 BuiltUpColumnData colData = new BuiltUpColumnData
                 {
                     BasePoint1 = p1,
                     BasePoint2 = p2,
+                    Bcol = Data.Bcol,
+                    Br_Rot = Data.Br_Rot,
                     Hcol_1 = Data.Hcol_1,
                     Hcol_e1 = Data.Hcol_e1,
                     Hcol_e2 = Data.Hcol_e2,
                     Hcol_e3 = Data.Hcol_e3,
                     Hr_base = Data.Hr_base,
+                    L_Rasc = Data.L_Rasc,
+                    L_Type = Data.L_Type,
+                    L_Preset = Data.L_Preset,
+                    L_Offset = Data.L_Offset,
+                    S_Preset = Data.S_Preset,
                     BranchProfile = Data.BranchProfile,
                     LacingProfile = Data.LacingProfile,
-                    Material = Data.Material
+                    S_Profile = Data.S_Profile,
+                    Material = Data.Material,
+                    S_Material = Data.S_Material
                 };
-
-                Logger.Write($"Параметры: Высота={colData.Hcol_1}, ВылетВниз={colData.Hcol_e1}, ШагРешетки={colData.Hr_base}", LogLevel.Info);
-                Logger.Write($"Профили: Ветвь={colData.BranchProfile}, Решетка={colData.LacingProfile}, Материал={colData.Material}", LogLevel.Info);
 
                 var branchLines = ColumnGeometryBuilder.GetBranchLines(colData);
                 var lacingLines = ColumnGeometryBuilder.GetLacingLines(colData);
+                var strutLines = ColumnGeometryBuilder.GetStrutLines(colData);
 
-                // --- ГЕНЕРАЦИЯ ВЕТВЕЙ ---
+                double autoBaseDist = 0.0;
                 foreach (var line in branchLines)
                 {
                     Beam branch = new Beam(line.Point1, line.Point2);
                     branch.Profile.ProfileString = colData.BranchProfile;
                     branch.Material.MaterialString = colData.Material;
                     branch.Class = "1";
-
                     branch.Position.Plane = Position.PlaneEnum.MIDDLE;
                     branch.Position.Depth = Position.DepthEnum.MIDDLE;
                     branch.Position.Rotation = Position.RotationEnum.TOP;
-                    branch.Position.RotationOffset = planeAngleDeg + 90.0;
-
+                    branch.Position.RotationOffset = planeAngleDeg + colData.Br_Rot;
                     branch.Insert();
+
+                    if (autoBaseDist == 0.0) branch.GetReportProperty("PROFILE.HEIGHT", ref autoBaseDist);
                 }
+
+                if (autoBaseDist <= 0.0) autoBaseDist = 200.0;
 
                 // --- ГЕНЕРАЦИЯ РЕШЕТКИ ---
                 foreach (var line in lacingLines)
                 {
-                    Beam lacing = new Beam(line.Point1, line.Point2);
-                    lacing.Profile.ProfileString = colData.LacingProfile;
-                    lacing.Material.MaterialString = colData.Material;
-                    lacing.Class = "3";
+                    if (colData.L_Type == 0)
+                    {
+                        CreateLacingBeam(line.Point1, line.Point2, colData).Insert();
+                    }
+                    else
+                    {
+                        Vector shift = localY * (autoBaseDist / 2.0);
+                        Point p1_A = new Point(line.Point1.X + shift.X, line.Point1.Y + shift.Y, line.Point1.Z);
+                        Point p2_A = new Point(line.Point2.X + shift.X, line.Point2.Y + shift.Y, line.Point2.Z);
+                        CreateLacingBeam(p1_A, p2_A, colData).Insert();
 
-                    lacing.Position.Plane = Position.PlaneEnum.MIDDLE;
-                    lacing.Position.Depth = Position.DepthEnum.MIDDLE;
-                    lacing.Position.Rotation = Position.RotationEnum.FRONT;
-                    lacing.Position.RotationOffset = 0.0;
-
-                    lacing.Insert();
+                        Point p1_B = new Point(line.Point1.X - shift.X, line.Point1.Y - shift.Y, line.Point1.Z);
+                        Point p2_B = new Point(line.Point2.X - shift.X, line.Point2.Y - shift.Y, line.Point2.Z);
+                        CreateLacingBeam(p2_B, p1_B, colData).Insert();
+                    }
                 }
 
-                Logger.Write("Успешное завершение. Колонна построена.", LogLevel.Success);
+                // --- ГЕНЕРАЦИЯ ПОПЕРЕЧНЫХ ПЛАНОК (STRUTS) ---
+                foreach (var line in strutLines)
+                {
+                    if (colData.S_Preset == 0) continue; // Нет планок
+
+                    if (colData.S_Preset == 1) // 100% Клон логики решетки
+                    {
+                        if (colData.L_Type == 0)
+                        {
+                            CreateStrutBeam_AsLacing(line.Point1, line.Point2, colData).Insert();
+                        }
+                        else
+                        {
+                            Vector shift = localY * (autoBaseDist / 2.0);
+                            Point p1_A = new Point(line.Point1.X + shift.X, line.Point1.Y + shift.Y, line.Point1.Z);
+                            Point p2_A = new Point(line.Point2.X + shift.X, line.Point2.Y + shift.Y, line.Point2.Z);
+                            CreateStrutBeam_AsLacing(p1_A, p2_A, colData).Insert();
+
+                            Point p1_B = new Point(line.Point1.X - shift.X, line.Point1.Y - shift.Y, line.Point1.Z);
+                            Point p2_B = new Point(line.Point2.X - shift.X, line.Point2.Y - shift.Y, line.Point2.Z);
+                            CreateStrutBeam_AsLacing(p2_B, p1_B, colData).Insert();
+                        }
+                    }
+                    else if (colData.S_Preset == 2) // Уникальный Швеллер по центру
+                    {
+                        CreateStrutBeam_Channel(line.Point1, line.Point2, colData).Insert();
+                    }
+                }
+
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Logger.Write($"ФАТАЛЬНАЯ ОШИБКА: {ex.Message} | StackTrace: {ex.StackTrace}", LogLevel.Error);
                 return false;
             }
+        }
+
+        private Beam CreateLacingBeam(Point p1, Point p2, BuiltUpColumnData data)
+        {
+            Beam b = new Beam(p1, p2);
+            b.Profile.ProfileString = data.LacingProfile;
+            b.Material.MaterialString = data.Material;
+            b.Class = "3";
+            b.Position.PlaneOffset = 0.0;
+            b.Position.DepthOffset = 0.0;
+
+            int activePreset = data.L_Type == 1 ? 1 : data.L_Preset;
+
+            switch (activePreset)
+            {
+                case 1:
+                    b.Position.Plane = Position.PlaneEnum.MIDDLE;
+                    b.Position.Depth = Position.DepthEnum.FRONT;
+                    b.Position.Rotation = Position.RotationEnum.TOP;
+                    b.Position.RotationOffset = 90.0;
+                    b.Position.DepthOffset = data.L_Offset;
+                    break;
+                case 2:
+                    b.Position.Plane = Position.PlaneEnum.LEFT;
+                    b.Position.Depth = Position.DepthEnum.MIDDLE;
+                    b.Position.Rotation = Position.RotationEnum.FRONT;
+                    b.Position.RotationOffset = 0.0;
+                    b.Position.PlaneOffset = data.L_Offset;
+                    break;
+                case 3:
+                    b.Position.Plane = Position.PlaneEnum.MIDDLE;
+                    b.Position.Depth = Position.DepthEnum.MIDDLE;
+                    b.Position.Rotation = Position.RotationEnum.FRONT;
+                    b.Position.RotationOffset = 0.0;
+                    b.Position.PlaneOffset = data.L_Offset;
+                    break;
+            }
+            return b;
+        }
+
+        // Создает планку, полностью копируя настройки CreateLacingBeam
+        private Beam CreateStrutBeam_AsLacing(Point p1, Point p2, BuiltUpColumnData data)
+        {
+            Beam b = CreateLacingBeam(p1, p2, data);
+            b.Profile.ProfileString = data.S_Profile;
+            b.Material.MaterialString = data.S_Material;
+            b.Class = "4";
+            return b;
+        }
+
+        // Создает уникальный швеллер (строго по центру, перевернутый корытом)
+        private Beam CreateStrutBeam_Channel(Point p1, Point p2, BuiltUpColumnData data)
+        {
+            Beam b = new Beam(p1, p2);
+            b.Profile.ProfileString = data.S_Profile;
+            b.Material.MaterialString = data.S_Material;
+            b.Class = "4";
+
+            b.Position.Plane = Position.PlaneEnum.MIDDLE;
+            b.Position.Depth = Position.DepthEnum.BEHIND;
+            b.Position.PlaneOffset = 0.0;
+            b.Position.DepthOffset = 0.0;
+
+            // Заменили TOP на BACK ("Сзади")
+            b.Position.Rotation = Position.RotationEnum.BACK;
+            b.Position.RotationOffset = 0.0;
+
+            return b;
         }
     }
 }
