@@ -89,6 +89,7 @@
     </Compile>
     <Compile Include="Services\ColumnGeometryBuilder.cs" />
     <Compile Include="Services\Logger.cs" />
+    <Compile Include="Services\StringParserService.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

@@ -71,5 +71,22 @@ namespace Apibim.Plugins.BuiltUpColumn
         {
             this.DataViewModel.S_Material = this.StrutMaterialCatalog.SelectedMaterial;
         }
+        private void DiaphragmProfileCatalog_SelectClicked(object sender, EventArgs e)
+        {
+            this.DiaphragmProfileCatalog.SelectedProfile = this.DataViewModel.D_Profile;
+        }
+        private void DiaphragmProfileCatalog_SelectionDone(object sender, EventArgs e)
+        {
+            this.DataViewModel.D_Profile = this.DiaphragmProfileCatalog.SelectedProfile;
+        }
+
+        private void DiaphragmMaterialCatalog_SelectClicked(object sender, EventArgs e)
+        {
+            this.DiaphragmMaterialCatalog.SelectedMaterial = this.DataViewModel.D_Material;
+        }
+        private void DiaphragmMaterialCatalog_SelectionDone(object sender, EventArgs e)
+        {
+            this.DataViewModel.D_Material = this.DiaphragmMaterialCatalog.SelectedMaterial;
+        }
     }
 }
