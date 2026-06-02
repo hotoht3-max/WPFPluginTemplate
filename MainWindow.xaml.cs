@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Reflection;
+using System.Windows;
+using System.Windows.Controls;
 using Tekla.Structures.Dialog;
 
 namespace Apibim.Plugins.BuiltUpColumn
@@ -14,79 +17,79 @@ namespace Apibim.Plugins.BuiltUpColumn
             this.DataContext = DataViewModel;
         }
 
-        // --- ОБРАБОТЧИКИ КАТАЛОГОВ (Встроенная логика Tekla WPF) ---
+        // --- УНИВЕРСАЛЬНЫЙ ВЫЗОВ КАТАЛОГА ПРОФИЛЕЙ (Событийный подход WPF) ---
+        private void BtnProfile_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.Tag != null)
+            {
+                string propName = btn.Tag.ToString();
+                PropertyInfo prop = typeof(MainWindowViewModel).GetProperty(propName);
 
-        private void BranchProfileCatalog_SelectClicked(object sender, EventArgs e)
-        {
-            this.BranchProfileCatalog.SelectedProfile = this.DataViewModel.BranchProfile;
-        }
-        private void BranchProfileCatalog_SelectionDone(object sender, EventArgs e)
-        {
-            this.DataViewModel.BranchProfile = this.BranchProfileCatalog.SelectedProfile;
-        }
+                if (prop != null)
+                {
+                    var catalog = new Tekla.Structures.Dialog.UIControls.ProfileCatalog();
+                    catalog.SelectedProfile = (string)prop.GetValue(DataViewModel) ?? string.Empty;
 
-        private void LacingProfileCatalog_SelectClicked(object sender, EventArgs e)
-        {
-            this.LacingProfileCatalog.SelectedProfile = this.DataViewModel.LacingProfile;
-        }
-        private void LacingProfileCatalog_SelectionDone(object sender, EventArgs e)
-        {
-            this.DataViewModel.LacingProfile = this.LacingProfileCatalog.SelectedProfile;
-        }
+                    // Подписываемся на событие выбора профиля (Дабл-клик или кнопка ОК)
+                    catalog.SelectClicked += (s, args) =>
+                    {
+                        prop.SetValue(DataViewModel, catalog.SelectedProfile);
+                    };
 
-        private void MaterialCatalog_SelectClicked(object sender, EventArgs e)
-        {
-            this.MaterialCatalog.SelectedMaterial = this.DataViewModel.Material;
-        }
-        private void MaterialCatalog_SelectionDone(object sender, EventArgs e)
-        {
-            this.DataViewModel.Material = this.MaterialCatalog.SelectedMaterial;
+                    catalog.Show(); // Метод без аргументов, возвращает void
+                }
+            }
         }
 
-        // --- СТАНДАРТНЫЕ ОБРАБОТЧИКИ КНОПОК ---
+        // --- УНИВЕРСАЛЬНЫЙ ВЫЗОВ КАТАЛОГА МАТЕРИАЛОВ ---
+        private void BtnMaterial_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.Tag != null)
+            {
+                string propName = btn.Tag.ToString();
+                PropertyInfo prop = typeof(MainWindowViewModel).GetProperty(propName);
+
+                if (prop != null)
+                {
+                    var catalog = new Tekla.Structures.Dialog.UIControls.MaterialCatalog();
+                    catalog.SelectedMaterial = (string)prop.GetValue(DataViewModel) ?? string.Empty;
+
+                    catalog.SelectClicked += (s, args) =>
+                    {
+                        prop.SetValue(DataViewModel, catalog.SelectedMaterial);
+                    };
+
+                    catalog.Show();
+                }
+            }
+        }
+
+        // --- ВЫЗОВ КАТАЛОГА КОМПОНЕНТОВ ---
+        private void BtnComponent_Click(object sender, RoutedEventArgs e)
+        {
+            var catalog = new Tekla.Structures.Dialog.UIControls.ComponentCatalog();
+            catalog.SelectedName = DataViewModel.SpliceComponent ?? string.Empty;
+
+            catalog.SelectClicked += (s, args) =>
+            {
+                DataViewModel.SpliceComponent = catalog.SelectedName;
+            };
+
+            catalog.Show();
+        }
+
+        // --- ВЫЗОВ ПРЕСЕТОВ СТЫКА (Подготовка к ComboBox) ---
+        private void BtnPreset_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Окно 'Список файлов атрибутов' (из старого API) недоступно в текущей WPF-библиотеке.\n\nНа следующем шаге мы заменим это поле на нативный ComboBox и научим его читать файлы атрибутов для выбранного компонента.", "RAM BIM", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        // --- СТАНДАРТНЫЕ КНОПКИ TEKLA ---
         private void WpfOkApplyModifyGetOnOffCancel_ApplyClicked(object sender, EventArgs e) => this.Apply();
         private void WpfOkApplyModifyGetOnOffCancel_CancelClicked(object sender, EventArgs e) => this.Close();
         private void WpfOkApplyModifyGetOnOffCancel_GetClicked(object sender, EventArgs e) => this.Get();
         private void WpfOkApplyModifyGetOnOffCancel_ModifyClicked(object sender, EventArgs e) => this.Modify();
-        private void WpfOkApplyModifyGetOnOffCancel_OkClicked(object sender, EventArgs e)
-        {
-            this.Apply();
-            this.Close();
-        }
+        private void WpfOkApplyModifyGetOnOffCancel_OkClicked(object sender, EventArgs e) { this.Apply(); this.Close(); }
         private void WpfOkApplyModifyGetOnOffCancel_OnOffClicked(object sender, EventArgs e) => this.ToggleSelection();
-        private void StrutProfileCatalog_SelectClicked(object sender, EventArgs e)
-        {
-            this.StrutProfileCatalog.SelectedProfile = this.DataViewModel.S_Profile;
-        }
-        private void StrutProfileCatalog_SelectionDone(object sender, EventArgs e)
-        {
-            this.DataViewModel.S_Profile = this.StrutProfileCatalog.SelectedProfile;
-        }
-
-        private void StrutMaterialCatalog_SelectClicked(object sender, EventArgs e)
-        {
-            this.StrutMaterialCatalog.SelectedMaterial = this.DataViewModel.S_Material;
-        }
-        private void StrutMaterialCatalog_SelectionDone(object sender, EventArgs e)
-        {
-            this.DataViewModel.S_Material = this.StrutMaterialCatalog.SelectedMaterial;
-        }
-        private void DiaphragmProfileCatalog_SelectClicked(object sender, EventArgs e)
-        {
-            this.DiaphragmProfileCatalog.SelectedProfile = this.DataViewModel.D_Profile;
-        }
-        private void DiaphragmProfileCatalog_SelectionDone(object sender, EventArgs e)
-        {
-            this.DataViewModel.D_Profile = this.DiaphragmProfileCatalog.SelectedProfile;
-        }
-
-        private void DiaphragmMaterialCatalog_SelectClicked(object sender, EventArgs e)
-        {
-            this.DiaphragmMaterialCatalog.SelectedMaterial = this.DataViewModel.D_Material;
-        }
-        private void DiaphragmMaterialCatalog_SelectionDone(object sender, EventArgs e)
-        {
-            this.DataViewModel.D_Material = this.DiaphragmMaterialCatalog.SelectedMaterial;
-        }
     }
 }

@@ -20,11 +20,12 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresField("Hcol_e3")] public double Hcol_e3 = 600.0;
 
         [StructuresField("SplicesText")] public string SplicesText = "";
+        [StructuresField("SpliceComponent")] public string SpliceComponent = "14";
+        [StructuresField("SplicePreset")] public string SplicePreset = "standard";
 
         [StructuresField("L_StepMode")] public int L_StepMode = 0;
         [StructuresField("Hr_base")] public double Hr_base = 1200.0;
         [StructuresField("L_StepText")] public string L_StepText = "";
-
         [StructuresField("L_Rasc")] public double L_Rasc = 50.0;
         [StructuresField("L_Rasc_Base")] public double L_Rasc_Base = 50.0;
         [StructuresField("L_Rasc_Top")] public double L_Rasc_Top = 50.0;
@@ -38,20 +39,21 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresField("S_NodesDouble")] public string S_NodesDouble = "";
         [StructuresField("S_NodesChannel")] public string S_NodesChannel = "";
         [StructuresField("S_NodesExclude")] public string S_NodesExclude = "";
-
         [StructuresField("S_Base_Preset")] public int S_Base_Preset = 2;
         [StructuresField("S_Top_Preset")] public int S_Top_Preset = 2;
         [StructuresField("S_Splice_Preset")] public int S_Splice_Preset = 2;
         [StructuresField("S_Preset")] public int S_Preset = 1;
 
-        [StructuresField("BranchProfile")] public string BranchProfile = "I20K1_57837_2017";
-        [StructuresField("LacingProfile")] public string LacingProfile = "L75X6_8509_93";
-        [StructuresField("S_Profile")] public string S_Profile = "L75X6_8509_93";
-        [StructuresField("D_Profile")] public string D_Profile = "16P_8240_97";
-
-        [StructuresField("Material")] public string Material = "C355Б";
-        [StructuresField("S_Material")] public string S_Material = "C245";
-        [StructuresField("D_Material")] public string D_Material = "C245";
+        // Ветвь
+        [StructuresField("B_Profile")] public string B_Profile = "I20K1_57837_2017"; [StructuresField("B_Material")] public string B_Material = "C355Б"; [StructuresField("B_AssyPref")] public string B_AssyPref = "К"; [StructuresField("B_AssyNo")] public string B_AssyNo = "1"; [StructuresField("B_PartPref")] public string B_PartPref = "к"; [StructuresField("B_PartNo")] public string B_PartNo = "1"; [StructuresField("B_Name")] public string B_Name = "ВЕТВЬ"; [StructuresField("B_Class")] public string B_Class = "1";
+        // Диафрагма
+        [StructuresField("D_Profile")] public string D_Profile = "16P_8240_97"; [StructuresField("D_Material")] public string D_Material = "C245"; [StructuresField("D_AssyPref")] public string D_AssyPref = ""; [StructuresField("D_AssyNo")] public string D_AssyNo = ""; [StructuresField("D_PartPref")] public string D_PartPref = "д"; [StructuresField("D_PartNo")] public string D_PartNo = "1"; [StructuresField("D_Name")] public string D_Name = "ДИАФРАГМА"; [StructuresField("D_Class")] public string D_Class = "4";
+        // Раскос рядовой
+        [StructuresField("L_Profile")] public string L_Profile = "L75X6_8509_93"; [StructuresField("L_Material")] public string L_Material = "C245"; [StructuresField("L_AssyPref")] public string L_AssyPref = ""; [StructuresField("L_AssyNo")] public string L_AssyNo = ""; [StructuresField("L_PartPref")] public string L_PartPref = "р"; [StructuresField("L_PartNo")] public string L_PartNo = "1"; [StructuresField("L_Name")] public string L_Name = "РАСКОС"; [StructuresField("L_Class")] public string L_Class = "3";
+        // Раскос стыковой
+        [StructuresField("LS_Profile")] public string LS_Profile = ""; [StructuresField("LS_Material")] public string LS_Material = ""; [StructuresField("LS_AssyPref")] public string LS_AssyPref = ""; [StructuresField("LS_AssyNo")] public string LS_AssyNo = ""; [StructuresField("LS_PartPref")] public string LS_PartPref = "рс"; [StructuresField("LS_PartNo")] public string LS_PartNo = "1"; [StructuresField("LS_Name")] public string LS_Name = "РАСКОС СТЫКОВОЙ"; [StructuresField("LS_Class")] public string LS_Class = "3";
+        // Распорка
+        [StructuresField("S_Profile")] public string S_Profile = ""; [StructuresField("S_Material")] public string S_Material = ""; [StructuresField("S_AssyPref")] public string S_AssyPref = ""; [StructuresField("S_AssyNo")] public string S_AssyNo = ""; [StructuresField("S_PartPref")] public string S_PartPref = "рп"; [StructuresField("S_PartNo")] public string S_PartNo = "1"; [StructuresField("S_Name")] public string S_Name = "РАСПОРКА"; [StructuresField("S_Class")] public string S_Class = "4";
     }
 
     [Plugin("Apibim_BuiltUpColumn")]
@@ -110,16 +112,16 @@ namespace Apibim.Plugins.BuiltUpColumn
                     Hcol_e3 = Data.Hcol_e3,
 
                     SplicesText = Data.SplicesText,
+                    SpliceComponent = Data.SpliceComponent,
+                    SplicePreset = Data.SplicePreset,
 
                     L_StepMode = Data.L_StepMode,
                     Hr_base = Data.Hr_base,
                     L_StepText = Data.L_StepText,
-
                     L_Rasc = Data.L_Rasc,
                     L_Rasc_Base = Data.L_Rasc_Base,
                     L_Rasc_Top = Data.L_Rasc_Top,
                     L_RascOverrides = Data.L_RascOverrides,
-
                     L_Type = Data.L_Type,
                     L_Preset = Data.L_Preset,
                     L_Offset = Data.L_Offset,
@@ -133,16 +135,47 @@ namespace Apibim.Plugins.BuiltUpColumn
                     S_Splice_Preset = Data.S_Splice_Preset,
                     S_Preset = Data.S_Preset,
 
-                    BranchProfile = Data.BranchProfile,
-                    LacingProfile = Data.LacingProfile,
-                    S_Profile = Data.S_Profile,
+                    B_Profile = Data.B_Profile,
+                    B_Material = Data.B_Material,
+                    B_AssyPref = Data.B_AssyPref,
+                    B_AssyNo = Data.B_AssyNo,
+                    B_PartPref = Data.B_PartPref,
+                    B_PartNo = Data.B_PartNo,
+                    B_Name = Data.B_Name,
+                    B_Class = Data.B_Class,
                     D_Profile = Data.D_Profile,
-
-                    Material = Data.Material,
+                    D_Material = Data.D_Material,
+                    D_AssyPref = Data.D_AssyPref,
+                    D_AssyNo = Data.D_AssyNo,
+                    D_PartPref = Data.D_PartPref,
+                    D_PartNo = Data.D_PartNo,
+                    D_Name = Data.D_Name,
+                    D_Class = Data.D_Class,
+                    L_Profile = Data.L_Profile,
+                    L_Material = Data.L_Material,
+                    L_AssyPref = Data.L_AssyPref,
+                    L_AssyNo = Data.L_AssyNo,
+                    L_PartPref = Data.L_PartPref,
+                    L_PartNo = Data.L_PartNo,
+                    L_Name = Data.L_Name,
+                    L_Class = Data.L_Class,
+                    LS_Profile = Data.LS_Profile,
+                    LS_Material = Data.LS_Material,
+                    LS_AssyPref = Data.LS_AssyPref,
+                    LS_AssyNo = Data.LS_AssyNo,
+                    LS_PartPref = Data.LS_PartPref,
+                    LS_PartNo = Data.LS_PartNo,
+                    LS_Name = Data.LS_Name,
+                    LS_Class = Data.LS_Class,
+                    S_Profile = Data.S_Profile,
                     S_Material = Data.S_Material,
-                    D_Material = Data.D_Material
+                    S_AssyPref = Data.S_AssyPref,
+                    S_AssyNo = Data.S_AssyNo,
+                    S_PartPref = Data.S_PartPref,
+                    S_PartNo = Data.S_PartNo,
+                    S_Name = Data.S_Name,
+                    S_Class = Data.S_Class
                 };
-
                 // Получаем Зоны, Стыки и Линии
                 var branchLines = ColumnGeometryBuilder.GetBranchLines(colData);
                 var zNodes = ColumnGeometryBuilder.GetZNodes(colData);
@@ -154,8 +187,8 @@ namespace Apibim.Plugins.BuiltUpColumn
                 foreach (var line in branchLines)
                 {
                     Beam branch = new Beam(line.Point1, line.Point2);
-                    branch.Profile.ProfileString = colData.BranchProfile;
-                    branch.Material.MaterialString = colData.Material;
+                    branch.Profile.ProfileString = colData.B_Profile;   // Раньше было BranchProfile
+                    branch.Material.MaterialString = colData.B_Material; // Раньше было Material
                     branch.Class = "1";
                     branch.Position.Plane = Position.PlaneEnum.MIDDLE;
                     branch.Position.Depth = Position.DepthEnum.MIDDLE;
@@ -264,8 +297,8 @@ namespace Apibim.Plugins.BuiltUpColumn
         private Beam CreateLacingBeam(Point p1, Point p2, BuiltUpColumnData data)
         {
             Beam b = new Beam(p1, p2);
-            b.Profile.ProfileString = data.LacingProfile;
-            b.Material.MaterialString = data.Material;
+            b.Profile.ProfileString = data.L_Profile;   // Раньше было LacingProfile
+            b.Material.MaterialString = data.L_Material; // Раньше было Material
             b.Class = "3";
             b.Position.PlaneOffset = 0.0;
             b.Position.DepthOffset = 0.0;

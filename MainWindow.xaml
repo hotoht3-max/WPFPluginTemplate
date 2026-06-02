@@ -8,28 +8,28 @@
         xmlns:UIControls="clr-namespace:Tekla.Structures.Dialog.UIControls;assembly=Tekla.Structures.Dialog" 
         x:Class="Apibim.Plugins.BuiltUpColumn.MainWindow"
         mc:Ignorable="d"
-        Title="Сквозная колонна RAM (Alpha)" FontSize="14" Height="700" Width="550">
+        Title="Сквозная колонна RAM (Alpha)" FontSize="14" Height="700" Width="850">
 
     <Grid>
         <Grid.Resources>
             <Style TargetType="TextBox">
                 <Setter Property="Height" Value="24"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="Margin" Value="0,3,5,3"/>
+                <Setter Property="Margin" Value="2"/>
             </Style>
             <Style TargetType="ComboBox">
                 <Setter Property="Height" Value="24"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="Margin" Value="0,3,5,3"/>
+                <Setter Property="Margin" Value="2"/>
             </Style>
             <Style TargetType="Label">
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="Margin" Value="0,3,5,3"/>
+                <Setter Property="Margin" Value="2"/>
             </Style>
             <Style TargetType="UIControls:WpfFilterCheckBox">
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="HorizontalAlignment" Value="Center"/>
-                <Setter Property="Margin" Value="10,0"/>
+                <Setter Property="Margin" Value="5,0"/>
             </Style>
         </Grid.Resources>
 
@@ -53,10 +53,6 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -97,23 +93,32 @@
                         <Label Grid.Row="7" Grid.Column="1" Content="Свободная зона сверху (Hcol_e3):"/>
                         <TextBox Grid.Row="7" Grid.Column="2" Text="{Binding Hcol_e3}"/>
 
-                        <TextBlock Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" Text="Стыки ветвей" FontWeight="Bold" Margin="0,15,0,5"/>
+                        <TextBlock Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" Text="Стыки ветвей (Компоненты)" FontWeight="Bold" Margin="0,15,0,5"/>
                         <UIControls:WpfFilterCheckBox Grid.Row="9" Grid.Column="0" AttributeName="SplicesText"/>
-                        <Label Grid.Row="9" Grid.Column="1" Content="Отметки стыков (от низа):"/>
+                        <Label Grid.Row="9" Grid.Column="1" Content="Отметки стыков:"/>
                         <TextBox Grid.Row="9" Grid.Column="2" Text="{Binding SplicesText}"/>
 
-                        <TextBlock Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" Text="Профиль ветви" FontWeight="Bold" Margin="0,15,0,5"/>
-                        <UIControls:WpfFilterCheckBox Grid.Row="11" Grid.Column="0" AttributeName="BranchProfile"/>
-                        <Label Grid.Row="11" Grid.Column="1" Content="Профиль ветвей:"/>
-                        <TextBox Grid.Row="11" Grid.Column="2" Text="{Binding BranchProfile}"/>
-                        <UIControls:WpfProfileCatalog x:Name="BranchProfileCatalog" Grid.Row="11" Grid.Column="3" Width="30" Margin="0,3,0,3"
-                                                      SelectClicked="BranchProfileCatalog_SelectClicked" SelectionDone="BranchProfileCatalog_SelectionDone"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="10" Grid.Column="0" AttributeName="SpliceComponent"/>
+                        <Label Grid.Row="10" Grid.Column="1" Content="Компонент стыка:"/>
+                        <Grid Grid.Row="10" Grid.Column="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="28"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Text="{Binding SpliceComponent}" Margin="0"/>
+                            <Button Grid.Column="1" Content="..." Width="28" Height="24" Margin="2,0,0,0" Click="BtnComponent_Click"/>
+                        </Grid>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="12" Grid.Column="0" AttributeName="Material"/>
-                        <Label Grid.Row="12" Grid.Column="1" Content="Материал колонны:"/>
-                        <TextBox Grid.Row="12" Grid.Column="2" Text="{Binding Material}"/>
-                        <UIControls:WpfMaterialCatalog x:Name="MaterialCatalog" Grid.Row="12" Grid.Column="3" Width="30" Margin="0,3,0,3"
-                                                       SelectClicked="MaterialCatalog_SelectClicked" SelectionDone="MaterialCatalog_SelectionDone"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="11" Grid.Column="0" AttributeName="SplicePreset"/>
+                        <Label Grid.Row="11" Grid.Column="1" Content="Файл атрибутов (Пресет):"/>
+                        <Grid Grid.Row="11" Grid.Column="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="28"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Text="{Binding SplicePreset}" Margin="0"/>
+                            <Button Grid.Column="1" Content="..." Width="28" Height="24" Margin="2,0,0,0" Click="BtnPreset_Click"/>
+                        </Grid>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
@@ -128,13 +133,6 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -204,13 +202,6 @@
                         <UIControls:WpfFilterCheckBox Grid.Row="12" Grid.Column="0" AttributeName="L_Offset"/>
                         <Label Grid.Row="12" Grid.Column="1" Content="Доп. смещение:"/>
                         <TextBox Grid.Row="12" Grid.Column="2" Text="{Binding L_Offset}"/>
-
-                        <TextBlock Grid.Row="13" Grid.Column="1" Grid.ColumnSpan="2" Text="Профиль решетки" FontWeight="Bold" Margin="0,15,0,5"/>
-                        <UIControls:WpfFilterCheckBox Grid.Row="14" Grid.Column="0" AttributeName="LacingProfile"/>
-                        <Label Grid.Row="14" Grid.Column="1" Content="Профиль раскоса:"/>
-                        <TextBox Grid.Row="14" Grid.Column="2" Text="{Binding LacingProfile}"/>
-                        <UIControls:WpfProfileCatalog x:Name="LacingProfileCatalog" Grid.Row="14" Grid.Column="3" Width="30" Margin="0,3,0,3"
-                                                      SelectClicked="LacingProfileCatalog_SelectClicked" SelectionDone="LacingProfileCatalog_SelectionDone"/>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
@@ -235,20 +226,9 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Настройки планок по зонам" FontWeight="Bold" Margin="0,10,0,5"/>
-
                         <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="S_Base_Preset"/>
                         <Label Grid.Row="1" Grid.Column="1" Content="Планка в базе [Узел 1]:"/>
                         <ComboBox Grid.Row="1" Grid.Column="2" SelectedIndex="{Binding S_Base_Preset}">
@@ -282,7 +262,6 @@
                         </ComboBox>
 
                         <TextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Text="Правила ручного управления" FontWeight="Bold" Margin="0,15,0,5"/>
-
                         <UIControls:WpfFilterCheckBox Grid.Row="6" Grid.Column="0" AttributeName="S_Mode"/>
                         <Label Grid.Row="6" Grid.Column="1" Content="Режим генерации:"/>
                         <ComboBox Grid.Row="6" Grid.Column="2" SelectedIndex="{Binding S_Mode}">
@@ -302,32 +281,163 @@
                         <UIControls:WpfFilterCheckBox Grid.Row="9" Grid.Column="0" AttributeName="S_NodesExclude"/>
                         <Label Grid.Row="9" Grid.Column="1" Content="Исключить узлы (Для режима 2):"/>
                         <TextBox Grid.Row="9" Grid.Column="2" Text="{Binding S_NodesExclude}"/>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
 
-                        <TextBlock Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" Text="Материалы и профили планок" FontWeight="Bold" Margin="0,15,0,5"/>
+            <TabItem Header="Атрибуты">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <Grid Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="170"/>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="65"/>
+                            <ColumnDefinition Width="65"/>
+                            <ColumnDefinition Width="65"/>
+                            <ColumnDefinition Width="65"/>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="50"/>
+                        </Grid.ColumnDefinitions>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="11" Grid.Column="0" AttributeName="S_Profile"/>
-                        <Label Grid.Row="11" Grid.Column="1" Content="Профиль распорки:"/>
-                        <TextBox Grid.Row="11" Grid.Column="2" Text="{Binding S_Profile}"/>
-                        <UIControls:WpfProfileCatalog x:Name="StrutProfileCatalog" Grid.Row="11" Grid.Column="3" Width="30" Margin="0,3,0,3"
-                                                      SelectClicked="StrutProfileCatalog_SelectClicked" SelectionDone="StrutProfileCatalog_SelectionDone"/>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="12" Grid.Column="0" AttributeName="D_Profile"/>
-                        <Label Grid.Row="12" Grid.Column="1" Content="Профиль диафрагмы:"/>
-                        <TextBox Grid.Row="12" Grid.Column="2" Text="{Binding D_Profile}"/>
-                        <UIControls:WpfProfileCatalog x:Name="DiaphragmProfileCatalog" Grid.Row="12" Grid.Column="3" Width="30" Margin="0,3,0,3"
-                                                      SelectClicked="DiaphragmProfileCatalog_SelectClicked" SelectionDone="DiaphragmProfileCatalog_SelectionDone"/>
+                        <TextBlock Text="Элемент" FontWeight="Bold" Grid.Row="0" Grid.Column="0" Margin="2,0"/>
+                        <TextBlock Text="Профиль" FontWeight="Bold" Grid.Row="0" Grid.Column="1" Margin="2,0"/>
+                        <TextBlock Text="Материал" FontWeight="Bold" Grid.Row="0" Grid.Column="2" Margin="2,0"/>
+                        <TextBlock Text="Сборка" FontWeight="Bold" Grid.Row="0" Grid.Column="3" Margin="2,0"/>
+                        <TextBlock Text="Поз.Сб" FontWeight="Bold" Grid.Row="0" Grid.Column="4" Margin="2,0"/>
+                        <TextBlock Text="Деталь" FontWeight="Bold" Grid.Row="0" Grid.Column="5" Margin="2,0"/>
+                        <TextBlock Text="Поз.Дет" FontWeight="Bold" Grid.Row="0" Grid.Column="6" Margin="2,0"/>
+                        <TextBlock Text="Имя (Tekla)" FontWeight="Bold" Grid.Row="0" Grid.Column="7" Margin="2,0"/>
+                        <TextBlock Text="Класс" FontWeight="Bold" Grid.Row="0" Grid.Column="8" Margin="2,0"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="13" Grid.Column="0" AttributeName="S_Material"/>
-                        <Label Grid.Row="13" Grid.Column="1" Content="Материал распорки:"/>
-                        <TextBox Grid.Row="13" Grid.Column="2" Text="{Binding S_Material}"/>
-                        <UIControls:WpfMaterialCatalog x:Name="StrutMaterialCatalog" Grid.Row="13" Grid.Column="3" Width="30" Margin="0,3,0,3"
-                                                       SelectClicked="StrutMaterialCatalog_SelectClicked" SelectionDone="StrutMaterialCatalog_SelectionDone"/>
+                        <Label Content="Ветвь:" Grid.Row="1" Grid.Column="0"/>
+                        <Grid Grid.Row="1" Grid.Column="1" Margin="2,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="28"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Text="{Binding B_Profile}" Margin="0"/>
+                            <UIControls:WpfProfileCatalog x:Name="B_ProfileCat" Grid.Column="1" Width="28" Height="24" Margin="0" SelectClicked="B_ProfileCat_SelectClicked" SelectionDone="B_ProfileCat_SelectionDone"/>
+                        </Grid>
+                        <Grid Grid.Row="1" Grid.Column="2" Margin="2,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="28"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Text="{Binding B_Material}" Margin="0"/>
+                            <UIControls:WpfMaterialCatalog x:Name="B_MaterialCat" Grid.Column="1" Width="28" Height="24" Margin="0" SelectClicked="B_MaterialCat_SelectClicked" SelectionDone="B_MaterialCat_SelectionDone"/>
+                        </Grid>
+                        <TextBox Text="{Binding B_AssyPref}" Grid.Row="1" Grid.Column="3"/>
+                        <TextBox Text="{Binding B_AssyNo}" Grid.Row="1" Grid.Column="4"/>
+                        <TextBox Text="{Binding B_PartPref}" Grid.Row="1" Grid.Column="5"/>
+                        <TextBox Text="{Binding B_PartNo}" Grid.Row="1" Grid.Column="6"/>
+                        <TextBox Text="{Binding B_Name}" Grid.Row="1" Grid.Column="7"/>
+                        <TextBox Text="{Binding B_Class}" Grid.Row="1" Grid.Column="8"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="14" Grid.Column="0" AttributeName="D_Material"/>
-                        <Label Grid.Row="14" Grid.Column="1" Content="Материал диафрагмы:"/>
-                        <TextBox Grid.Row="14" Grid.Column="2" Text="{Binding D_Material}"/>
-                        <UIControls:WpfMaterialCatalog x:Name="DiaphragmMaterialCatalog" Grid.Row="14" Grid.Column="3" Width="30" Margin="0,3,0,3"
-                                                       SelectClicked="DiaphragmMaterialCatalog_SelectClicked" SelectionDone="DiaphragmMaterialCatalog_SelectionDone"/>
+                        <Label Content="Диафрагма:" Grid.Row="2" Grid.Column="0"/>
+                        <Grid Grid.Row="2" Grid.Column="1" Margin="2,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="28"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Text="{Binding D_Profile}" Margin="0"/>
+                            <UIControls:WpfProfileCatalog x:Name="D_ProfileCat" Grid.Column="1" Width="28" Height="24" Margin="0" SelectClicked="D_ProfileCat_SelectClicked" SelectionDone="D_ProfileCat_SelectionDone"/>
+                        </Grid>
+                        <Grid Grid.Row="2" Grid.Column="2" Margin="2,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="28"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Text="{Binding D_Material}" Margin="0"/>
+                            <UIControls:WpfMaterialCatalog x:Name="D_MaterialCat" Grid.Column="1" Width="28" Height="24" Margin="0" SelectClicked="D_MaterialCat_SelectClicked" SelectionDone="D_MaterialCat_SelectionDone"/>
+                        </Grid>
+                        <TextBox Text="{Binding D_AssyPref}" Grid.Row="2" Grid.Column="3"/>
+                        <TextBox Text="{Binding D_AssyNo}" Grid.Row="2" Grid.Column="4"/>
+                        <TextBox Text="{Binding D_PartPref}" Grid.Row="2" Grid.Column="5"/>
+                        <TextBox Text="{Binding D_PartNo}" Grid.Row="2" Grid.Column="6"/>
+                        <TextBox Text="{Binding D_Name}" Grid.Row="2" Grid.Column="7"/>
+                        <TextBox Text="{Binding D_Class}" Grid.Row="2" Grid.Column="8"/>
+
+                        <Label Content="Раскос рядовой:" Grid.Row="3" Grid.Column="0"/>
+                        <Grid Grid.Row="3" Grid.Column="1" Margin="2,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="28"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Text="{Binding L_Profile}" Margin="0"/>
+                            <UIControls:WpfProfileCatalog x:Name="L_ProfileCat" Grid.Column="1" Width="28" Height="24" Margin="0" SelectClicked="L_ProfileCat_SelectClicked" SelectionDone="L_ProfileCat_SelectionDone"/>
+                        </Grid>
+                        <Grid Grid.Row="3" Grid.Column="2" Margin="2,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="28"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Text="{Binding L_Material}" Margin="0"/>
+                            <UIControls:WpfMaterialCatalog x:Name="L_MaterialCat" Grid.Column="1" Width="28" Height="24" Margin="0" SelectClicked="L_MaterialCat_SelectClicked" SelectionDone="L_MaterialCat_SelectionDone"/>
+                        </Grid>
+                        <TextBox Text="{Binding L_AssyPref}" Grid.Row="3" Grid.Column="3"/>
+                        <TextBox Text="{Binding L_AssyNo}" Grid.Row="3" Grid.Column="4"/>
+                        <TextBox Text="{Binding L_PartPref}" Grid.Row="3" Grid.Column="5"/>
+                        <TextBox Text="{Binding L_PartNo}" Grid.Row="3" Grid.Column="6"/>
+                        <TextBox Text="{Binding L_Name}" Grid.Row="3" Grid.Column="7"/>
+                        <TextBox Text="{Binding L_Class}" Grid.Row="3" Grid.Column="8"/>
+
+                        <Label Content="Раскос стыковой:" Grid.Row="4" Grid.Column="0" Foreground="Gray"/>
+                        <Grid Grid.Row="4" Grid.Column="1" Margin="2,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="28"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Text="{Binding LS_Profile}" Margin="0"/>
+                            <UIControls:WpfProfileCatalog x:Name="LS_ProfileCat" Grid.Column="1" Width="28" Height="24" Margin="0" SelectClicked="LS_ProfileCat_SelectClicked" SelectionDone="LS_ProfileCat_SelectionDone"/>
+                        </Grid>
+                        <Grid Grid.Row="4" Grid.Column="2" Margin="2,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="28"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Text="{Binding LS_Material}" Margin="0"/>
+                            <UIControls:WpfMaterialCatalog x:Name="LS_MaterialCat" Grid.Column="1" Width="28" Height="24" Margin="0" SelectClicked="LS_MaterialCat_SelectClicked" SelectionDone="LS_MaterialCat_SelectionDone"/>
+                        </Grid>
+                        <TextBox Text="{Binding LS_AssyPref}" Grid.Row="4" Grid.Column="3"/>
+                        <TextBox Text="{Binding LS_AssyNo}" Grid.Row="4" Grid.Column="4"/>
+                        <TextBox Text="{Binding LS_PartPref}" Grid.Row="4" Grid.Column="5"/>
+                        <TextBox Text="{Binding LS_PartNo}" Grid.Row="4" Grid.Column="6"/>
+                        <TextBox Text="{Binding LS_Name}" Grid.Row="4" Grid.Column="7"/>
+                        <TextBox Text="{Binding LS_Class}" Grid.Row="4" Grid.Column="8"/>
+
+                        <Label Content="Распорка:" Grid.Row="5" Grid.Column="0" Foreground="Gray"/>
+                        <Grid Grid.Row="5" Grid.Column="1" Margin="2,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="28"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Text="{Binding S_Profile}" Margin="0"/>
+                            <UIControls:WpfProfileCatalog x:Name="S_ProfileCat" Grid.Column="1" Width="28" Height="24" Margin="0" SelectClicked="S_ProfileCat_SelectClicked" SelectionDone="S_ProfileCat_SelectionDone"/>
+                        </Grid>
+                        <Grid Grid.Row="5" Grid.Column="2" Margin="2,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="28"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Text="{Binding S_Material}" Margin="0"/>
+                            <UIControls:WpfMaterialCatalog x:Name="S_MaterialCat" Grid.Column="1" Width="28" Height="24" Margin="0" SelectClicked="S_MaterialCat_SelectClicked" SelectionDone="S_MaterialCat_SelectionDone"/>
+                        </Grid>
+                        <TextBox Text="{Binding S_AssyPref}" Grid.Row="5" Grid.Column="3"/>
+                        <TextBox Text="{Binding S_AssyNo}" Grid.Row="5" Grid.Column="4"/>
+                        <TextBox Text="{Binding S_PartPref}" Grid.Row="5" Grid.Column="5"/>
+                        <TextBox Text="{Binding S_PartNo}" Grid.Row="5" Grid.Column="6"/>
+                        <TextBox Text="{Binding S_Name}" Grid.Row="5" Grid.Column="7"/>
+                        <TextBox Text="{Binding S_Class}" Grid.Row="5" Grid.Column="8"/>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
