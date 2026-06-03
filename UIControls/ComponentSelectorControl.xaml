@@ -24,7 +24,7 @@
 
         <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding PresetLabel, ElementName=Root}" VerticalAlignment="Center" Margin="0,0,10,0"/>
         <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding PresetText, ElementName=Root, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="24" Margin="0,0,10,0" VerticalContentAlignment="Center"/>
-        <Button Grid.Row="1" Grid.Column="2" Content="..." Width="28" Height="24" Click="PresetButton_Click" 
-                FontFamily="Segoe UI" FontSize="11" Padding="0,-2,0,0" Background="#FFF0F0F0" BorderBrush="#FFABADB3" BorderThickness="1"/>
+        <Button Grid.Row="1" Grid.Column="2" Content="..." Click="PresetButton_Click" 
+                FontFamily="Segoe UI" FontSize="11" Padding="0,-2,0,0" Background="#FFF0F0F0" BorderBrush="#FFABADB3" BorderThickness="1" Margin="3,4,7,3" RenderTransformOrigin="0.463,0.52"/>
     </Grid>
 </UserControl>
