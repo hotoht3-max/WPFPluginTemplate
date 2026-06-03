@@ -441,6 +441,43 @@
                     </Grid>
                 </ScrollViewer>
             </TabItem>
+            <TabItem Header="Тест каталога">
+                <StackPanel Margin="15" Orientation="Vertical">
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBlock Text="Материал:" VerticalAlignment="Center" Width="80"/>
+                        <TextBox x:Name="TxtTestMaterial" Text="" VerticalAlignment="Center" Width="150" Margin="0,0,10,0"/>
+                        <UIControls:WpfMaterialCatalog x:Name="TestMaterialCat" Width="28" Height="24" 
+                                                       SelectClicked="TestMaterialCat_SelectClicked" 
+                                                       SelectionDone="TestMaterialCat_SelectionDone"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBlock Text="Профиль:" VerticalAlignment="Center" Width="80"/>
+                        <TextBox x:Name="TxtTestProfile" Text="" VerticalAlignment="Center" Width="150" Margin="0,0,10,0"/>
+                        <UIControls:WpfProfileCatalog x:Name="TestProfileCat" Width="28" Height="24" 
+                                                      SelectClicked="TestProfileCat_SelectClicked" 
+                                                      SelectionDone="TestProfileCat_SelectionDone"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBlock Text="Компонент:" VerticalAlignment="Center" Width="80"/>
+                        <TextBox x:Name="TxtTestComponent" Text="" VerticalAlignment="Center" Width="150" Margin="0,0,10,0"/>
+                        <UIControls:WpfComponentCatalog x:Name="TestComponentCat" Width="28" Height="24" 
+                                                        SelectClicked="TestComponentCat_SelectClicked" 
+                                                        SelectionDone="TestComponentCat_SelectionDone"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Пресет:" VerticalAlignment="Center" Width="80"/>
+                        <TextBox x:Name="TxtTestPreset" Text="" VerticalAlignment="Center" Width="150" Margin="0,0,10,0"/>
+                        <Button Content="..." Width="28" Height="24" Click="TestPreset_Click" 
+                            FontFamily="Segoe UI" FontSize="11" Padding="0,-2,0,0" 
+                            Background="#FFF0F0F0" BorderBrush="#FFABADB3" BorderThickness="1"/>
+                    </StackPanel>
+
+                </StackPanel>
+            </TabItem>
         </TabControl>
 
         <UIControls:WpfOkApplyModifyGetOnOffCancel Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,5,0,5"

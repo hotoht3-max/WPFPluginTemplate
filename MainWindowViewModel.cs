@@ -100,5 +100,6 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresDialog("S_PartNo", typeof(TD.String))] public string S_PartNo { get => _s_PartNo; set => Set(ref _s_PartNo, value); }
         [StructuresDialog("S_Name", typeof(TD.String))] public string S_Name { get => _s_Name; set => Set(ref _s_Name, value); }
         [StructuresDialog("S_Class", typeof(TD.String))] public string S_Class { get => _s_Class; set => Set(ref _s_Class, value); }
+
     }
 }
