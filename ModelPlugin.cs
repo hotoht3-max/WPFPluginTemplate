@@ -44,16 +44,11 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresField("S_Splice_Preset")] public int S_Splice_Preset = 2;
         [StructuresField("S_Preset")] public int S_Preset = 1;
 
-        // Ветвь
-        [StructuresField("B_Profile")] public string B_Profile = "I20K1_57837_2017"; [StructuresField("B_Material")] public string B_Material = "C355Б"; [StructuresField("B_AssyPref")] public string B_AssyPref = "К"; [StructuresField("B_AssyNo")] public string B_AssyNo = "1"; [StructuresField("B_PartPref")] public string B_PartPref = "к"; [StructuresField("B_PartNo")] public string B_PartNo = "1"; [StructuresField("B_Name")] public string B_Name = "ВЕТВЬ"; [StructuresField("B_Class")] public string B_Class = "1";
-        // Диафрагма
-        [StructuresField("D_Profile")] public string D_Profile = "16P_8240_97"; [StructuresField("D_Material")] public string D_Material = "C245"; [StructuresField("D_AssyPref")] public string D_AssyPref = ""; [StructuresField("D_AssyNo")] public string D_AssyNo = ""; [StructuresField("D_PartPref")] public string D_PartPref = "д"; [StructuresField("D_PartNo")] public string D_PartNo = "1"; [StructuresField("D_Name")] public string D_Name = "ДИАФРАГМА"; [StructuresField("D_Class")] public string D_Class = "4";
-        // Раскос рядовой
-        [StructuresField("L_Profile")] public string L_Profile = "L75X6_8509_93"; [StructuresField("L_Material")] public string L_Material = "C245"; [StructuresField("L_AssyPref")] public string L_AssyPref = ""; [StructuresField("L_AssyNo")] public string L_AssyNo = ""; [StructuresField("L_PartPref")] public string L_PartPref = "р"; [StructuresField("L_PartNo")] public string L_PartNo = "1"; [StructuresField("L_Name")] public string L_Name = "РАСКОС"; [StructuresField("L_Class")] public string L_Class = "3";
-        // Раскос стыковой
-        [StructuresField("LS_Profile")] public string LS_Profile = ""; [StructuresField("LS_Material")] public string LS_Material = ""; [StructuresField("LS_AssyPref")] public string LS_AssyPref = ""; [StructuresField("LS_AssyNo")] public string LS_AssyNo = ""; [StructuresField("LS_PartPref")] public string LS_PartPref = "рс"; [StructuresField("LS_PartNo")] public string LS_PartNo = "1"; [StructuresField("LS_Name")] public string LS_Name = "РАСКОС СТЫКОВОЙ"; [StructuresField("LS_Class")] public string LS_Class = "3";
-        // Распорка
-        [StructuresField("S_Profile")] public string S_Profile = ""; [StructuresField("S_Material")] public string S_Material = ""; [StructuresField("S_AssyPref")] public string S_AssyPref = ""; [StructuresField("S_AssyNo")] public string S_AssyNo = ""; [StructuresField("S_PartPref")] public string S_PartPref = "рп"; [StructuresField("S_PartNo")] public string S_PartNo = "1"; [StructuresField("S_Name")] public string S_Name = "РАСПОРКА"; [StructuresField("S_Class")] public string S_Class = "4";
+        [StructuresField("B_Profile")] public string B_Profile = "I20K1_57837_2017"; [StructuresField("B_Material")] public string B_Material = "C355Б"; [StructuresField("B_AssyPref")] public string B_AssyPref = "К"; [StructuresField("B_AssyNo")] public string B_AssyNo = "1"; [StructuresField("B_PartPref")] public string B_PartPref = "к"; [StructuresField("B_PartNo")] public string B_PartNo = "1"; [StructuresField("B_Name")] public string B_Name = "ВЕТВЬ"; [StructuresField("B_Class")] public string B_Class = "1"; [StructuresField("B_UDA")] public string B_UDA = "";
+        [StructuresField("D_Profile")] public string D_Profile = "16P_8240_97"; [StructuresField("D_Material")] public string D_Material = "C245"; [StructuresField("D_AssyPref")] public string D_AssyPref = ""; [StructuresField("D_AssyNo")] public string D_AssyNo = ""; [StructuresField("D_PartPref")] public string D_PartPref = "д"; [StructuresField("D_PartNo")] public string D_PartNo = "1"; [StructuresField("D_Name")] public string D_Name = "ДИАФРАГМА"; [StructuresField("D_Class")] public string D_Class = "4"; [StructuresField("D_UDA")] public string D_UDA = "";
+        [StructuresField("L_Profile")] public string L_Profile = "L75X6_8509_93"; [StructuresField("L_Material")] public string L_Material = "C245"; [StructuresField("L_AssyPref")] public string L_AssyPref = ""; [StructuresField("L_AssyNo")] public string L_AssyNo = ""; [StructuresField("L_PartPref")] public string L_PartPref = "р"; [StructuresField("L_PartNo")] public string L_PartNo = "1"; [StructuresField("L_Name")] public string L_Name = "РАСКОС"; [StructuresField("L_Class")] public string L_Class = "3"; [StructuresField("L_UDA")] public string L_UDA = "";
+        [StructuresField("LS_Profile")] public string LS_Profile = ""; [StructuresField("LS_Material")] public string LS_Material = ""; [StructuresField("LS_AssyPref")] public string LS_AssyPref = ""; [StructuresField("LS_AssyNo")] public string LS_AssyNo = ""; [StructuresField("LS_PartPref")] public string LS_PartPref = "рс"; [StructuresField("LS_PartNo")] public string LS_PartNo = "1"; [StructuresField("LS_Name")] public string LS_Name = "РАСКОС СТЫКОВОЙ"; [StructuresField("LS_Class")] public string LS_Class = "3"; [StructuresField("LS_UDA")] public string LS_UDA = "";
+        [StructuresField("S_Profile")] public string S_Profile = ""; [StructuresField("S_Material")] public string S_Material = ""; [StructuresField("S_AssyPref")] public string S_AssyPref = ""; [StructuresField("S_AssyNo")] public string S_AssyNo = ""; [StructuresField("S_PartPref")] public string S_PartPref = "рп"; [StructuresField("S_PartNo")] public string S_PartNo = "1"; [StructuresField("S_Name")] public string S_Name = "РАСПОРКА"; [StructuresField("S_Class")] public string S_Class = "4"; [StructuresField("S_UDA")] public string S_UDA = "";
     }
 
     [Plugin("Apibim_BuiltUpColumn")]
@@ -75,7 +70,12 @@ namespace Apibim.Plugins.BuiltUpColumn
                     new InputDefinition(picker.PickPoint("Укажите направление колонны (Точка 2)"))
                 };
             }
-            catch (Exception) { return new List<InputDefinition>(); }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("User interrupt")) return new List<InputDefinition>();
+                System.Windows.MessageBox.Show($"Ошибка выбора точек:\n\n{ex.Message}", "RAM BIM", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                return new List<InputDefinition>();
+            }
         }
 
         public override bool Run(List<InputDefinition> Input)
@@ -110,11 +110,9 @@ namespace Apibim.Plugins.BuiltUpColumn
                     Hcol_e1 = Data.Hcol_e1,
                     Hcol_e2 = Data.Hcol_e2,
                     Hcol_e3 = Data.Hcol_e3,
-
                     SplicesText = Data.SplicesText,
                     SpliceComponent = Data.SpliceComponent,
                     SplicePreset = Data.SplicePreset,
-
                     L_StepMode = Data.L_StepMode,
                     Hr_base = Data.Hr_base,
                     L_StepText = Data.L_StepText,
@@ -125,7 +123,6 @@ namespace Apibim.Plugins.BuiltUpColumn
                     L_Type = Data.L_Type,
                     L_Preset = Data.L_Preset,
                     L_Offset = Data.L_Offset,
-
                     S_Mode = Data.S_Mode,
                     S_NodesDouble = Data.S_NodesDouble,
                     S_NodesChannel = Data.S_NodesChannel,
@@ -143,6 +140,7 @@ namespace Apibim.Plugins.BuiltUpColumn
                     B_PartNo = Data.B_PartNo,
                     B_Name = Data.B_Name,
                     B_Class = Data.B_Class,
+                    B_UDA = Data.B_UDA,
                     D_Profile = Data.D_Profile,
                     D_Material = Data.D_Material,
                     D_AssyPref = Data.D_AssyPref,
@@ -151,6 +149,7 @@ namespace Apibim.Plugins.BuiltUpColumn
                     D_PartNo = Data.D_PartNo,
                     D_Name = Data.D_Name,
                     D_Class = Data.D_Class,
+                    D_UDA = Data.D_UDA,
                     L_Profile = Data.L_Profile,
                     L_Material = Data.L_Material,
                     L_AssyPref = Data.L_AssyPref,
@@ -159,6 +158,7 @@ namespace Apibim.Plugins.BuiltUpColumn
                     L_PartNo = Data.L_PartNo,
                     L_Name = Data.L_Name,
                     L_Class = Data.L_Class,
+                    L_UDA = Data.L_UDA,
                     LS_Profile = Data.LS_Profile,
                     LS_Material = Data.LS_Material,
                     LS_AssyPref = Data.LS_AssyPref,
@@ -167,6 +167,7 @@ namespace Apibim.Plugins.BuiltUpColumn
                     LS_PartNo = Data.LS_PartNo,
                     LS_Name = Data.LS_Name,
                     LS_Class = Data.LS_Class,
+                    LS_UDA = Data.LS_UDA,
                     S_Profile = Data.S_Profile,
                     S_Material = Data.S_Material,
                     S_AssyPref = Data.S_AssyPref,
@@ -174,61 +175,101 @@ namespace Apibim.Plugins.BuiltUpColumn
                     S_PartPref = Data.S_PartPref,
                     S_PartNo = Data.S_PartNo,
                     S_Name = Data.S_Name,
-                    S_Class = Data.S_Class
+                    S_Class = Data.S_Class,
+                    S_UDA = Data.S_UDA
                 };
-                // Получаем Зоны, Стыки и Линии
+
+                if (string.IsNullOrWhiteSpace(colData.B_Profile)) throw new Exception("Не заполнен 'Профиль' для Ветви. Построение отменено.");
+                if (string.IsNullOrWhiteSpace(colData.L_Profile)) throw new Exception("Не заполнен 'Профиль' для Раскоса. Построение отменено.");
+
                 var branchLines = ColumnGeometryBuilder.GetBranchLines(colData);
                 var zNodes = ColumnGeometryBuilder.GetZNodes(colData);
                 var lacingLines = ColumnGeometryBuilder.GetLacingLines(colData, zNodes);
                 var strutLines = ColumnGeometryBuilder.GetStrutLines(colData, zNodes);
 
-                // --- 1. ГЕНЕРАЦИЯ ВЕТВЕЙ (СО СТЫКАМИ) ---
+                var splices = StringParserService.ParseSplices(colData.SplicesText);
+
+                // --- 1. ГЕНЕРАЦИЯ И КЭШИРОВАНИЕ ВЕТВЕЙ ---
                 double autoBaseDist = 0.0;
+                List<Beam> createdBranches = new List<Beam>();
+
                 foreach (var line in branchLines)
                 {
                     Beam branch = new Beam(line.Point1, line.Point2);
-                    branch.Profile.ProfileString = colData.B_Profile;   // Раньше было BranchProfile
-                    branch.Material.MaterialString = colData.B_Material; // Раньше было Material
-                    branch.Class = "1";
+                    branch.Profile.ProfileString = colData.B_Profile;
+                    branch.Material.MaterialString = colData.B_Material;
+                    branch.Class = colData.B_Class;
+                    branch.Name = colData.B_Name;
+                    branch.PartNumber.Prefix = colData.B_PartPref; branch.PartNumber.StartNumber = GetInt(colData.B_PartNo, 1);
+                    branch.AssemblyNumber.Prefix = colData.B_AssyPref; branch.AssemblyNumber.StartNumber = GetInt(colData.B_AssyNo, 1);
+
                     branch.Position.Plane = Position.PlaneEnum.MIDDLE;
                     branch.Position.Depth = Position.DepthEnum.MIDDLE;
                     branch.Position.Rotation = Position.RotationEnum.TOP;
                     branch.Position.RotationOffset = planeAngleDeg + colData.Br_Rot;
-                    branch.Insert();
 
+                    if (!branch.Insert()) throw new Exception($"Не удалось построить ветвь: {colData.B_Profile} / {colData.B_Material}");
+
+                    createdBranches.Add(branch);
                     if (autoBaseDist == 0.0) branch.GetReportProperty("PROFILE.HEIGHT", ref autoBaseDist);
                 }
 
                 if (autoBaseDist <= 0.0) autoBaseDist = 200.0;
 
-                // --- 2. ГЕНЕРАЦИЯ РЕШЕТКИ ---
+                // --- 2. УСТАНОВКА КОМПОНЕНТОВ СТЫКОВ (Через универсальный сервис) ---
+                if (!string.IsNullOrWhiteSpace(colData.SpliceComponent))
+                {
+                    int branchesPerSide = createdBranches.Count / 2;
+                    for (int i = 0; i < branchesPerSide - 1; i++)
+                    {
+                        // Левая ветвь
+                        if (!TeklaComponentService.InsertConnection(colData.SpliceComponent, colData.SplicePreset, createdBranches[i], new List<ModelObject> { createdBranches[i + 1] }, null, out string errL))
+                            Logger.Write($"Стык (Левый, ярус {i + 1}): {errL}", LogLevel.Error);
+
+                        // Правая ветвь
+                        if (!TeklaComponentService.InsertConnection(colData.SpliceComponent, colData.SplicePreset, createdBranches[branchesPerSide + i], new List<ModelObject> { createdBranches[branchesPerSide + i + 1] }, null, out string errR))
+                            Logger.Write($"Стык (Правый, ярус {i + 1}): {errR}", LogLevel.Error);
+                    }
+                }
+
+                // --- 3. ГЕНЕРАЦИЯ РЕШЕТКИ (СО СТРОГОЙ ПРОВЕРКОЙ СТЫКОВЫХ РАСКОСОВ) ---
                 foreach (var line in lacingLines)
                 {
-                    if (colData.L_Type == 0)
+                    bool isSpliceDiagonal = false;
+                    double minZ = Math.Min(line.Point1.Z, line.Point2.Z);
+                    double maxZ = Math.Max(line.Point1.Z, line.Point2.Z);
+
+                    foreach (var spliceZ in splices)
                     {
-                        CreateLacingBeam(line.Point1, line.Point2, colData).Insert();
+                        if (spliceZ >= minZ && spliceZ <= maxZ)
+                        {
+                            isSpliceDiagonal = true;
+                            break;
+                        }
                     }
+
+                    if (colData.L_Type == 0) CreateLacingBeam(line.Point1, line.Point2, colData, isSpliceDiagonal).Insert();
                     else
                     {
                         Vector shift = localY * (autoBaseDist / 2.0);
                         Point p1_A = new Point(line.Point1.X + shift.X, line.Point1.Y + shift.Y, line.Point1.Z);
                         Point p2_A = new Point(line.Point2.X + shift.X, line.Point2.Y + shift.Y, line.Point2.Z);
-                        CreateLacingBeam(p1_A, p2_A, colData).Insert();
+                        CreateLacingBeam(p1_A, p2_A, colData, isSpliceDiagonal).Insert();
 
                         Point p1_B = new Point(line.Point1.X - shift.X, line.Point1.Y - shift.Y, line.Point1.Z);
                         Point p2_B = new Point(line.Point2.X - shift.X, line.Point2.Y - shift.Y, line.Point2.Z);
-                        CreateLacingBeam(p2_B, p1_B, colData).Insert();
+                        CreateLacingBeam(p2_B, p1_B, colData, isSpliceDiagonal).Insert();
                     }
                 }
 
-                // --- 3. МАРШРУТИЗАЦИЯ ПЛАНОК ---
+                // --- 4. МАРШРУТИЗАЦИЯ ПЛАНОК (УЛЬТИМАТИВНЫЕ ИСКЛЮЧЕНИЯ) ---
                 int totalNodes = strutLines.Count;
-                var splices = StringParserService.ParseSplices(colData.SplicesText);
                 var spliceNodes = ColumnGeometryBuilder.GetSpliceAdjacentNodes(zNodes, splices);
 
+                // Читаем исключения ВСЕГДА, независимо от режима!
+                var excludeNodes = StringParserService.ParseNodes(colData.S_NodesExclude, totalNodes);
                 var doubleNodes = new HashSet<int>();
                 var channelNodes = new HashSet<int>();
-                var excludeNodes = new HashSet<int>();
 
                 if (colData.S_Mode == 1)
                 {
@@ -237,50 +278,50 @@ namespace Apibim.Plugins.BuiltUpColumn
                 }
                 else if (colData.S_Mode == 2)
                 {
-                    excludeNodes = StringParserService.ParseNodes(colData.S_NodesExclude, totalNodes);
                     channelNodes = StringParserService.ParseNodes(colData.S_NodesChannel, totalNodes);
                 }
 
                 for (int i = 0; i < totalNodes; i++)
                 {
-                    var line = strutLines[i];
-                    int presetToUse = 0; // По умолчанию ничего
+                    // АБСОЛЮТНЫЙ ПРИОРИТЕТ 1: Исключение планки
+                    if (excludeNodes.Contains(i)) continue;
 
-                    // ПРИОРИТЕТ 1: Крайние узлы и узлы стыков
+                    var line = strutLines[i];
+                    int presetToUse = 0;
+
                     if (i == 0) presetToUse = colData.S_Base_Preset;
                     else if (i == totalNodes - 1) presetToUse = colData.S_Top_Preset;
                     else if (spliceNodes.Contains(i)) presetToUse = colData.S_Splice_Preset;
-
-                    // ПРИОРИТЕТ 2: Рядовые узлы по правилам ручного ввода (если включен)
                     else if (colData.S_Mode > 0)
                     {
-                        if (colData.S_Mode == 2 && excludeNodes.Contains(i)) continue; // Исключение
-
-                        if (channelNodes.Contains(i)) presetToUse = 2; // Принудительно швеллер
-                        else if (colData.S_Mode == 2 || doubleNodes.Contains(i)) presetToUse = colData.S_Preset; // Распорка
+                        if (channelNodes.Contains(i)) presetToUse = 2;
+                        else if (colData.S_Mode == 2 || doubleNodes.Contains(i)) presetToUse = colData.S_Preset;
                     }
 
-                    // ФИНАЛ: Вставка
                     if (presetToUse == 1) InsertStrut_AsLacing(line, colData, localY, autoBaseDist);
                     else if (presetToUse == 2) CreateStrutBeam_Channel(line.Point1, line.Point2, colData).Insert();
                 }
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                System.Windows.MessageBox.Show($"Критическая ошибка построения (Run):\n\n{ex}", "RAM BIM: Ошибка", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 return false;
             }
         }
 
         // --- ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ---
+        private int GetInt(string val, int fallback)
+        {
+            if (int.TryParse(val, out int result)) return result;
+            return fallback;
+        }
+
 
         private void InsertStrut_AsLacing(LineSegment line, BuiltUpColumnData colData, Vector localY, double autoBaseDist)
         {
-            if (colData.L_Type == 0)
-            {
-                CreateStrutBeam_AsLacing(line.Point1, line.Point2, colData).Insert();
-            }
+            if (colData.L_Type == 0) CreateStrutBeam_AsLacing(line.Point1, line.Point2, colData).Insert();
             else
             {
                 Vector shift = localY * (autoBaseDist / 2.0);
@@ -294,50 +335,52 @@ namespace Apibim.Plugins.BuiltUpColumn
             }
         }
 
-        private Beam CreateLacingBeam(Point p1, Point p2, BuiltUpColumnData data)
+        private Beam CreateLacingBeam(Point p1, Point p2, BuiltUpColumnData data, bool isSpliceDiagonal)
         {
             Beam b = new Beam(p1, p2);
-            b.Profile.ProfileString = data.L_Profile;   // Раньше было LacingProfile
-            b.Material.MaterialString = data.L_Material; // Раньше было Material
-            b.Class = "3";
+
+            // Наследование для стыкового раскоса (Если LS_ пустой, берет значение от обычного раскоса L_)
+            string prof = isSpliceDiagonal && !string.IsNullOrWhiteSpace(data.LS_Profile) ? data.LS_Profile : data.L_Profile;
+            string mat = isSpliceDiagonal && !string.IsNullOrWhiteSpace(data.LS_Material) ? data.LS_Material : data.L_Material;
+            string cls = isSpliceDiagonal && !string.IsNullOrWhiteSpace(data.LS_Class) ? data.LS_Class : data.L_Class;
+            string name = isSpliceDiagonal && !string.IsNullOrWhiteSpace(data.LS_Name) ? data.LS_Name : data.L_Name;
+            string pPref = isSpliceDiagonal && !string.IsNullOrWhiteSpace(data.LS_PartPref) ? data.LS_PartPref : data.L_PartPref;
+            string pNo = isSpliceDiagonal && !string.IsNullOrWhiteSpace(data.LS_PartNo) ? data.LS_PartNo : data.L_PartNo;
+            string aPref = isSpliceDiagonal && !string.IsNullOrWhiteSpace(data.LS_AssyPref) ? data.LS_AssyPref : data.L_AssyPref;
+            string aNo = isSpliceDiagonal && !string.IsNullOrWhiteSpace(data.LS_AssyNo) ? data.LS_AssyNo : data.L_AssyNo;
+
+            b.Profile.ProfileString = prof;
+            b.Material.MaterialString = mat;
+            b.Class = cls;
+            b.Name = name;
+            b.PartNumber.Prefix = pPref; b.PartNumber.StartNumber = GetInt(pNo, 1);
+            b.AssemblyNumber.Prefix = aPref; b.AssemblyNumber.StartNumber = GetInt(aNo, 1);
+
             b.Position.PlaneOffset = 0.0;
             b.Position.DepthOffset = 0.0;
 
             int activePreset = data.L_Type == 1 ? 1 : data.L_Preset;
-
             switch (activePreset)
             {
-                case 1:
-                    b.Position.Plane = Position.PlaneEnum.MIDDLE;
-                    b.Position.Depth = Position.DepthEnum.FRONT;
-                    b.Position.Rotation = Position.RotationEnum.TOP;
-                    b.Position.RotationOffset = 90.0;
-                    b.Position.DepthOffset = data.L_Offset;
-                    break;
-                case 2:
-                    b.Position.Plane = Position.PlaneEnum.LEFT;
-                    b.Position.Depth = Position.DepthEnum.MIDDLE;
-                    b.Position.Rotation = Position.RotationEnum.FRONT;
-                    b.Position.RotationOffset = 0.0;
-                    b.Position.PlaneOffset = data.L_Offset;
-                    break;
-                case 3:
-                    b.Position.Plane = Position.PlaneEnum.MIDDLE;
-                    b.Position.Depth = Position.DepthEnum.MIDDLE;
-                    b.Position.Rotation = Position.RotationEnum.FRONT;
-                    b.Position.RotationOffset = 0.0;
-                    b.Position.PlaneOffset = data.L_Offset;
-                    break;
+                case 1: b.Position.Plane = Position.PlaneEnum.MIDDLE; b.Position.Depth = Position.DepthEnum.FRONT; b.Position.Rotation = Position.RotationEnum.TOP; b.Position.RotationOffset = 90.0; b.Position.DepthOffset = data.L_Offset; break;
+                case 2: b.Position.Plane = Position.PlaneEnum.LEFT; b.Position.Depth = Position.DepthEnum.MIDDLE; b.Position.Rotation = Position.RotationEnum.FRONT; b.Position.RotationOffset = 0.0; b.Position.PlaneOffset = data.L_Offset; break;
+                case 3: b.Position.Plane = Position.PlaneEnum.MIDDLE; b.Position.Depth = Position.DepthEnum.MIDDLE; b.Position.Rotation = Position.RotationEnum.FRONT; b.Position.RotationOffset = 0.0; b.Position.PlaneOffset = data.L_Offset; break;
             }
             return b;
         }
 
         private Beam CreateStrutBeam_AsLacing(Point p1, Point p2, BuiltUpColumnData data)
         {
-            Beam b = CreateLacingBeam(p1, p2, data);
-            b.Profile.ProfileString = data.S_Profile;
-            b.Material.MaterialString = data.S_Material;
-            b.Class = "4";
+            // Распорка технически это просто горизонтальный раскос (передаем false)
+            Beam b = CreateLacingBeam(p1, p2, data, false);
+
+            if (!string.IsNullOrWhiteSpace(data.S_Profile)) b.Profile.ProfileString = data.S_Profile;
+            if (!string.IsNullOrWhiteSpace(data.S_Material)) b.Material.MaterialString = data.S_Material;
+            if (!string.IsNullOrWhiteSpace(data.S_Class)) b.Class = data.S_Class;
+            if (!string.IsNullOrWhiteSpace(data.S_Name)) b.Name = data.S_Name;
+            if (!string.IsNullOrWhiteSpace(data.S_PartPref)) b.PartNumber.Prefix = data.S_PartPref;
+            if (!string.IsNullOrWhiteSpace(data.S_PartNo)) b.PartNumber.StartNumber = GetInt(data.S_PartNo, 1);
+
             return b;
         }
 
@@ -346,13 +389,15 @@ namespace Apibim.Plugins.BuiltUpColumn
             Beam b = new Beam(p1, p2);
             b.Profile.ProfileString = data.D_Profile;
             b.Material.MaterialString = data.D_Material;
-            b.Class = "4";
+            b.Class = data.D_Class;
+            b.Name = data.D_Name;
+            b.PartNumber.Prefix = data.D_PartPref; b.PartNumber.StartNumber = GetInt(data.D_PartNo, 1);
+            b.AssemblyNumber.Prefix = data.D_AssyPref; b.AssemblyNumber.StartNumber = GetInt(data.D_AssyNo, 1);
 
             b.Position.Plane = Position.PlaneEnum.MIDDLE;
             b.Position.Depth = Position.DepthEnum.BEHIND;
             b.Position.PlaneOffset = 0.0;
             b.Position.DepthOffset = 0.0;
-
             b.Position.Rotation = Position.RotationEnum.BACK;
             b.Position.RotationOffset = 0.0;
 

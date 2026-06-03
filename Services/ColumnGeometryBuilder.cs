@@ -18,9 +18,9 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
             double startZ = -data.Hcol_e1;
             double endZ = data.Hcol_1;
 
-            // Читаем стыки, фильтруем те, что вышли за габариты колонны (допуск 10мм)
+            // Строгая математика: берем только те стыки, которые лежат строго внутри колонны
             List<double> splices = StringParserService.ParseSplices(data.SplicesText)
-                .Where(s => s > startZ + 10.0 && s < endZ - 10.0)
+                .Where(s => s > startZ && s < endZ)
                 .OrderBy(s => s).ToList();
 
             List<double> zPoints = new List<double> { startZ };
@@ -139,13 +139,11 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                 Point pStart = new Point(currentCenter);
                 Point pEnd = new Point(nextCenter);
 
-                // Читаем сдвиги для старта (вектор уходит ВВЕРХ) и для конца (вектор приходит СНИЗУ)
                 double shiftUp = GetRascUp(i, data, overrides, zNodes.Count);
                 double shiftDown = GetRascDown(i + 1, data, overrides, zNodes.Count);
 
-                // Применяем сдвиги
                 pStart.Translate(upVector * shiftUp);
-                pEnd.Translate(upVector * -shiftDown); // Минус, потому что сдвиг вниз от теор. узла
+                pEnd.Translate(upVector * -shiftDown);
 
                 if (toggleToRight) lines.Add(new LineSegment(pStart, pEnd));
                 else lines.Add(new LineSegment(pEnd, pStart));

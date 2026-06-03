@@ -4,11 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Apibim.Plugins.BuiltUpColumn"
+        xmlns:localUI="clr-namespace:Apibim.Plugins.BuiltUpColumn.UIControls"
         xmlns:tsd="clr-namespace:Tekla.Structures.Dialog;assembly=Tekla.Structures.Dialog"
         xmlns:UIControls="clr-namespace:Tekla.Structures.Dialog.UIControls;assembly=Tekla.Structures.Dialog" 
         x:Class="Apibim.Plugins.BuiltUpColumn.MainWindow"
         mc:Ignorable="d"
-        Title="Сквозная колонна RAM (Alpha)" FontSize="14" Height="700" Width="850">
+        Title="Сквозная колонна RAM (Alpha)" FontSize="14" Height="700" Width="1200">
 
     <Grid>
         <Grid.Resources>
@@ -94,31 +95,17 @@
                         <TextBox Grid.Row="7" Grid.Column="2" Text="{Binding Hcol_e3}"/>
 
                         <TextBlock Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" Text="Стыки ветвей (Компоненты)" FontWeight="Bold" Margin="0,15,0,5"/>
+
                         <UIControls:WpfFilterCheckBox Grid.Row="9" Grid.Column="0" AttributeName="SplicesText"/>
                         <Label Grid.Row="9" Grid.Column="1" Content="Отметки стыков:"/>
                         <TextBox Grid.Row="9" Grid.Column="2" Text="{Binding SplicesText}"/>
 
                         <UIControls:WpfFilterCheckBox Grid.Row="10" Grid.Column="0" AttributeName="SpliceComponent"/>
-                        <Label Grid.Row="10" Grid.Column="1" Content="Компонент стыка:"/>
-                        <Grid Grid.Row="10" Grid.Column="2">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="28"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBox Text="{Binding SpliceComponent}" Margin="0"/>
-                            <Button Grid.Column="1" Content="..." Width="28" Height="24" Margin="2,0,0,0" Click="BtnComponent_Click"/>
-                        </Grid>
-
                         <UIControls:WpfFilterCheckBox Grid.Row="11" Grid.Column="0" AttributeName="SplicePreset"/>
-                        <Label Grid.Row="11" Grid.Column="1" Content="Файл атрибутов (Пресет):"/>
-                        <Grid Grid.Row="11" Grid.Column="2">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="28"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBox Text="{Binding SplicePreset}" Margin="0"/>
-                            <Button Grid.Column="1" Content="..." Width="28" Height="24" Margin="2,0,0,0" Click="BtnPreset_Click"/>
-                        </Grid>
+
+                        <localUI:ComponentSelectorControl Grid.Row="10" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,5"
+                                                          ComponentText="{Binding SpliceComponent}"
+                                                          PresetText="{Binding SplicePreset}"/>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
@@ -287,196 +274,90 @@
 
             <TabItem Header="Атрибуты">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                    <Grid Margin="5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="130"/>
-                            <ColumnDefinition Width="170"/>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="65"/>
-                            <ColumnDefinition Width="65"/>
-                            <ColumnDefinition Width="65"/>
-                            <ColumnDefinition Width="65"/>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="50"/>
-                        </Grid.ColumnDefinitions>
+                    <StackPanel Margin="10">
 
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="145"/>
+                                <ColumnDefinition Width="165"/>
+                                <ColumnDefinition Width="135"/>
+                                <ColumnDefinition Width="75"/>
+                                <ColumnDefinition Width="75"/>
+                                <ColumnDefinition Width="75"/>
+                                <ColumnDefinition Width="75"/>
+                                <ColumnDefinition Width="145"/>
+                                <ColumnDefinition Width="75"/>
+                                <ColumnDefinition Width="80"/>
+                            </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="Элемент" FontWeight="Bold" Grid.Row="0" Grid.Column="0" Margin="2,0"/>
-                        <TextBlock Text="Профиль" FontWeight="Bold" Grid.Row="0" Grid.Column="1" Margin="2,0"/>
-                        <TextBlock Text="Материал" FontWeight="Bold" Grid.Row="0" Grid.Column="2" Margin="2,0"/>
-                        <TextBlock Text="Сборка" FontWeight="Bold" Grid.Row="0" Grid.Column="3" Margin="2,0"/>
-                        <TextBlock Text="Поз.Сб" FontWeight="Bold" Grid.Row="0" Grid.Column="4" Margin="2,0"/>
-                        <TextBlock Text="Деталь" FontWeight="Bold" Grid.Row="0" Grid.Column="5" Margin="2,0"/>
-                        <TextBlock Text="Поз.Дет" FontWeight="Bold" Grid.Row="0" Grid.Column="6" Margin="2,0"/>
-                        <TextBlock Text="Имя (Tekla)" FontWeight="Bold" Grid.Row="0" Grid.Column="7" Margin="2,0"/>
-                        <TextBlock Text="Класс" FontWeight="Bold" Grid.Row="0" Grid.Column="8" Margin="2,0"/>
+                            <TextBlock Text="Элемент" FontWeight="Bold" Grid.Column="0" Margin="25,0,0,0"/>
+                            <TextBlock Text="Профиль" FontWeight="Bold" Grid.Column="1" Margin="20,0,0,0"/>
+                            <TextBlock Text="Материал" FontWeight="Bold" Grid.Column="2" Margin="20,0,0,0"/>
+                            <TextBlock Text="Преф. Дет" FontWeight="Bold" Grid.Column="3" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Поз. Дет" FontWeight="Bold" Grid.Column="4" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Преф. Сб" FontWeight="Bold" Grid.Column="5" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Поз. Сб" FontWeight="Bold" Grid.Column="6" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Имя (Tekla)" FontWeight="Bold" Grid.Column="7" Margin="20,0,0,0"/>
+                            <TextBlock Text="Класс" FontWeight="Bold" Grid.Column="8" HorizontalAlignment="Center"/>
+                        </Grid>
 
-                        <Label Content="Ветвь:" Grid.Row="1" Grid.Column="0"/>
-                        <Grid Grid.Row="1" Grid.Column="1" Margin="2,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="28"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBox Text="{Binding B_Profile}" Margin="0"/>
-                            <UIControls:WpfProfileCatalog x:Name="B_ProfileCat" Grid.Column="1" Width="28" Height="24" Margin="0" SelectClicked="B_ProfileCat_SelectClicked" SelectionDone="B_ProfileCat_SelectionDone"/>
-                        </Grid>
-                        <Grid Grid.Row="1" Grid.Column="2" Margin="2,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="28"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBox Text="{Binding B_Material}" Margin="0"/>
-                            <UIControls:WpfMaterialCatalog x:Name="B_MaterialCat" Grid.Column="1" Width="28" Height="24" Margin="0" SelectClicked="B_MaterialCat_SelectClicked" SelectionDone="B_MaterialCat_SelectionDone"/>
-                        </Grid>
-                        <TextBox Text="{Binding B_AssyPref}" Grid.Row="1" Grid.Column="3"/>
-                        <TextBox Text="{Binding B_AssyNo}" Grid.Row="1" Grid.Column="4"/>
-                        <TextBox Text="{Binding B_PartPref}" Grid.Row="1" Grid.Column="5"/>
-                        <TextBox Text="{Binding B_PartNo}" Grid.Row="1" Grid.Column="6"/>
-                        <TextBox Text="{Binding B_Name}" Grid.Row="1" Grid.Column="7"/>
-                        <TextBox Text="{Binding B_Class}" Grid.Row="1" Grid.Column="8"/>
+                        <localUI:PartAttributesRowControl RowLabel="Ветвь:"
+                            Profile="{Binding B_Profile}" ProfileAttr="B_Profile"
+                            Material="{Binding B_Material}" MaterialAttr="B_Material"
+                            PartPrefix="{Binding B_PartPref}" PartPrefixAttr="B_PartPref"
+                            PartStartNo="{Binding B_PartNo}" PartStartNoAttr="B_PartNo"
+                            AssemblyPrefix="{Binding B_AssyPref}" AssemblyPrefixAttr="B_AssyPref"
+                            AssemblyStartNo="{Binding B_AssyNo}" AssemblyStartNoAttr="B_AssyNo"
+                            PartName="{Binding B_Name}" PartNameAttr="B_Name"
+                            PartClass="{Binding B_Class}" PartClassAttr="B_Class"
+                            UdaAttr="B_UDA"/>
 
-                        <Label Content="Диафрагма:" Grid.Row="2" Grid.Column="0"/>
-                        <Grid Grid.Row="2" Grid.Column="1" Margin="2,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="28"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBox Text="{Binding D_Profile}" Margin="0"/>
-                            <UIControls:WpfProfileCatalog x:Name="D_ProfileCat" Grid.Column="1" Width="28" Height="24" Margin="0" SelectClicked="D_ProfileCat_SelectClicked" SelectionDone="D_ProfileCat_SelectionDone"/>
-                        </Grid>
-                        <Grid Grid.Row="2" Grid.Column="2" Margin="2,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="28"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBox Text="{Binding D_Material}" Margin="0"/>
-                            <UIControls:WpfMaterialCatalog x:Name="D_MaterialCat" Grid.Column="1" Width="28" Height="24" Margin="0" SelectClicked="D_MaterialCat_SelectClicked" SelectionDone="D_MaterialCat_SelectionDone"/>
-                        </Grid>
-                        <TextBox Text="{Binding D_AssyPref}" Grid.Row="2" Grid.Column="3"/>
-                        <TextBox Text="{Binding D_AssyNo}" Grid.Row="2" Grid.Column="4"/>
-                        <TextBox Text="{Binding D_PartPref}" Grid.Row="2" Grid.Column="5"/>
-                        <TextBox Text="{Binding D_PartNo}" Grid.Row="2" Grid.Column="6"/>
-                        <TextBox Text="{Binding D_Name}" Grid.Row="2" Grid.Column="7"/>
-                        <TextBox Text="{Binding D_Class}" Grid.Row="2" Grid.Column="8"/>
+                        <localUI:PartAttributesRowControl RowLabel="Диафрагма:"
+                            Profile="{Binding D_Profile}" ProfileAttr="D_Profile"
+                            Material="{Binding D_Material}" MaterialAttr="D_Material"
+                            PartPrefix="{Binding D_PartPref}" PartPrefixAttr="D_PartPref"
+                            PartStartNo="{Binding D_PartNo}" PartStartNoAttr="D_PartNo"
+                            AssemblyPrefix="{Binding D_AssyPref}" AssemblyPrefixAttr="D_AssyPref"
+                            AssemblyStartNo="{Binding D_AssyNo}" AssemblyStartNoAttr="D_AssyNo"
+                            PartName="{Binding D_Name}" PartNameAttr="D_Name"
+                            PartClass="{Binding D_Class}" PartClassAttr="D_Class"
+                            UdaAttr="D_UDA"/>
 
-                        <Label Content="Раскос рядовой:" Grid.Row="3" Grid.Column="0"/>
-                        <Grid Grid.Row="3" Grid.Column="1" Margin="2,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="28"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBox Text="{Binding L_Profile}" Margin="0"/>
-                            <UIControls:WpfProfileCatalog x:Name="L_ProfileCat" Grid.Column="1" Width="28" Height="24" Margin="0" SelectClicked="L_ProfileCat_SelectClicked" SelectionDone="L_ProfileCat_SelectionDone"/>
-                        </Grid>
-                        <Grid Grid.Row="3" Grid.Column="2" Margin="2,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="28"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBox Text="{Binding L_Material}" Margin="0"/>
-                            <UIControls:WpfMaterialCatalog x:Name="L_MaterialCat" Grid.Column="1" Width="28" Height="24" Margin="0" SelectClicked="L_MaterialCat_SelectClicked" SelectionDone="L_MaterialCat_SelectionDone"/>
-                        </Grid>
-                        <TextBox Text="{Binding L_AssyPref}" Grid.Row="3" Grid.Column="3"/>
-                        <TextBox Text="{Binding L_AssyNo}" Grid.Row="3" Grid.Column="4"/>
-                        <TextBox Text="{Binding L_PartPref}" Grid.Row="3" Grid.Column="5"/>
-                        <TextBox Text="{Binding L_PartNo}" Grid.Row="3" Grid.Column="6"/>
-                        <TextBox Text="{Binding L_Name}" Grid.Row="3" Grid.Column="7"/>
-                        <TextBox Text="{Binding L_Class}" Grid.Row="3" Grid.Column="8"/>
+                        <localUI:PartAttributesRowControl RowLabel="Раскос рядовой:"
+                            Profile="{Binding L_Profile}" ProfileAttr="L_Profile"
+                            Material="{Binding L_Material}" MaterialAttr="L_Material"
+                            PartPrefix="{Binding L_PartPref}" PartPrefixAttr="L_PartPref"
+                            PartStartNo="{Binding L_PartNo}" PartStartNoAttr="L_PartNo"
+                            AssemblyPrefix="{Binding L_AssyPref}" AssemblyPrefixAttr="L_AssyPref"
+                            AssemblyStartNo="{Binding L_AssyNo}" AssemblyStartNoAttr="L_AssyNo"
+                            PartName="{Binding L_Name}" PartNameAttr="L_Name"
+                            PartClass="{Binding L_Class}" PartClassAttr="L_Class"
+                            UdaAttr="L_UDA"/>
 
-                        <Label Content="Раскос стыковой:" Grid.Row="4" Grid.Column="0" Foreground="Gray"/>
-                        <Grid Grid.Row="4" Grid.Column="1" Margin="2,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="28"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBox Text="{Binding LS_Profile}" Margin="0"/>
-                            <UIControls:WpfProfileCatalog x:Name="LS_ProfileCat" Grid.Column="1" Width="28" Height="24" Margin="0" SelectClicked="LS_ProfileCat_SelectClicked" SelectionDone="LS_ProfileCat_SelectionDone"/>
-                        </Grid>
-                        <Grid Grid.Row="4" Grid.Column="2" Margin="2,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="28"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBox Text="{Binding LS_Material}" Margin="0"/>
-                            <UIControls:WpfMaterialCatalog x:Name="LS_MaterialCat" Grid.Column="1" Width="28" Height="24" Margin="0" SelectClicked="LS_MaterialCat_SelectClicked" SelectionDone="LS_MaterialCat_SelectionDone"/>
-                        </Grid>
-                        <TextBox Text="{Binding LS_AssyPref}" Grid.Row="4" Grid.Column="3"/>
-                        <TextBox Text="{Binding LS_AssyNo}" Grid.Row="4" Grid.Column="4"/>
-                        <TextBox Text="{Binding LS_PartPref}" Grid.Row="4" Grid.Column="5"/>
-                        <TextBox Text="{Binding LS_PartNo}" Grid.Row="4" Grid.Column="6"/>
-                        <TextBox Text="{Binding LS_Name}" Grid.Row="4" Grid.Column="7"/>
-                        <TextBox Text="{Binding LS_Class}" Grid.Row="4" Grid.Column="8"/>
+                        <localUI:PartAttributesRowControl RowLabel="Раскос стыковой:"
+                            Profile="{Binding LS_Profile}" ProfileAttr="LS_Profile"
+                            Material="{Binding LS_Material}" MaterialAttr="LS_Material"
+                            PartPrefix="{Binding LS_PartPref}" PartPrefixAttr="LS_PartPref"
+                            PartStartNo="{Binding LS_PartNo}" PartStartNoAttr="LS_PartNo"
+                            AssemblyPrefix="{Binding LS_AssyPref}" AssemblyPrefixAttr="LS_AssyPref"
+                            AssemblyStartNo="{Binding LS_AssyNo}" AssemblyStartNoAttr="LS_AssyNo"
+                            PartName="{Binding LS_Name}" PartNameAttr="LS_Name"
+                            PartClass="{Binding LS_Class}" PartClassAttr="LS_Class"
+                            UdaAttr="LS_UDA"/>
 
-                        <Label Content="Распорка:" Grid.Row="5" Grid.Column="0" Foreground="Gray"/>
-                        <Grid Grid.Row="5" Grid.Column="1" Margin="2,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="28"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBox Text="{Binding S_Profile}" Margin="0"/>
-                            <UIControls:WpfProfileCatalog x:Name="S_ProfileCat" Grid.Column="1" Width="28" Height="24" Margin="0" SelectClicked="S_ProfileCat_SelectClicked" SelectionDone="S_ProfileCat_SelectionDone"/>
-                        </Grid>
-                        <Grid Grid.Row="5" Grid.Column="2" Margin="2,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="28"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBox Text="{Binding S_Material}" Margin="0"/>
-                            <UIControls:WpfMaterialCatalog x:Name="S_MaterialCat" Grid.Column="1" Width="28" Height="24" Margin="0" SelectClicked="S_MaterialCat_SelectClicked" SelectionDone="S_MaterialCat_SelectionDone"/>
-                        </Grid>
-                        <TextBox Text="{Binding S_AssyPref}" Grid.Row="5" Grid.Column="3"/>
-                        <TextBox Text="{Binding S_AssyNo}" Grid.Row="5" Grid.Column="4"/>
-                        <TextBox Text="{Binding S_PartPref}" Grid.Row="5" Grid.Column="5"/>
-                        <TextBox Text="{Binding S_PartNo}" Grid.Row="5" Grid.Column="6"/>
-                        <TextBox Text="{Binding S_Name}" Grid.Row="5" Grid.Column="7"/>
-                        <TextBox Text="{Binding S_Class}" Grid.Row="5" Grid.Column="8"/>
-                    </Grid>
+                        <localUI:PartAttributesRowControl RowLabel="Распорка:"
+                            Profile="{Binding S_Profile}" ProfileAttr="S_Profile"
+                            Material="{Binding S_Material}" MaterialAttr="S_Material"
+                            PartPrefix="{Binding S_PartPref}" PartPrefixAttr="S_PartPref"
+                            PartStartNo="{Binding S_PartNo}" PartStartNoAttr="S_PartNo"
+                            AssemblyPrefix="{Binding S_AssyPref}" AssemblyPrefixAttr="S_AssyPref"
+                            AssemblyStartNo="{Binding S_AssyNo}" AssemblyStartNoAttr="S_AssyNo"
+                            PartName="{Binding S_Name}" PartNameAttr="S_Name"
+                            PartClass="{Binding S_Class}" PartClassAttr="S_Class"
+                            UdaAttr="S_UDA"/>
+
+                    </StackPanel>
                 </ScrollViewer>
-            </TabItem>
-            <TabItem Header="Тест каталога">
-                <StackPanel Margin="15" Orientation="Vertical">
-
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                        <TextBlock Text="Материал:" VerticalAlignment="Center" Width="80"/>
-                        <TextBox x:Name="TxtTestMaterial" Text="" VerticalAlignment="Center" Width="150" Margin="0,0,10,0"/>
-                        <UIControls:WpfMaterialCatalog x:Name="TestMaterialCat" Width="28" Height="24" 
-                                                       SelectClicked="TestMaterialCat_SelectClicked" 
-                                                       SelectionDone="TestMaterialCat_SelectionDone"/>
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                        <TextBlock Text="Профиль:" VerticalAlignment="Center" Width="80"/>
-                        <TextBox x:Name="TxtTestProfile" Text="" VerticalAlignment="Center" Width="150" Margin="0,0,10,0"/>
-                        <UIControls:WpfProfileCatalog x:Name="TestProfileCat" Width="28" Height="24" 
-                                                      SelectClicked="TestProfileCat_SelectClicked" 
-                                                      SelectionDone="TestProfileCat_SelectionDone"/>
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                        <TextBlock Text="Компонент:" VerticalAlignment="Center" Width="80"/>
-                        <TextBox x:Name="TxtTestComponent" Text="" VerticalAlignment="Center" Width="150" Margin="0,0,10,0"/>
-                        <UIControls:WpfComponentCatalog x:Name="TestComponentCat" Width="28" Height="24" 
-                                                        SelectClicked="TestComponentCat_SelectClicked" 
-                                                        SelectionDone="TestComponentCat_SelectionDone"/>
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Пресет:" VerticalAlignment="Center" Width="80"/>
-                        <TextBox x:Name="TxtTestPreset" Text="" VerticalAlignment="Center" Width="150" Margin="0,0,10,0"/>
-                        <Button Content="..." Width="28" Height="24" Click="TestPreset_Click" 
-                            FontFamily="Segoe UI" FontSize="11" Padding="0,-2,0,0" 
-                            Background="#FFF0F0F0" BorderBrush="#FFABADB3" BorderThickness="1"/>
-                    </StackPanel>
-
-                </StackPanel>
             </TabItem>
         </TabControl>
 

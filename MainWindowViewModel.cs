@@ -19,16 +19,12 @@ namespace Apibim.Plugins.BuiltUpColumn
         private int _s_Mode = 0; private string _s_NodesDouble = ""; private string _s_NodesChannel = ""; private string _s_NodesExclude = "";
         private int _s_Base_Preset = 2; private int _s_Top_Preset = 2; private int _s_Splice_Preset = 2; private int _s_Preset = 1;
 
-        // Ветвь
-        private string _b_Profile = "I20K1_57837_2017"; private string _b_Material = "C355Б"; private string _b_AssyPref = "К"; private string _b_AssyNo = "1"; private string _b_PartPref = "к"; private string _b_PartNo = "1"; private string _b_Name = "ВЕТВЬ"; private string _b_Class = "1";
-        // Диафрагма
-        private string _d_Profile = "16P_8240_97"; private string _d_Material = "C245"; private string _d_AssyPref = ""; private string _d_AssyNo = ""; private string _d_PartPref = "д"; private string _d_PartNo = "1"; private string _d_Name = "ДИАФРАГМА"; private string _d_Class = "4";
-        // Раскос рядовой
-        private string _l_Profile = "L75X6_8509_93"; private string _l_Material = "C245"; private string _l_AssyPref = ""; private string _l_AssyNo = ""; private string _l_PartPref = "р"; private string _l_PartNo = "1"; private string _l_Name = "РАСКОС"; private string _l_Class = "3";
-        // Раскос стыковой
-        private string _ls_Profile = ""; private string _ls_Material = ""; private string _ls_AssyPref = ""; private string _ls_AssyNo = ""; private string _ls_PartPref = "рс"; private string _ls_PartNo = "1"; private string _ls_Name = "РАСКОС СТЫКОВОЙ"; private string _ls_Class = "3";
-        // Распорка
-        private string _s_Profile = ""; private string _s_Material = ""; private string _s_AssyPref = ""; private string _s_AssyNo = ""; private string _s_PartPref = "рп"; private string _s_PartNo = "1"; private string _s_Name = "РАСПОРКА"; private string _s_Class = "4";
+        // Матрица атрибутов (включая UDA)
+        private string _b_Profile = "I20K1_57837_2017"; private string _b_Material = "C355Б"; private string _b_AssyPref = "К"; private string _b_AssyNo = "1"; private string _b_PartPref = "к"; private string _b_PartNo = "1"; private string _b_Name = "ВЕТВЬ"; private string _b_Class = "1"; private string _b_uda = "";
+        private string _d_Profile = "16P_8240_97"; private string _d_Material = "C245"; private string _d_AssyPref = ""; private string _d_AssyNo = ""; private string _d_PartPref = "д"; private string _d_PartNo = "1"; private string _d_Name = "ДИАФРАГМА"; private string _d_Class = "4"; private string _d_uda = "";
+        private string _l_Profile = "L75X6_8509_93"; private string _l_Material = "C245"; private string _l_AssyPref = ""; private string _l_AssyNo = ""; private string _l_PartPref = "р"; private string _l_PartNo = "1"; private string _l_Name = "РАСКОС"; private string _l_Class = "3"; private string _l_uda = "";
+        private string _ls_Profile = ""; private string _ls_Material = ""; private string _ls_AssyPref = ""; private string _ls_AssyNo = ""; private string _ls_PartPref = "рс"; private string _ls_PartNo = "1"; private string _ls_Name = "РАСКОС СТЫКОВОЙ"; private string _ls_Class = "3"; private string _ls_uda = "";
+        private string _s_Profile = ""; private string _s_Material = ""; private string _s_AssyPref = ""; private string _s_AssyNo = ""; private string _s_PartPref = "рп"; private string _s_PartNo = "1"; private string _s_Name = "РАСПОРКА"; private string _s_Class = "4"; private string _s_uda = "";
 
         [StructuresDialog("Bcol", typeof(TD.Double))] public double Bcol { get => _bcol; set => Set(ref _bcol, value); }
         [StructuresDialog("Br_Rot", typeof(TD.Double))] public double Br_Rot { get => _br_Rot; set => Set(ref _br_Rot, value); }
@@ -68,6 +64,8 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresDialog("B_PartNo", typeof(TD.String))] public string B_PartNo { get => _b_PartNo; set => Set(ref _b_PartNo, value); }
         [StructuresDialog("B_Name", typeof(TD.String))] public string B_Name { get => _b_Name; set => Set(ref _b_Name, value); }
         [StructuresDialog("B_Class", typeof(TD.String))] public string B_Class { get => _b_Class; set => Set(ref _b_Class, value); }
+        [StructuresDialog("B_UDA", typeof(TD.String))] public string B_UDA { get => _b_uda; set => Set(ref _b_uda, value); }
+
         [StructuresDialog("D_Profile", typeof(TD.String))] public string D_Profile { get => _d_Profile; set => Set(ref _d_Profile, value); }
         [StructuresDialog("D_Material", typeof(TD.String))] public string D_Material { get => _d_Material; set => Set(ref _d_Material, value); }
         [StructuresDialog("D_AssyPref", typeof(TD.String))] public string D_AssyPref { get => _d_AssyPref; set => Set(ref _d_AssyPref, value); }
@@ -76,6 +74,8 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresDialog("D_PartNo", typeof(TD.String))] public string D_PartNo { get => _d_PartNo; set => Set(ref _d_PartNo, value); }
         [StructuresDialog("D_Name", typeof(TD.String))] public string D_Name { get => _d_Name; set => Set(ref _d_Name, value); }
         [StructuresDialog("D_Class", typeof(TD.String))] public string D_Class { get => _d_Class; set => Set(ref _d_Class, value); }
+        [StructuresDialog("D_UDA", typeof(TD.String))] public string D_UDA { get => _d_uda; set => Set(ref _d_uda, value); }
+
         [StructuresDialog("L_Profile", typeof(TD.String))] public string L_Profile { get => _l_Profile; set => Set(ref _l_Profile, value); }
         [StructuresDialog("L_Material", typeof(TD.String))] public string L_Material { get => _l_Material; set => Set(ref _l_Material, value); }
         [StructuresDialog("L_AssyPref", typeof(TD.String))] public string L_AssyPref { get => _l_AssyPref; set => Set(ref _l_AssyPref, value); }
@@ -84,6 +84,8 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresDialog("L_PartNo", typeof(TD.String))] public string L_PartNo { get => _l_PartNo; set => Set(ref _l_PartNo, value); }
         [StructuresDialog("L_Name", typeof(TD.String))] public string L_Name { get => _l_Name; set => Set(ref _l_Name, value); }
         [StructuresDialog("L_Class", typeof(TD.String))] public string L_Class { get => _l_Class; set => Set(ref _l_Class, value); }
+        [StructuresDialog("L_UDA", typeof(TD.String))] public string L_UDA { get => _l_uda; set => Set(ref _l_uda, value); }
+
         [StructuresDialog("LS_Profile", typeof(TD.String))] public string LS_Profile { get => _ls_Profile; set => Set(ref _ls_Profile, value); }
         [StructuresDialog("LS_Material", typeof(TD.String))] public string LS_Material { get => _ls_Material; set => Set(ref _ls_Material, value); }
         [StructuresDialog("LS_AssyPref", typeof(TD.String))] public string LS_AssyPref { get => _ls_AssyPref; set => Set(ref _ls_AssyPref, value); }
@@ -92,6 +94,8 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresDialog("LS_PartNo", typeof(TD.String))] public string LS_PartNo { get => _ls_PartNo; set => Set(ref _ls_PartNo, value); }
         [StructuresDialog("LS_Name", typeof(TD.String))] public string LS_Name { get => _ls_Name; set => Set(ref _ls_Name, value); }
         [StructuresDialog("LS_Class", typeof(TD.String))] public string LS_Class { get => _ls_Class; set => Set(ref _ls_Class, value); }
+        [StructuresDialog("LS_UDA", typeof(TD.String))] public string LS_UDA { get => _ls_uda; set => Set(ref _ls_uda, value); }
+
         [StructuresDialog("S_Profile", typeof(TD.String))] public string S_Profile { get => _s_Profile; set => Set(ref _s_Profile, value); }
         [StructuresDialog("S_Material", typeof(TD.String))] public string S_Material { get => _s_Material; set => Set(ref _s_Material, value); }
         [StructuresDialog("S_AssyPref", typeof(TD.String))] public string S_AssyPref { get => _s_AssyPref; set => Set(ref _s_AssyPref, value); }
@@ -100,6 +104,6 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresDialog("S_PartNo", typeof(TD.String))] public string S_PartNo { get => _s_PartNo; set => Set(ref _s_PartNo, value); }
         [StructuresDialog("S_Name", typeof(TD.String))] public string S_Name { get => _s_Name; set => Set(ref _s_Name, value); }
         [StructuresDialog("S_Class", typeof(TD.String))] public string S_Class { get => _s_Class; set => Set(ref _s_Class, value); }
-
+        [StructuresDialog("S_UDA", typeof(TD.String))] public string S_UDA { get => _s_uda; set => Set(ref _s_uda, value); }
     }
 }
