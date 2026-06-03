@@ -8,9 +8,8 @@ namespace Apibim.Plugins.BuiltUpColumn
     {
         private double _bcol = 500.0; private double _br_Rot = 90.0;
         private double _hcol_1 = 10000.0; private double _hcol_e1 = 500.0; private double _hcol_e2 = 600.0; private double _hcol_e3 = 600.0;
-        private string _splicesText = "";
 
-        // 5 уровней стыков
+        private string _splicesText = "";
         private string _splice1Component = "77"; private string _splice1Preset = "standard";
         private string _splice2Component = ""; private string _splice2Preset = ""; private string _splice2Indexes = "";
         private string _splice3Component = ""; private string _splice3Preset = ""; private string _splice3Indexes = "";
@@ -21,12 +20,19 @@ namespace Apibim.Plugins.BuiltUpColumn
         private double _l_Rasc = 50.0; private double _l_Rasc_Base = 50.0; private double _l_Rasc_Top = 50.0; private string _l_RascOverrides = "";
         private int _l_Type = 1; private int _l_Preset = 1; private double _l_Offset = 0.0;
 
-        private int _s_Mode = 0; private string _s_NodesDouble = ""; private string _s_NodesChannel = ""; private string _s_NodesExclude = "";
         private int _s_Base_Preset = 2; private int _s_Top_Preset = 2; private int _s_Splice_Preset = 2; private int _s_Preset = 1;
 
-        // Матрица атрибутов (включая UDA)
+        // Новые текстовые поля для слотов
+        private string _s_NodesAngle = "";
+        private string _s_NodesAnglePlate = "";
+        private string _s_NodesD1 = "";
+        private string _s_NodesD2 = "";
+        private string _s_NodesExcludePlate = "";
+        private string _s_NodesExclude = "";
+
         private string _b_Profile = "I20K1_57837_2017"; private string _b_Material = "C355Б"; private string _b_AssyPref = "К"; private string _b_AssyNo = "1"; private string _b_PartPref = "к"; private string _b_PartNo = "1"; private string _b_Name = "ВЕТВЬ"; private string _b_Class = "1"; private string _b_uda = "";
-        private string _d_Profile = "16P_8240_97"; private string _d_Material = "C245"; private string _d_AssyPref = ""; private string _d_AssyNo = ""; private string _d_PartPref = "д"; private string _d_PartNo = "1"; private string _d_Name = "ДИАФРАГМА"; private string _d_Class = "4"; private string _d_uda = "";
+        private string _d_Profile = "16P_8240_97"; private string _d_Material = "C245"; private string _d_AssyPref = ""; private string _d_AssyNo = ""; private string _d_PartPref = "д1"; private string _d_PartNo = "1"; private string _d_Name = "ДИАФРАГМА 1"; private string _d_Class = "4"; private string _d_uda = "";
+        private string _d2_Profile = "20B1_57837_2017"; private string _d2_Material = "C245"; private string _d2_AssyPref = ""; private string _d2_AssyNo = ""; private string _d2_PartPref = "д2"; private string _d2_PartNo = "1"; private string _d2_Name = "ДИАФРАГМА 2"; private string _d2_Class = "4"; private string _d2_uda = "";
         private string _l_Profile = "L75X6_8509_93"; private string _l_Material = "C245"; private string _l_AssyPref = ""; private string _l_AssyNo = ""; private string _l_PartPref = "р"; private string _l_PartNo = "1"; private string _l_Name = "РАСКОС"; private string _l_Class = "3"; private string _l_uda = "";
         private string _ls_Profile = ""; private string _ls_Material = ""; private string _ls_AssyPref = ""; private string _ls_AssyNo = ""; private string _ls_PartPref = "рс"; private string _ls_PartNo = "1"; private string _ls_Name = "РАСКОС СТЫКОВОЙ"; private string _ls_Class = "3"; private string _ls_uda = "";
         private string _s_Profile = ""; private string _s_Material = ""; private string _s_AssyPref = ""; private string _s_AssyNo = ""; private string _s_PartPref = "рп"; private string _s_PartNo = "1"; private string _s_Name = "РАСПОРКА"; private string _s_Class = "4"; private string _s_uda = "";
@@ -37,6 +43,23 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresDialog("Hcol_e1", typeof(TD.Double))] public double Hcol_e1 { get => _hcol_e1; set => Set(ref _hcol_e1, value); }
         [StructuresDialog("Hcol_e2", typeof(TD.Double))] public double Hcol_e2 { get => _hcol_e2; set => Set(ref _hcol_e2, value); }
         [StructuresDialog("Hcol_e3", typeof(TD.Double))] public double Hcol_e3 { get => _hcol_e3; set => Set(ref _hcol_e3, value); }
+
+        [StructuresDialog("SplicesText", typeof(TD.String))] public string SplicesText { get => _splicesText; set => Set(ref _splicesText, value); }
+        [StructuresDialog("Splice1Component", typeof(TD.String))] public string Splice1Component { get => _splice1Component; set => Set(ref _splice1Component, value); }
+        [StructuresDialog("Splice1Preset", typeof(TD.String))] public string Splice1Preset { get => _splice1Preset; set => Set(ref _splice1Preset, value); }
+        [StructuresDialog("Splice2Component", typeof(TD.String))] public string Splice2Component { get => _splice2Component; set => Set(ref _splice2Component, value); }
+        [StructuresDialog("Splice2Preset", typeof(TD.String))] public string Splice2Preset { get => _splice2Preset; set => Set(ref _splice2Preset, value); }
+        [StructuresDialog("Splice2Indexes", typeof(TD.String))] public string Splice2Indexes { get => _splice2Indexes; set => Set(ref _splice2Indexes, value); }
+        [StructuresDialog("Splice3Component", typeof(TD.String))] public string Splice3Component { get => _splice3Component; set => Set(ref _splice3Component, value); }
+        [StructuresDialog("Splice3Preset", typeof(TD.String))] public string Splice3Preset { get => _splice3Preset; set => Set(ref _splice3Preset, value); }
+        [StructuresDialog("Splice3Indexes", typeof(TD.String))] public string Splice3Indexes { get => _splice3Indexes; set => Set(ref _splice3Indexes, value); }
+        [StructuresDialog("Splice4Component", typeof(TD.String))] public string Splice4Component { get => _splice4Component; set => Set(ref _splice4Component, value); }
+        [StructuresDialog("Splice4Preset", typeof(TD.String))] public string Splice4Preset { get => _splice4Preset; set => Set(ref _splice4Preset, value); }
+        [StructuresDialog("Splice4Indexes", typeof(TD.String))] public string Splice4Indexes { get => _splice4Indexes; set => Set(ref _splice4Indexes, value); }
+        [StructuresDialog("Splice5Component", typeof(TD.String))] public string Splice5Component { get => _splice5Component; set => Set(ref _splice5Component, value); }
+        [StructuresDialog("Splice5Preset", typeof(TD.String))] public string Splice5Preset { get => _splice5Preset; set => Set(ref _splice5Preset, value); }
+        [StructuresDialog("Splice5Indexes", typeof(TD.String))] public string Splice5Indexes { get => _splice5Indexes; set => Set(ref _splice5Indexes, value); }
+
         [StructuresDialog("L_StepMode", typeof(TD.Integer))] public int L_StepMode { get => _l_StepMode; set => Set(ref _l_StepMode, value); }
         [StructuresDialog("Hr_base", typeof(TD.Double))] public double Hr_base { get => _hr_base; set => Set(ref _hr_base, value); }
         [StructuresDialog("L_StepText", typeof(TD.String))] public string L_StepText { get => _l_StepText; set => Set(ref _l_StepText, value); }
@@ -48,14 +71,17 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresDialog("L_Preset", typeof(TD.Integer))] public int L_Preset { get => _l_Preset; set => Set(ref _l_Preset, value); }
         [StructuresDialog("L_Offset", typeof(TD.Double))] public double L_Offset { get => _l_Offset; set => Set(ref _l_Offset, value); }
 
-        [StructuresDialog("S_Mode", typeof(TD.Integer))] public int S_Mode { get => _s_Mode; set => Set(ref _s_Mode, value); }
-        [StructuresDialog("S_NodesDouble", typeof(TD.String))] public string S_NodesDouble { get => _s_NodesDouble; set => Set(ref _s_NodesDouble, value); }
-        [StructuresDialog("S_NodesChannel", typeof(TD.String))] public string S_NodesChannel { get => _s_NodesChannel; set => Set(ref _s_NodesChannel, value); }
-        [StructuresDialog("S_NodesExclude", typeof(TD.String))] public string S_NodesExclude { get => _s_NodesExclude; set => Set(ref _s_NodesExclude, value); }
         [StructuresDialog("S_Base_Preset", typeof(TD.Integer))] public int S_Base_Preset { get => _s_Base_Preset; set => Set(ref _s_Base_Preset, value); }
         [StructuresDialog("S_Top_Preset", typeof(TD.Integer))] public int S_Top_Preset { get => _s_Top_Preset; set => Set(ref _s_Top_Preset, value); }
         [StructuresDialog("S_Splice_Preset", typeof(TD.Integer))] public int S_Splice_Preset { get => _s_Splice_Preset; set => Set(ref _s_Splice_Preset, value); }
         [StructuresDialog("S_Preset", typeof(TD.Integer))] public int S_Preset { get => _s_Preset; set => Set(ref _s_Preset, value); }
+
+        [StructuresDialog("S_NodesAngle", typeof(TD.String))] public string S_NodesAngle { get => _s_NodesAngle; set => Set(ref _s_NodesAngle, value); }
+        [StructuresDialog("S_NodesAnglePlate", typeof(TD.String))] public string S_NodesAnglePlate { get => _s_NodesAnglePlate; set => Set(ref _s_NodesAnglePlate, value); }
+        [StructuresDialog("S_NodesD1", typeof(TD.String))] public string S_NodesD1 { get => _s_NodesD1; set => Set(ref _s_NodesD1, value); }
+        [StructuresDialog("S_NodesD2", typeof(TD.String))] public string S_NodesD2 { get => _s_NodesD2; set => Set(ref _s_NodesD2, value); }
+        [StructuresDialog("S_NodesExcludePlate", typeof(TD.String))] public string S_NodesExcludePlate { get => _s_NodesExcludePlate; set => Set(ref _s_NodesExcludePlate, value); }
+        [StructuresDialog("S_NodesExclude", typeof(TD.String))] public string S_NodesExclude { get => _s_NodesExclude; set => Set(ref _s_NodesExclude, value); }
 
         [StructuresDialog("B_Profile", typeof(TD.String))] public string B_Profile { get => _b_Profile; set => Set(ref _b_Profile, value); }
         [StructuresDialog("B_Material", typeof(TD.String))] public string B_Material { get => _b_Material; set => Set(ref _b_Material, value); }
@@ -76,6 +102,16 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresDialog("D_Name", typeof(TD.String))] public string D_Name { get => _d_Name; set => Set(ref _d_Name, value); }
         [StructuresDialog("D_Class", typeof(TD.String))] public string D_Class { get => _d_Class; set => Set(ref _d_Class, value); }
         [StructuresDialog("D_UDA", typeof(TD.String))] public string D_UDA { get => _d_uda; set => Set(ref _d_uda, value); }
+
+        [StructuresDialog("D2_Profile", typeof(TD.String))] public string D2_Profile { get => _d2_Profile; set => Set(ref _d2_Profile, value); }
+        [StructuresDialog("D2_Material", typeof(TD.String))] public string D2_Material { get => _d2_Material; set => Set(ref _d2_Material, value); }
+        [StructuresDialog("D2_AssyPref", typeof(TD.String))] public string D2_AssyPref { get => _d2_AssyPref; set => Set(ref _d2_AssyPref, value); }
+        [StructuresDialog("D2_AssyNo", typeof(TD.String))] public string D2_AssyNo { get => _d2_AssyNo; set => Set(ref _d2_AssyNo, value); }
+        [StructuresDialog("D2_PartPref", typeof(TD.String))] public string D2_PartPref { get => _d2_PartPref; set => Set(ref _d2_PartPref, value); }
+        [StructuresDialog("D2_PartNo", typeof(TD.String))] public string D2_PartNo { get => _d2_PartNo; set => Set(ref _d2_PartNo, value); }
+        [StructuresDialog("D2_Name", typeof(TD.String))] public string D2_Name { get => _d2_Name; set => Set(ref _d2_Name, value); }
+        [StructuresDialog("D2_Class", typeof(TD.String))] public string D2_Class { get => _d2_Class; set => Set(ref _d2_Class, value); }
+        [StructuresDialog("D2_UDA", typeof(TD.String))] public string D2_UDA { get => _d2_uda; set => Set(ref _d2_uda, value); }
 
         [StructuresDialog("L_Profile", typeof(TD.String))] public string L_Profile { get => _l_Profile; set => Set(ref _l_Profile, value); }
         [StructuresDialog("L_Material", typeof(TD.String))] public string L_Material { get => _l_Material; set => Set(ref _l_Material, value); }
@@ -106,26 +142,5 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresDialog("S_Name", typeof(TD.String))] public string S_Name { get => _s_Name; set => Set(ref _s_Name, value); }
         [StructuresDialog("S_Class", typeof(TD.String))] public string S_Class { get => _s_Class; set => Set(ref _s_Class, value); }
         [StructuresDialog("S_UDA", typeof(TD.String))] public string S_UDA { get => _s_uda; set => Set(ref _s_uda, value); }
-        [StructuresDialog("SplicesText", typeof(TD.String))] public string SplicesText { get => _splicesText; set => Set(ref _splicesText, value); }
-
-        [StructuresDialog("Splice1Component", typeof(TD.String))] public string Splice1Component { get => _splice1Component; set => Set(ref _splice1Component, value); }
-        [StructuresDialog("Splice1Preset", typeof(TD.String))] public string Splice1Preset { get => _splice1Preset; set => Set(ref _splice1Preset, value); }
-
-        [StructuresDialog("Splice2Component", typeof(TD.String))] public string Splice2Component { get => _splice2Component; set => Set(ref _splice2Component, value); }
-        [StructuresDialog("Splice2Preset", typeof(TD.String))] public string Splice2Preset { get => _splice2Preset; set => Set(ref _splice2Preset, value); }
-        [StructuresDialog("Splice2Indexes", typeof(TD.String))] public string Splice2Indexes { get => _splice2Indexes; set => Set(ref _splice2Indexes, value); }
-
-        [StructuresDialog("Splice3Component", typeof(TD.String))] public string Splice3Component { get => _splice3Component; set => Set(ref _splice3Component, value); }
-        [StructuresDialog("Splice3Preset", typeof(TD.String))] public string Splice3Preset { get => _splice3Preset; set => Set(ref _splice3Preset, value); }
-        [StructuresDialog("Splice3Indexes", typeof(TD.String))] public string Splice3Indexes { get => _splice3Indexes; set => Set(ref _splice3Indexes, value); }
-
-        [StructuresDialog("Splice4Component", typeof(TD.String))] public string Splice4Component { get => _splice4Component; set => Set(ref _splice4Component, value); }
-        [StructuresDialog("Splice4Preset", typeof(TD.String))] public string Splice4Preset { get => _splice4Preset; set => Set(ref _splice4Preset, value); }
-        [StructuresDialog("Splice4Indexes", typeof(TD.String))] public string Splice4Indexes { get => _splice4Indexes; set => Set(ref _splice4Indexes, value); }
-
-        [StructuresDialog("Splice5Component", typeof(TD.String))] public string Splice5Component { get => _splice5Component; set => Set(ref _splice5Component, value); }
-        [StructuresDialog("Splice5Preset", typeof(TD.String))] public string Splice5Preset { get => _splice5Preset; set => Set(ref _splice5Preset, value); }
-        [StructuresDialog("Splice5Indexes", typeof(TD.String))] public string Splice5Indexes { get => _splice5Indexes; set => Set(ref _splice5Indexes, value); }
-
     }
 }

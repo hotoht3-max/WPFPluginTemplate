@@ -39,20 +39,25 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresField("L_Preset")] public int L_Preset = 1;
         [StructuresField("L_Offset")] public double L_Offset = 0.0;
 
-        [StructuresField("S_Mode")] public int S_Mode = 0;
-        [StructuresField("S_NodesDouble")] public string S_NodesDouble = "";
-        [StructuresField("S_NodesChannel")] public string S_NodesChannel = "";
-        [StructuresField("S_NodesExclude")] public string S_NodesExclude = "";
+        // --- ПЛАНКИ (Правила и слоты) ---
         [StructuresField("S_Base_Preset")] public int S_Base_Preset = 2;
         [StructuresField("S_Top_Preset")] public int S_Top_Preset = 2;
         [StructuresField("S_Splice_Preset")] public int S_Splice_Preset = 2;
         [StructuresField("S_Preset")] public int S_Preset = 1;
 
+        [StructuresField("S_NodesAngle")] public string S_NodesAngle = "";
+        [StructuresField("S_NodesAnglePlate")] public string S_NodesAnglePlate = "";
+        [StructuresField("S_NodesD1")] public string S_NodesD1 = "";
+        [StructuresField("S_NodesD2")] public string S_NodesD2 = "";
+        [StructuresField("S_NodesExcludePlate")] public string S_NodesExcludePlate = "";
+        [StructuresField("S_NodesExclude")] public string S_NodesExclude = "";
+
         [StructuresField("B_Profile")] public string B_Profile = "I20K1_57837_2017"; [StructuresField("B_Material")] public string B_Material = "C355Б"; [StructuresField("B_AssyPref")] public string B_AssyPref = "К"; [StructuresField("B_AssyNo")] public string B_AssyNo = "1"; [StructuresField("B_PartPref")] public string B_PartPref = "к"; [StructuresField("B_PartNo")] public string B_PartNo = "1"; [StructuresField("B_Name")] public string B_Name = "ВЕТВЬ"; [StructuresField("B_Class")] public string B_Class = "1"; [StructuresField("B_UDA")] public string B_UDA = "";
-        [StructuresField("D_Profile")] public string D_Profile = "16P_8240_97"; [StructuresField("D_Material")] public string D_Material = "C245"; [StructuresField("D_AssyPref")] public string D_AssyPref = ""; [StructuresField("D_AssyNo")] public string D_AssyNo = ""; [StructuresField("D_PartPref")] public string D_PartPref = "д"; [StructuresField("D_PartNo")] public string D_PartNo = "1"; [StructuresField("D_Name")] public string D_Name = "ДИАФРАГМА"; [StructuresField("D_Class")] public string D_Class = "4"; [StructuresField("D_UDA")] public string D_UDA = "";
+        [StructuresField("D_Profile")] public string D_Profile = "16P_8240_97"; [StructuresField("D_Material")] public string D_Material = "C245"; [StructuresField("D_AssyPref")] public string D_AssyPref = ""; [StructuresField("D_AssyNo")] public string D_AssyNo = ""; [StructuresField("D_PartPref")] public string D_PartPref = "д1"; [StructuresField("D_PartNo")] public string D_PartNo = "1"; [StructuresField("D_Name")] public string D_Name = "ДИАФРАГМА 1"; [StructuresField("D_Class")] public string D_Class = "4"; [StructuresField("D_UDA")] public string D_UDA = "";
+        [StructuresField("D2_Profile")] public string D2_Profile = "20B1_57837_2017"; [StructuresField("D2_Material")] public string D2_Material = "C245"; [StructuresField("D2_AssyPref")] public string D2_AssyPref = ""; [StructuresField("D2_AssyNo")] public string D2_AssyNo = ""; [StructuresField("D2_PartPref")] public string D2_PartPref = "д2"; [StructuresField("D2_PartNo")] public string D2_PartNo = "1"; [StructuresField("D2_Name")] public string D2_Name = "ДИАФРАГМА 2"; [StructuresField("D2_Class")] public string D2_Class = "4"; [StructuresField("D2_UDA")] public string D2_UDA = "";
+        [StructuresField("S_Profile")] public string S_Profile = "L75X6_8509_93"; [StructuresField("S_Material")] public string S_Material = "C245"; [StructuresField("S_AssyPref")] public string S_AssyPref = ""; [StructuresField("S_AssyNo")] public string S_AssyNo = ""; [StructuresField("S_PartPref")] public string S_PartPref = "рп"; [StructuresField("S_PartNo")] public string S_PartNo = "1"; [StructuresField("S_Name")] public string S_Name = "РАСПОРКА"; [StructuresField("S_Class")] public string S_Class = "4"; [StructuresField("S_UDA")] public string S_UDA = "";
         [StructuresField("L_Profile")] public string L_Profile = "L75X6_8509_93"; [StructuresField("L_Material")] public string L_Material = "C245"; [StructuresField("L_AssyPref")] public string L_AssyPref = ""; [StructuresField("L_AssyNo")] public string L_AssyNo = ""; [StructuresField("L_PartPref")] public string L_PartPref = "р"; [StructuresField("L_PartNo")] public string L_PartNo = "1"; [StructuresField("L_Name")] public string L_Name = "РАСКОС"; [StructuresField("L_Class")] public string L_Class = "3"; [StructuresField("L_UDA")] public string L_UDA = "";
         [StructuresField("LS_Profile")] public string LS_Profile = ""; [StructuresField("LS_Material")] public string LS_Material = ""; [StructuresField("LS_AssyPref")] public string LS_AssyPref = ""; [StructuresField("LS_AssyNo")] public string LS_AssyNo = ""; [StructuresField("LS_PartPref")] public string LS_PartPref = "рс"; [StructuresField("LS_PartNo")] public string LS_PartNo = "1"; [StructuresField("LS_Name")] public string LS_Name = "РАСКОС СТЫКОВОЙ"; [StructuresField("LS_Class")] public string LS_Class = "3"; [StructuresField("LS_UDA")] public string LS_UDA = "";
-        [StructuresField("S_Profile")] public string S_Profile = ""; [StructuresField("S_Material")] public string S_Material = ""; [StructuresField("S_AssyPref")] public string S_AssyPref = ""; [StructuresField("S_AssyNo")] public string S_AssyNo = ""; [StructuresField("S_PartPref")] public string S_PartPref = "рп"; [StructuresField("S_PartNo")] public string S_PartNo = "1"; [StructuresField("S_Name")] public string S_Name = "РАСПОРКА"; [StructuresField("S_Class")] public string S_Class = "4"; [StructuresField("S_UDA")] public string S_UDA = "";
     }
 
     [Plugin("Apibim_BuiltUpColumn")]
@@ -139,14 +144,17 @@ namespace Apibim.Plugins.BuiltUpColumn
                     L_Type = Data.L_Type,
                     L_Preset = Data.L_Preset,
                     L_Offset = Data.L_Offset,
-                    S_Mode = Data.S_Mode,
-                    S_NodesDouble = Data.S_NodesDouble,
-                    S_NodesChannel = Data.S_NodesChannel,
-                    S_NodesExclude = Data.S_NodesExclude,
+
                     S_Base_Preset = Data.S_Base_Preset,
                     S_Top_Preset = Data.S_Top_Preset,
                     S_Splice_Preset = Data.S_Splice_Preset,
                     S_Preset = Data.S_Preset,
+                    S_NodesAngle = Data.S_NodesAngle,
+                    S_NodesAnglePlate = Data.S_NodesAnglePlate,
+                    S_NodesD1 = Data.S_NodesD1,
+                    S_NodesD2 = Data.S_NodesD2,
+                    S_NodesExcludePlate = Data.S_NodesExcludePlate,
+                    S_NodesExclude = Data.S_NodesExclude,
 
                     B_Profile = Data.B_Profile,
                     B_Material = Data.B_Material,
@@ -166,6 +174,15 @@ namespace Apibim.Plugins.BuiltUpColumn
                     D_Name = Data.D_Name,
                     D_Class = Data.D_Class,
                     D_UDA = Data.D_UDA,
+                    D2_Profile = Data.D2_Profile,
+                    D2_Material = Data.D2_Material,
+                    D2_AssyPref = Data.D2_AssyPref,
+                    D2_AssyNo = Data.D2_AssyNo,
+                    D2_PartPref = Data.D2_PartPref,
+                    D2_PartNo = Data.D2_PartNo,
+                    D2_Name = Data.D2_Name,
+                    D2_Class = Data.D2_Class,
+                    D2_UDA = Data.D2_UDA,
                     L_Profile = Data.L_Profile,
                     L_Material = Data.L_Material,
                     L_AssyPref = Data.L_AssyPref,
@@ -192,7 +209,7 @@ namespace Apibim.Plugins.BuiltUpColumn
                     S_PartNo = Data.S_PartNo,
                     S_Name = Data.S_Name,
                     S_Class = Data.S_Class,
-                    S_UDA = Data.S_UDA
+                    S_UDA = Data.S_UDA,
                 };
 
                 if (string.IsNullOrWhiteSpace(colData.B_Profile)) throw new Exception("Не заполнен 'Профиль' для Ветви. Построение отменено.");
@@ -262,7 +279,7 @@ namespace Apibim.Plugins.BuiltUpColumn
                     }
                 }
 
-                // --- 3. ГЕНЕРАЦИЯ РЕШЕТКИ (СО СТРОГОЙ ПРОВЕРКОЙ СТЫКОВЫХ РАСКОСОВ) ---
+                // --- 3. ГЕНЕРАЦИЯ РЕШЕТКИ ---
                 foreach (var line in lacingLines)
                 {
                     bool isSpliceDiagonal = false;
@@ -292,44 +309,66 @@ namespace Apibim.Plugins.BuiltUpColumn
                     }
                 }
 
-                // --- 4. МАРШРУТИЗАЦИЯ ПЛАНОК (УЛЬТИМАТИВНЫЕ ИСКЛЮЧЕНИЯ) ---
+                // --- 4. МАРШРУТИЗАЦИЯ ПЛАНОК (СЛОТОВЫЙ ДВИЖОК V2 - ЧИСТЫЙ КАСКАД) ---
+                var idxAngle = ParseIndexes(colData.S_NodesAngle);
+                var idxAnglePlate = ParseIndexes(colData.S_NodesAnglePlate);
+                var idxD1 = ParseIndexes(colData.S_NodesD1);
+                var idxD2 = ParseIndexes(colData.S_NodesD2);
+                var idxExcPlate = ParseIndexes(colData.S_NodesExcludePlate);
+                var idxExclude = ParseIndexes(colData.S_NodesExclude);
+
                 int totalNodes = strutLines.Count;
                 var spliceNodes = ColumnGeometryBuilder.GetSpliceAdjacentNodes(zNodes, splices);
 
-                // Читаем исключения ВСЕГДА, независимо от режима!
-                var excludeNodes = StringParserService.ParseNodes(colData.S_NodesExclude, totalNodes);
-                var doubleNodes = new HashSet<int>();
-                var channelNodes = new HashSet<int>();
-
-                if (colData.S_Mode == 1)
-                {
-                    doubleNodes = StringParserService.ParseNodes(colData.S_NodesDouble, totalNodes);
-                    channelNodes = StringParserService.ParseNodes(colData.S_NodesChannel, totalNodes);
-                }
-                else if (colData.S_Mode == 2)
-                {
-                    channelNodes = StringParserService.ParseNodes(colData.S_NodesChannel, totalNodes);
-                }
-
                 for (int i = 0; i < totalNodes; i++)
                 {
-                    // АБСОЛЮТНЫЙ ПРИОРИТЕТ 1: Исключение планки
-                    if (excludeNodes.Contains(i)) continue;
+                    int currentLevel = i + 1; // Узел 1, 2, 3...
+                    int slotType = 0;         // 0 - Нет, 1 - Уголки, 2 - Уголки+Лист, 3 - Тип 1, 4 - Тип 2
+
+                    // ШАГ 1: ФОНОВАЯ ЗАЛИВКА (Зоны)
+                    if (i == 0) slotType = colData.S_Base_Preset;
+                    else if (i == totalNodes - 1) slotType = colData.S_Top_Preset;
+                    else if (spliceNodes.Contains(i)) slotType = colData.S_Splice_Preset;
+                    else slotType = colData.S_Preset;
+
+                    // ШАГ 2: РУЧНОЕ СОЗИДАНИЕ (Override)
+                    if (idxAngle.Contains(currentLevel)) slotType = 1;
+                    if (idxAnglePlate.Contains(currentLevel)) slotType = 2;
+                    if (idxD1.Contains(currentLevel)) slotType = 3;
+                    if (idxD2.Contains(currentLevel)) slotType = 4;
+
+                    // ШАГ 3: ТОЧЕЧНАЯ ДЕГРАДАЦИЯ (Снос листа)
+                    if (idxExcPlate.Contains(currentLevel) && slotType == 2)
+                        slotType = 1;
+
+                    // ШАГ 4: АННИГИЛЯЦИЯ (Глобальное исключение)
+                    if (idxExclude.Contains(currentLevel))
+                        slotType = 0;
+
+                    // --- ФАЗА ФИЗИЧЕСКОГО ПОСТРОЕНИЯ ---
+                    if (slotType == 0) continue;
 
                     var line = strutLines[i];
-                    int presetToUse = 0;
 
-                    if (i == 0) presetToUse = colData.S_Base_Preset;
-                    else if (i == totalNodes - 1) presetToUse = colData.S_Top_Preset;
-                    else if (spliceNodes.Contains(i)) presetToUse = colData.S_Splice_Preset;
-                    else if (colData.S_Mode > 0)
+                    if (slotType == 1 || slotType == 2)
                     {
-                        if (channelNodes.Contains(i)) presetToUse = 2;
-                        else if (colData.S_Mode == 2 || doubleNodes.Contains(i)) presetToUse = colData.S_Preset;
-                    }
+                        // Базовые уголки распорок
+                        InsertStrut_AsLacing(line, colData, localY, autoBaseDist);
 
-                    if (presetToUse == 1) InsertStrut_AsLacing(line, colData, localY, autoBaseDist);
-                    else if (presetToUse == 2) CreateStrutBeam_Channel(line.Point1, line.Point2, colData).Insert();
+                        // Каскадная надстройка листа
+                        if (slotType == 2 && colData.L_Type == 1) // Лист создается только если решетка сдвоенная (L_Type=1)
+                        {
+                            InsertGussetPlateStub(line.Point1, line.Point2);
+                        }
+                    }
+                    else if (slotType == 3)
+                    {
+                        CreateStrutBeam_Type1(line.Point1, line.Point2, colData).Insert();
+                    }
+                    else if (slotType == 4)
+                    {
+                        CreateStrutBeam_Type2(line.Point1, line.Point2, colData).Insert();
+                    }
                 }
 
                 return true;
@@ -347,7 +386,6 @@ namespace Apibim.Plugins.BuiltUpColumn
             if (int.TryParse(val, out int result)) return result;
             return fallback;
         }
-
 
         private void InsertStrut_AsLacing(LineSegment line, BuiltUpColumnData colData, Vector localY, double autoBaseDist)
         {
@@ -401,7 +439,6 @@ namespace Apibim.Plugins.BuiltUpColumn
 
         private Beam CreateStrutBeam_AsLacing(Point p1, Point p2, BuiltUpColumnData data)
         {
-            // Распорка технически это просто горизонтальный раскос (передаем false)
             Beam b = CreateLacingBeam(p1, p2, data, false);
 
             if (!string.IsNullOrWhiteSpace(data.S_Profile)) b.Profile.ProfileString = data.S_Profile;
@@ -414,7 +451,7 @@ namespace Apibim.Plugins.BuiltUpColumn
             return b;
         }
 
-        private Beam CreateStrutBeam_Channel(Point p1, Point p2, BuiltUpColumnData data)
+        private Beam CreateStrutBeam_Type1(Point p1, Point p2, BuiltUpColumnData data)
         {
             Beam b = new Beam(p1, p2);
             b.Profile.ProfileString = data.D_Profile;
@@ -433,6 +470,50 @@ namespace Apibim.Plugins.BuiltUpColumn
 
             return b;
         }
+
+        private Beam CreateStrutBeam_Type2(Point p1, Point p2, BuiltUpColumnData data)
+        {
+            Beam b = new Beam(p1, p2);
+            b.Profile.ProfileString = data.D2_Profile;
+            b.Material.MaterialString = data.D2_Material;
+            b.Class = data.D2_Class;
+            b.Name = data.D2_Name;
+            b.PartNumber.Prefix = data.D2_PartPref; b.PartNumber.StartNumber = GetInt(data.D2_PartNo, 1);
+            b.AssemblyNumber.Prefix = data.D2_AssyPref; b.AssemblyNumber.StartNumber = GetInt(data.D2_AssyNo, 1);
+
+            b.Position.Plane = Position.PlaneEnum.MIDDLE;
+            b.Position.Depth = Position.DepthEnum.BEHIND;
+            b.Position.PlaneOffset = 0.0;
+            b.Position.DepthOffset = 0.0;
+            b.Position.Rotation = Position.RotationEnum.BACK;
+            b.Position.RotationOffset = 0.0;
+
+            return b;
+        }
+
+        private void InsertGussetPlateStub(Point p1, Point p2)
+        {
+            try
+            {
+                Beam plateBeam = new Beam(p1, p2);
+                plateBeam.Profile.ProfileString = "PL10*200";
+                plateBeam.Material.MaterialString = "C245";
+                plateBeam.Class = "99";
+                plateBeam.Name = "ЛИСТ_РАСПОРКИ";
+
+                // Ставим пластину строго по центру между ветвями
+                plateBeam.Position.Depth = Position.DepthEnum.MIDDLE;
+                plateBeam.Position.Plane = Position.PlaneEnum.MIDDLE;
+                plateBeam.Position.Rotation = Position.RotationEnum.TOP;
+
+                plateBeam.Insert();
+            }
+            catch
+            {
+                // Если построение листа упадет, это не должно ломать весь макрос
+            }
+        }
+
         private HashSet<int> ParseIndexes(string text)
         {
             var set = new HashSet<int>();

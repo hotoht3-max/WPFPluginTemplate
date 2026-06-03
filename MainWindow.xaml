@@ -196,61 +196,76 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Настройки планок по зонам" FontWeight="Bold" Margin="0,10,0,5"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Настройки планок по зонам (Фон)" FontWeight="Bold" Margin="0,10,0,5"/>
                         <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="S_Base_Preset"/>
                         <Label Grid.Row="1" Grid.Column="1" Content="Планка в базе [Узел 1]:"/>
                         <ComboBox Grid.Row="1" Grid.Column="2" SelectedIndex="{Binding S_Base_Preset}">
                             <ComboBoxItem Content="0 - Нет"/>
-                            <ComboBoxItem Content="1 - Распорка (дублер)"/>
-                            <ComboBoxItem Content="2 - Диафрагма (швеллер)"/>
+                            <ComboBoxItem Content="1 - Распорка (уголки)"/>
+                            <ComboBoxItem Content="2 - Распорка с листом"/>
+                            <ComboBoxItem Content="3 - Диафрагма (Тип 1)"/>
+                            <ComboBoxItem Content="4 - Диафрагма (Тип 2)"/>
                         </ComboBox>
 
                         <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="S_Top_Preset"/>
                         <Label Grid.Row="2" Grid.Column="1" Content="Планка в верхушке [Узел N]:"/>
                         <ComboBox Grid.Row="2" Grid.Column="2" SelectedIndex="{Binding S_Top_Preset}">
                             <ComboBoxItem Content="0 - Нет"/>
-                            <ComboBoxItem Content="1 - Распорка (дублер)"/>
-                            <ComboBoxItem Content="2 - Диафрагма (швеллер)"/>
+                            <ComboBoxItem Content="1 - Распорка (уголки)"/>
+                            <ComboBoxItem Content="2 - Распорка с листом"/>
+                            <ComboBoxItem Content="3 - Диафрагма (Тип 1)"/>
+                            <ComboBoxItem Content="4 - Диафрагма (Тип 2)"/>
                         </ComboBox>
 
                         <UIControls:WpfFilterCheckBox Grid.Row="3" Grid.Column="0" AttributeName="S_Splice_Preset"/>
                         <Label Grid.Row="3" Grid.Column="1" Content="Планки у стыков ветвей:"/>
                         <ComboBox Grid.Row="3" Grid.Column="2" SelectedIndex="{Binding S_Splice_Preset}">
                             <ComboBoxItem Content="0 - Нет"/>
-                            <ComboBoxItem Content="1 - Распорка (дублер)"/>
-                            <ComboBoxItem Content="2 - Диафрагма (швеллер)"/>
+                            <ComboBoxItem Content="1 - Распорка (уголки)"/>
+                            <ComboBoxItem Content="2 - Распорка с листом"/>
+                            <ComboBoxItem Content="3 - Диафрагма (Тип 1)"/>
+                            <ComboBoxItem Content="4 - Диафрагма (Тип 2)"/>
                         </ComboBox>
 
                         <UIControls:WpfFilterCheckBox Grid.Row="4" Grid.Column="0" AttributeName="S_Preset"/>
                         <Label Grid.Row="4" Grid.Column="1" Content="Рядовые планки (по умолчанию):"/>
                         <ComboBox Grid.Row="4" Grid.Column="2" SelectedIndex="{Binding S_Preset}">
                             <ComboBoxItem Content="0 - Нет"/>
-                            <ComboBoxItem Content="1 - Распорка (дублер)"/>
-                            <ComboBoxItem Content="2 - Диафрагма (швеллер)"/>
+                            <ComboBoxItem Content="1 - Распорка (уголки)"/>
+                            <ComboBoxItem Content="2 - Распорка с листом"/>
+                            <ComboBoxItem Content="3 - Диафрагма (Тип 1)"/>
+                            <ComboBoxItem Content="4 - Диафрагма (Тип 2)"/>
                         </ComboBox>
 
-                        <TextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Text="Правила ручного управления" FontWeight="Bold" Margin="0,15,0,5"/>
-                        <UIControls:WpfFilterCheckBox Grid.Row="6" Grid.Column="0" AttributeName="S_Mode"/>
-                        <Label Grid.Row="6" Grid.Column="1" Content="Режим генерации:"/>
-                        <ComboBox Grid.Row="6" Grid.Column="2" SelectedIndex="{Binding S_Mode}">
-                            <ComboBoxItem Content="0 - Выключить ручной ввод"/>
-                            <ComboBoxItem Content="1 - Точечный (Только указанные)"/>
-                            <ComboBoxItem Content="2 - Сплошной (С исключениями)"/>
-                        </ComboBox>
+                        <TextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Text="Переопределение узлов (Каскад)" FontWeight="Bold" Margin="0,15,0,5"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="7" Grid.Column="0" AttributeName="S_NodesDouble"/>
-                        <Label Grid.Row="7" Grid.Column="1" Content="Узлы распорок:"/>
-                        <TextBox Grid.Row="7" Grid.Column="2" Text="{Binding S_NodesDouble}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="6" Grid.Column="0" AttributeName="S_NodesAngle"/>
+                        <Label Grid.Row="6" Grid.Column="1" Content="Узлы уголков [Тип 1]:"/>
+                        <TextBox Grid.Row="6" Grid.Column="2" Text="{Binding S_NodesAngle}"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="8" Grid.Column="0" AttributeName="S_NodesChannel"/>
-                        <Label Grid.Row="8" Grid.Column="1" Content="Узлы диафрагм:"/>
-                        <TextBox Grid.Row="8" Grid.Column="2" Text="{Binding S_NodesChannel}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="7" Grid.Column="0" AttributeName="S_NodesAnglePlate"/>
+                        <Label Grid.Row="7" Grid.Column="1" Content="Узлы уголков с листом [Тип 2]:"/>
+                        <TextBox Grid.Row="7" Grid.Column="2" Text="{Binding S_NodesAnglePlate}"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="9" Grid.Column="0" AttributeName="S_NodesExclude"/>
-                        <Label Grid.Row="9" Grid.Column="1" Content="Исключить узлы (Для режима 2):"/>
-                        <TextBox Grid.Row="9" Grid.Column="2" Text="{Binding S_NodesExclude}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="8" Grid.Column="0" AttributeName="S_NodesD1"/>
+                        <Label Grid.Row="8" Grid.Column="1" Content="Узлы диафрагм (Тип 1) [Тип 3]:"/>
+                        <TextBox Grid.Row="8" Grid.Column="2" Text="{Binding S_NodesD1}"/>
+
+                        <UIControls:WpfFilterCheckBox Grid.Row="9" Grid.Column="0" AttributeName="S_NodesD2"/>
+                        <Label Grid.Row="9" Grid.Column="1" Content="Узлы диафрагм (Тип 2) [Тип 4]:"/>
+                        <TextBox Grid.Row="9" Grid.Column="2" Text="{Binding S_NodesD2}"/>
+
+                        <UIControls:WpfFilterCheckBox Grid.Row="10" Grid.Column="0" AttributeName="S_NodesExcludePlate"/>
+                        <Label Grid.Row="10" Grid.Column="1" Content="Исключить листы (Тип 2 -> 1):"/>
+                        <TextBox Grid.Row="10" Grid.Column="2" Text="{Binding S_NodesExcludePlate}"/>
+
+                        <UIControls:WpfFilterCheckBox Grid.Row="11" Grid.Column="0" AttributeName="S_NodesExclude"/>
+                        <Label Grid.Row="11" Grid.Column="1" Content="Глобально исключить узлы:" Foreground="DarkRed" FontWeight="SemiBold"/>
+                        <TextBox Grid.Row="11" Grid.Column="2" Text="{Binding S_NodesExclude}"/>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
@@ -371,7 +386,7 @@
                             PartClass="{Binding B_Class}" PartClassAttr="B_Class"
                             UdaAttr="B_UDA"/>
 
-                        <localUI:PartAttributesRowControl RowLabel="Диафрагма:"
+                        <localUI:PartAttributesRowControl RowLabel="Диафрагма (Тип 1):"
                             Profile="{Binding D_Profile}" ProfileAttr="D_Profile"
                             Material="{Binding D_Material}" MaterialAttr="D_Material"
                             PartPrefix="{Binding D_PartPref}" PartPrefixAttr="D_PartPref"
@@ -381,6 +396,17 @@
                             PartName="{Binding D_Name}" PartNameAttr="D_Name"
                             PartClass="{Binding D_Class}" PartClassAttr="D_Class"
                             UdaAttr="D_UDA"/>
+
+                        <localUI:PartAttributesRowControl RowLabel="Диафрагма (Тип 2):"
+                            Profile="{Binding D2_Profile}" ProfileAttr="D2_Profile"
+                            Material="{Binding D2_Material}" MaterialAttr="D2_Material"
+                            PartPrefix="{Binding D2_PartPref}" PartPrefixAttr="D2_PartPref"
+                            PartStartNo="{Binding D2_PartNo}" PartStartNoAttr="D2_PartNo"
+                            AssemblyPrefix="{Binding D2_AssyPref}" AssemblyPrefixAttr="D2_AssyPref"
+                            AssemblyStartNo="{Binding D2_AssyNo}" AssemblyStartNoAttr="D2_AssyNo"
+                            PartName="{Binding D2_Name}" PartNameAttr="D2_Name"
+                            PartClass="{Binding D2_Class}" PartClassAttr="D2_Class"
+                            UdaAttr="D2_UDA"/>
 
                         <localUI:PartAttributesRowControl RowLabel="Раскос рядовой:"
                             Profile="{Binding L_Profile}" ProfileAttr="L_Profile"

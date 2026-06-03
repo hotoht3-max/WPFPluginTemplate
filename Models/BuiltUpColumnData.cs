@@ -15,11 +15,9 @@ namespace Apibim.Plugins.BuiltUpColumn.Models
         public double Hcol_e2 { get; set; }
         public double Hcol_e3 { get; set; }
 
-        // --- КАСКАДНЫЕ СТЫКИ (5 УРОВНЕЙ) ---
-        public string SplicesText { get; set; } // Отметки стыков в модели (Z)
-
+        public string SplicesText { get; set; }
         public string Splice1Component { get; set; }
-        public string Splice1Preset { get; set; } // Уровень 1 (Базовый)
+        public string Splice1Preset { get; set; }
         public string Splice2Component { get; set; }
         public string Splice2Preset { get; set; }
         public string Splice2Indexes { get; set; }
@@ -44,16 +42,19 @@ namespace Apibim.Plugins.BuiltUpColumn.Models
         public int L_Preset { get; set; }
         public double L_Offset { get; set; }
 
-        public int S_Mode { get; set; }
-        public string S_NodesDouble { get; set; }
-        public string S_NodesChannel { get; set; }
-        public string S_NodesExclude { get; set; }
         public int S_Base_Preset { get; set; }
         public int S_Top_Preset { get; set; }
         public int S_Splice_Preset { get; set; }
         public int S_Preset { get; set; }
 
-        // --- МАТРИЦА АТРИБУТОВ ---
+        // Новые текстовые поля для каскадного управления планками
+        public string S_NodesAngle { get; set; }
+        public string S_NodesAnglePlate { get; set; }
+        public string S_NodesD1 { get; set; }
+        public string S_NodesD2 { get; set; }
+        public string S_NodesExcludePlate { get; set; }
+        public string S_NodesExclude { get; set; }
+
         public string B_Profile { get; set; }
         public string B_Material { get; set; }
         public string B_AssyPref { get; set; }
@@ -72,6 +73,18 @@ namespace Apibim.Plugins.BuiltUpColumn.Models
         public string D_Name { get; set; }
         public string D_Class { get; set; }
         public string D_UDA { get; set; }
+
+        // Новая матрица для Диафрагмы Тип 2
+        public string D2_Profile { get; set; }
+        public string D2_Material { get; set; }
+        public string D2_AssyPref { get; set; }
+        public string D2_AssyNo { get; set; }
+        public string D2_PartPref { get; set; }
+        public string D2_PartNo { get; set; }
+        public string D2_Name { get; set; }
+        public string D2_Class { get; set; }
+        public string D2_UDA { get; set; }
+
         public string L_Profile { get; set; }
         public string L_Material { get; set; }
         public string L_AssyPref { get; set; }
