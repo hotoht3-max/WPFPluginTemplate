@@ -20,8 +20,12 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresField("Hcol_e3")] public double Hcol_e3 = 600.0;
 
         [StructuresField("SplicesText")] public string SplicesText = "";
-        [StructuresField("SpliceComponent")] public string SpliceComponent = "14";
-        [StructuresField("SplicePreset")] public string SplicePreset = "standard";
+
+        [StructuresField("Splice1Component")] public string Splice1Component = "77"; [StructuresField("Splice1Preset")] public string Splice1Preset = "standard";
+        [StructuresField("Splice2Component")] public string Splice2Component = ""; [StructuresField("Splice2Preset")] public string Splice2Preset = ""; [StructuresField("Splice2Indexes")] public string Splice2Indexes = "";
+        [StructuresField("Splice3Component")] public string Splice3Component = ""; [StructuresField("Splice3Preset")] public string Splice3Preset = ""; [StructuresField("Splice3Indexes")] public string Splice3Indexes = "";
+        [StructuresField("Splice4Component")] public string Splice4Component = ""; [StructuresField("Splice4Preset")] public string Splice4Preset = ""; [StructuresField("Splice4Indexes")] public string Splice4Indexes = "";
+        [StructuresField("Splice5Component")] public string Splice5Component = ""; [StructuresField("Splice5Preset")] public string Splice5Preset = ""; [StructuresField("Splice5Indexes")] public string Splice5Indexes = "";
 
         [StructuresField("L_StepMode")] public int L_StepMode = 0;
         [StructuresField("Hr_base")] public double Hr_base = 1200.0;
@@ -111,8 +115,20 @@ namespace Apibim.Plugins.BuiltUpColumn
                     Hcol_e2 = Data.Hcol_e2,
                     Hcol_e3 = Data.Hcol_e3,
                     SplicesText = Data.SplicesText,
-                    SpliceComponent = Data.SpliceComponent,
-                    SplicePreset = Data.SplicePreset,
+                    Splice1Component = Data.Splice1Component,
+                    Splice1Preset = Data.Splice1Preset,
+                    Splice2Component = Data.Splice2Component,
+                    Splice2Preset = Data.Splice2Preset,
+                    Splice2Indexes = Data.Splice2Indexes,
+                    Splice3Component = Data.Splice3Component,
+                    Splice3Preset = Data.Splice3Preset,
+                    Splice3Indexes = Data.Splice3Indexes,
+                    Splice4Component = Data.Splice4Component,
+                    Splice4Preset = Data.Splice4Preset,
+                    Splice4Indexes = Data.Splice4Indexes,
+                    Splice5Component = Data.Splice5Component,
+                    Splice5Preset = Data.Splice5Preset,
+                    Splice5Indexes = Data.Splice5Indexes,
                     L_StepMode = Data.L_StepMode,
                     Hr_base = Data.Hr_base,
                     L_StepText = Data.L_StepText,
@@ -216,19 +232,33 @@ namespace Apibim.Plugins.BuiltUpColumn
 
                 if (autoBaseDist <= 0.0) autoBaseDist = 200.0;
 
-                // --- 2. УСТАНОВКА КОМПОНЕНТОВ СТЫКОВ (Через универсальный сервис) ---
-                if (!string.IsNullOrWhiteSpace(colData.SpliceComponent))
+                // --- 2. УСТАНОВКА КОМПОНЕНТОВ СТЫКОВ (5 УРОВНЕЙ КАСКАДА) ---
+                var idx2 = ParseIndexes(colData.Splice2Indexes);
+                var idx3 = ParseIndexes(colData.Splice3Indexes);
+                var idx4 = ParseIndexes(colData.Splice4Indexes);
+                var idx5 = ParseIndexes(colData.Splice5Indexes);
+
+                int branchesPerSide = createdBranches.Count / 2;
+                for (int i = 0; i < branchesPerSide - 1; i++)
                 {
-                    int branchesPerSide = createdBranches.Count / 2;
-                    for (int i = 0; i < branchesPerSide - 1; i++)
+                    int currentLevel = i + 1; // Порядковый номер стыка для пользователя (1, 2, 3...)
+
+                    // Уровень 1 (Базовый)
+                    string activeComp = colData.Splice1Component;
+                    string activePreset = colData.Splice1Preset;
+
+                    // КАСКАДНОЕ ПЕРЕОПРЕДЕЛЕНИЕ (Кто ниже в коде - тот и Царь)
+                    if (idx2.Contains(currentLevel)) { activeComp = colData.Splice2Component; activePreset = colData.Splice2Preset; }
+                    if (idx3.Contains(currentLevel)) { activeComp = colData.Splice3Component; activePreset = colData.Splice3Preset; }
+                    if (idx4.Contains(currentLevel)) { activeComp = colData.Splice4Component; activePreset = colData.Splice4Preset; }
+                    if (idx5.Contains(currentLevel)) { activeComp = colData.Splice5Component; activePreset = colData.Splice5Preset; }
+
+                    if (!string.IsNullOrWhiteSpace(activeComp))
                     {
                         // Левая ветвь
-                        if (!TeklaComponentService.InsertConnection(colData.SpliceComponent, colData.SplicePreset, createdBranches[i], new List<ModelObject> { createdBranches[i + 1] }, null, out string errL))
-                            Logger.Write($"Стык (Левый, ярус {i + 1}): {errL}", LogLevel.Error);
-
+                        TeklaComponentService.InsertConnection(activeComp, activePreset, createdBranches[i], new List<ModelObject> { createdBranches[i + 1] }, null, out string errL);
                         // Правая ветвь
-                        if (!TeklaComponentService.InsertConnection(colData.SpliceComponent, colData.SplicePreset, createdBranches[branchesPerSide + i], new List<ModelObject> { createdBranches[branchesPerSide + i + 1] }, null, out string errR))
-                            Logger.Write($"Стык (Правый, ярус {i + 1}): {errR}", LogLevel.Error);
+                        TeklaComponentService.InsertConnection(activeComp, activePreset, createdBranches[branchesPerSide + i], new List<ModelObject> { createdBranches[branchesPerSide + i + 1] }, null, out string errR);
                     }
                 }
 
@@ -402,6 +432,17 @@ namespace Apibim.Plugins.BuiltUpColumn
             b.Position.RotationOffset = 0.0;
 
             return b;
+        }
+        private HashSet<int> ParseIndexes(string text)
+        {
+            var set = new HashSet<int>();
+            if (string.IsNullOrWhiteSpace(text)) return set;
+            var parts = text.Split(new[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var p in parts)
+            {
+                if (int.TryParse(p, out int val)) set.Add(val);
+            }
+            return set;
         }
     }
 }

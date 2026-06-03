@@ -23,29 +23,12 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
             try
             {
                 Connection conn = new Connection();
-
-                // Магия Tekla API: У компонента всегда должно быть заполнено Name (даже если мы используем Number)
                 conn.Name = nameOrNumber;
 
-                if (int.TryParse(nameOrNumber, out int compNum))
-                {
-                    conn.Number = compNum; // Системный компонент (например, 77)
-                }
-                else
-                {
-                    conn.Number = BaseComponent.CUSTOM_OBJECT_NUMBER; // Кастомный компонент или плагин (-100000)
-                }
+                if (int.TryParse(nameOrNumber, out int compNum)) conn.Number = compNum;
+                else conn.Number = BaseComponent.CUSTOM_OBJECT_NUMBER;
 
-                // Пресет загружается строго после присвоения имени и номера!
-                if (!string.IsNullOrWhiteSpace(preset))
-                {
-                    conn.LoadAttributesFromFile(preset);
-                }
-
-                if (upVector != null)
-                {
-                    conn.UpVector = upVector;
-                }
+                if (upVector != null) conn.UpVector = upVector;
 
                 conn.SetPrimaryObject(primary);
                 foreach (var sec in secondaries)
@@ -53,10 +36,34 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                     conn.SetSecondaryObject(sec);
                 }
 
+                // 1. ВСТАВЛЯЕМ УЗЕЛ В МОДЕЛЬ
+                // В этот момент Текла агрессивно применяет Автостандарты (класс 0, пустой код)
                 if (!conn.Insert())
                 {
-                    errorMessage = "Tekla API вернул false. Возможные причины: несовместимые профили, неверный пресет, или компонент не является Connection.";
+                    errorMessage = "Tekla API вернул false при вставке компонента.";
                     return false;
+                }
+
+                // 2. POST-MODIFY: ПЕРЕБИВАЕМ АВТОСТАНДАРТЫ
+                if (!string.IsNullOrWhiteSpace(preset))
+                {
+                    // Накатываем пресет поверх уже созданного узла
+                    conn.LoadAttributesFromFile(preset);
+
+                    // Имплементируем твою идею: Жестко глушим Автостандарты
+                    conn.SetAttribute("ac_root", "albl_no_root");
+                    conn.SetAttribute("ad_root", "albl_no_root");
+
+                    // Достаем спрятанный класс (group_no) и инъектируем его
+                    int classValue = 0;
+                    if (conn.GetAttribute("group_no", ref classValue))
+                    {
+                        conn.SetAttribute("class", classValue);
+                        conn.SetAttribute("group_no", classValue);
+                    }
+
+                    // Принудительно применяем изменения к узлу в модели
+                    conn.Modify();
                 }
 
                 return true;

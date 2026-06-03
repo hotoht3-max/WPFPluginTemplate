@@ -62,10 +62,6 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Габариты и ориентация" FontWeight="Bold" Margin="0,10,0,5"/>
@@ -93,19 +89,6 @@
                         <UIControls:WpfFilterCheckBox Grid.Row="7" Grid.Column="0" AttributeName="Hcol_e3"/>
                         <Label Grid.Row="7" Grid.Column="1" Content="Свободная зона сверху (Hcol_e3):"/>
                         <TextBox Grid.Row="7" Grid.Column="2" Text="{Binding Hcol_e3}"/>
-
-                        <TextBlock Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" Text="Стыки ветвей (Компоненты)" FontWeight="Bold" Margin="0,15,0,5"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="9" Grid.Column="0" AttributeName="SplicesText"/>
-                        <Label Grid.Row="9" Grid.Column="1" Content="Отметки стыков:"/>
-                        <TextBox Grid.Row="9" Grid.Column="2" Text="{Binding SplicesText}"/>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="10" Grid.Column="0" AttributeName="SpliceComponent"/>
-                        <UIControls:WpfFilterCheckBox Grid.Row="11" Grid.Column="0" AttributeName="SplicePreset"/>
-
-                        <localUI:ComponentSelectorControl Grid.Row="10" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,5"
-                                                          ComponentText="{Binding SpliceComponent}"
-                                                          PresetText="{Binding SplicePreset}"/>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
@@ -268,6 +251,82 @@
                         <UIControls:WpfFilterCheckBox Grid.Row="9" Grid.Column="0" AttributeName="S_NodesExclude"/>
                         <Label Grid.Row="9" Grid.Column="1" Content="Исключить узлы (Для режима 2):"/>
                         <TextBox Grid.Row="9" Grid.Column="2" Text="{Binding S_NodesExclude}"/>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Стыки ветвей">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <UIControls:WpfFilterCheckBox Grid.Row="0" Grid.Column="0" AttributeName="SplicesText"/>
+                        <Label Grid.Row="0" Grid.Column="1" Content="Отметки стыков в модели (Z):" FontWeight="Bold"/>
+                        <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding SplicesText}" ToolTip="Введите отметки через пробел (например: 6000 12000)"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="Уровень 1 (Базовый для всех стыков)" FontWeight="Bold" Foreground="#FF0055A4" Margin="0,15,0,5"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="Splice1Component"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="3" Grid.Column="0" AttributeName="Splice1Preset"/>
+                        <localUI:ComponentSelectorControl Grid.Row="2" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" ComponentText="{Binding Splice1Component, Mode=TwoWay}" PresetText="{Binding Splice1Preset, Mode=TwoWay}"/>
+
+                        <TextBlock Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Text="Уровень 2 (Переопределить выбранные)" FontWeight="Bold" Margin="0,15,0,5"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="5" Grid.Column="0" AttributeName="Splice2Indexes"/>
+                        <Label Grid.Row="5" Grid.Column="1" Content="Номера стыков (например: 2 4):"/>
+                        <TextBox Grid.Row="5" Grid.Column="2" Text="{Binding Splice2Indexes}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="6" Grid.Column="0" AttributeName="Splice2Component"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="7" Grid.Column="0" AttributeName="Splice2Preset"/>
+                        <localUI:ComponentSelectorControl Grid.Row="6" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" ComponentText="{Binding Splice2Component, Mode=TwoWay}" PresetText="{Binding Splice2Preset, Mode=TwoWay}"/>
+
+                        <TextBlock Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" Text="Уровень 3 (Переопределить выбранные)" FontWeight="Bold" Margin="0,15,0,5"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="9" Grid.Column="0" AttributeName="Splice3Indexes"/>
+                        <Label Grid.Row="9" Grid.Column="1" Content="Номера стыков:"/>
+                        <TextBox Grid.Row="9" Grid.Column="2" Text="{Binding Splice3Indexes}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="10" Grid.Column="0" AttributeName="Splice3Component"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="11" Grid.Column="0" AttributeName="Splice3Preset"/>
+                        <localUI:ComponentSelectorControl Grid.Row="10" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" ComponentText="{Binding Splice3Component, Mode=TwoWay}" PresetText="{Binding Splice3Preset, Mode=TwoWay}"/>
+
+                        <TextBlock Grid.Row="12" Grid.Column="1" Grid.ColumnSpan="2" Text="Уровень 4 (Переопределить выбранные)" FontWeight="Bold" Margin="0,15,0,5"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="13" Grid.Column="0" AttributeName="Splice4Indexes"/>
+                        <Label Grid.Row="13" Grid.Column="1" Content="Номера стыков:"/>
+                        <TextBox Grid.Row="13" Grid.Column="2" Text="{Binding Splice4Indexes}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="14" Grid.Column="0" AttributeName="Splice4Component"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="15" Grid.Column="0" AttributeName="Splice4Preset"/>
+                        <localUI:ComponentSelectorControl Grid.Row="14" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" ComponentText="{Binding Splice4Component, Mode=TwoWay}" PresetText="{Binding Splice4Preset, Mode=TwoWay}"/>
+
+                        <TextBlock Grid.Row="16" Grid.Column="1" Grid.ColumnSpan="2" Text="Уровень 5 (Переопределить выбранные)" FontWeight="Bold" Margin="0,15,0,5"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="17" Grid.Column="0" AttributeName="Splice5Indexes"/>
+                        <Label Grid.Row="17" Grid.Column="1" Content="Номера стыков:"/>
+                        <TextBox Grid.Row="17" Grid.Column="2" Text="{Binding Splice5Indexes}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="18" Grid.Column="0" AttributeName="Splice5Component"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="19" Grid.Column="0" AttributeName="Splice5Preset"/>
+                        <localUI:ComponentSelectorControl Grid.Row="18" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" ComponentText="{Binding Splice5Component, Mode=TwoWay}" PresetText="{Binding Splice5Preset, Mode=TwoWay}"/>
+
                     </Grid>
                 </ScrollViewer>
             </TabItem>

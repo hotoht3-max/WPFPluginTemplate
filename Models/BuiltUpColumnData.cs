@@ -15,9 +15,23 @@ namespace Apibim.Plugins.BuiltUpColumn.Models
         public double Hcol_e2 { get; set; }
         public double Hcol_e3 { get; set; }
 
-        public string SplicesText { get; set; }
-        public string SpliceComponent { get; set; }
-        public string SplicePreset { get; set; }
+        // --- КАСКАДНЫЕ СТЫКИ (5 УРОВНЕЙ) ---
+        public string SplicesText { get; set; } // Отметки стыков в модели (Z)
+
+        public string Splice1Component { get; set; }
+        public string Splice1Preset { get; set; } // Уровень 1 (Базовый)
+        public string Splice2Component { get; set; }
+        public string Splice2Preset { get; set; }
+        public string Splice2Indexes { get; set; }
+        public string Splice3Component { get; set; }
+        public string Splice3Preset { get; set; }
+        public string Splice3Indexes { get; set; }
+        public string Splice4Component { get; set; }
+        public string Splice4Preset { get; set; }
+        public string Splice4Indexes { get; set; }
+        public string Splice5Component { get; set; }
+        public string Splice5Preset { get; set; }
+        public string Splice5Indexes { get; set; }
 
         public int L_StepMode { get; set; }
         public double Hr_base { get; set; }
