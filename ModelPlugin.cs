@@ -97,17 +97,17 @@ namespace Apibim.Plugins.BuiltUpColumn
                 // --- 1. ПОДГОТОВКА СИСТЕМЫ КООРДИНАТ ---
                 Point p1 = (Point)Input[0].GetInput();
                 Point p2Temp = (Point)Input[1].GetInput();
-                p2Temp = p2Temp.ResetZ(p1.Z);
+                p2Temp = p2Temp.ResetZ(p1.Z); // Используем Extension!
 
-                double dx = p2Temp.X - p1.X;
-                double dy = p2Temp.Y - p1.Y;
-                double length = Math.Sqrt(dx * dx + dy * dy);
-                if (length < 10.0) return false;
+                Vector localX = PointExtension.GetVector(p1, p2Temp); // Получаем вектор без dx/dy
+                if (localX.GetLength() < 10.0) return false;          // Нативный расчет длины
 
-                Vector localX = new Vector(dx / length, dy / length, 0);
+                localX.Normalize(); // Делаем длину вектора равной 1
                 Vector localY = new Vector(-localX.Y, localX.X, 0);
-                double planeAngleDeg = Math.Atan2(localX.Y, localX.X) * (180.0 / Math.PI);
-                Point p2 = new Point(p1.X + localX.X * Data.Bcol, p1.Y + localX.Y * Data.Bcol, p1.Z);
+                double planeAngleDeg = Math.Atan2(localX.Y, localX.X) * (180.0 / Math.PI); // Угол оставляем для RotationOffset
+
+                Point p2 = new Point(p1);
+                p2.Translate(localX * Data.Bcol); // Сдвигаем точку по вектору (используем Extension)
 
                 // --- 2. МАППИНГ ДАННЫХ (DataMapper) ---
                 var colData = PluginDataMapper.Map(Data);
@@ -213,15 +213,18 @@ namespace Apibim.Plugins.BuiltUpColumn
                 {
                     TeklaPartBuilder.CreateLacing(line.Point1, line.Point2, settings, activePreset, colData.L_Offset).Insert();
                 }
-                else // Сдвоенная решетка
+                else // Сдвоенная решетка (Используем Tekla.Extension!)
                 {
                     Vector shift = localY * (autoBaseDist / 2.0);
-                    Point p1_A = new Point(line.Point1.X + shift.X, line.Point1.Y + shift.Y, line.Point1.Z);
-                    Point p2_A = new Point(line.Point2.X + shift.X, line.Point2.Y + shift.Y, line.Point2.Z);
+
+                    // Ветвь А (Сдвиг по вектору)
+                    Point p1_A = new Point(line.Point1); p1_A.Translate(shift);
+                    Point p2_A = new Point(line.Point2); p2_A.Translate(shift);
                     TeklaPartBuilder.CreateLacing(p1_A, p2_A, settings, activePreset, colData.L_Offset).Insert();
 
-                    Point p1_B = new Point(line.Point1.X - shift.X, line.Point1.Y - shift.Y, line.Point1.Z);
-                    Point p2_B = new Point(line.Point2.X - shift.X, line.Point2.Y - shift.Y, line.Point2.Z);
+                    // Ветвь Б (Сдвиг в обратную сторону через .Negative())
+                    Point p1_B = new Point(line.Point1); p1_B.Translate(shift.Negative());
+                    Point p2_B = new Point(line.Point2); p2_B.Translate(shift.Negative());
                     TeklaPartBuilder.CreateLacing(p2_B, p1_B, settings, activePreset, colData.L_Offset).Insert();
                 }
             }
@@ -280,13 +283,15 @@ namespace Apibim.Plugins.BuiltUpColumn
                     }
                     else
                     {
+                        // Сдвоенная распорка (Используем Tekla.Extension!)
                         Vector shift = localY * (autoBaseDist / 2.0);
-                        Point p1_A = new Point(line.Point1.X + shift.X, line.Point1.Y + shift.Y, line.Point1.Z);
-                        Point p2_A = new Point(line.Point2.X + shift.X, line.Point2.Y + shift.Y, line.Point2.Z);
+
+                        Point p1_A = new Point(line.Point1); p1_A.Translate(shift);
+                        Point p2_A = new Point(line.Point2); p2_A.Translate(shift);
                         TeklaPartBuilder.CreateLacing(p1_A, p2_A, colData.Strut, activePreset, colData.L_Offset).Insert();
 
-                        Point p1_B = new Point(line.Point1.X - shift.X, line.Point1.Y - shift.Y, line.Point1.Z);
-                        Point p2_B = new Point(line.Point2.X - shift.X, line.Point2.Y - shift.Y, line.Point2.Z);
+                        Point p1_B = new Point(line.Point1); p1_B.Translate(shift.Negative());
+                        Point p2_B = new Point(line.Point2); p2_B.Translate(shift.Negative());
                         TeklaPartBuilder.CreateLacing(p2_B, p1_B, colData.Strut, activePreset, colData.L_Offset).Insert();
                     }
 

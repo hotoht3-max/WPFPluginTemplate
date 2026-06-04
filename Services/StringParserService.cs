@@ -1,29 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Tekla.Extension; // <--- ОБЯЗАТЕЛЬНО ДОБАВЛЯЕМ
 
 namespace Apibim.Plugins.BuiltUpColumn.Services
 {
     public static class StringParserService
     {
+        // 1. ПАРСЕР ШАГОВ (Заменен на мощь Tekla.Extension)
         public static List<double> ParseManualStep(string input)
         {
             var steps = new List<double>();
             if (string.IsNullOrWhiteSpace(input)) return steps;
 
-            var tokens = input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var token in tokens)
+            try
             {
-                if (token.Contains("*"))
-                {
-                    var parts = token.Split('*');
-                    if (parts.Length == 2 && int.TryParse(parts[0], out int count) && double.TryParse(parts[1], out double val))
-                    {
-                        for (int i = 0; i < count; i++) steps.Add(val);
-                    }
-                }
-                else if (double.TryParse(token, out double val)) steps.Add(val);
+                // Метод GetDistances сам распарсит "3*200 150" и переведет в [200, 200, 200, 150]
+                steps = input.GetDistances().ToList();
             }
+            catch
+            {
+                // Защита: если ввели абракадабру, вернем пустой список, чтобы колонна не упала
+            }
+
             return steps;
         }
 
