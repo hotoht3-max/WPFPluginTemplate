@@ -1,0 +1,119 @@
+﻿using Apibim.Plugins.BuiltUpColumn.Models;
+
+namespace Apibim.Plugins.BuiltUpColumn.Services
+{
+    public static class PluginDataMapper
+    {
+        public static BuiltUpColumnData Map(PluginData data)
+        {
+            // 1. СНАЧАЛА СОБИРАЕМ БАЗОВЫЙ РАСКОС (ОН БУДЕТ ДОНОРОМ)
+            var lacing = CreatePart(data.L_Profile, data.L_Material, data.L_PartPref, data.L_PartNo, data.L_AssyPref, data.L_AssyNo, data.L_Name, data.L_Class, data.L_UDA);
+
+            var colData = new BuiltUpColumnData
+            {
+                // Геометрия
+                Bcol = data.Bcol,
+                Br_Rot = data.Br_Rot,
+                Hcol_1 = data.Hcol_1,
+                Hcol_e1 = data.Hcol_e1,
+                Hcol_e2 = data.Hcol_e2,
+                Hcol_e3 = data.Hcol_e3,
+
+                // Стыки
+                SplicesText = data.SplicesText,
+                Splice1Component = data.Splice1Component,
+                Splice1Preset = data.Splice1Preset,
+                Splice2Component = data.Splice2Component,
+                Splice2Preset = data.Splice2Preset,
+                Splice2Indexes = data.Splice2Indexes,
+                Splice3Component = data.Splice3Component,
+                Splice3Preset = data.Splice3Preset,
+                Splice3Indexes = data.Splice3Indexes,
+                Splice4Component = data.Splice4Component,
+                Splice4Preset = data.Splice4Preset,
+                Splice4Indexes = data.Splice4Indexes,
+                Splice5Component = data.Splice5Component,
+                Splice5Preset = data.Splice5Preset,
+                Splice5Indexes = data.Splice5Indexes,
+
+                // Решетка
+                L_StepMode = data.L_StepMode,
+                Hr_base = data.Hr_base,
+                L_StepText = data.L_StepText,
+                L_Rasc = data.L_Rasc,
+                L_Rasc_Base = data.L_Rasc_Base,
+                L_Rasc_Top = data.L_Rasc_Top,
+                L_RascOverrides = data.L_RascOverrides,
+                L_Type = data.L_Type,
+                L_Preset = data.L_Preset,
+                L_Offset = data.L_Offset,
+
+                // Планки
+                S_Base_Preset = data.S_Base_Preset,
+                S_Top_Preset = data.S_Top_Preset,
+                S_Splice_Preset = data.S_Splice_Preset,
+                S_Preset = data.S_Preset,
+                S_NodesAngle = data.S_NodesAngle,
+                S_NodesAnglePlate = data.S_NodesAnglePlate,
+                S_NodesD1 = data.S_NodesD1,
+                S_NodesD2 = data.S_NodesD2,
+                S_NodesExcludePlate = data.S_NodesExcludePlate,
+                S_NodesExclude = data.S_NodesExclude,
+
+                // --- КОНВЕРТАЦИЯ СВОЙСТВ ДЕТАЛЕЙ ---
+                Branch = CreatePart(data.B_Profile, data.B_Material, data.B_PartPref, data.B_PartNo, data.B_AssyPref, data.B_AssyNo, data.B_Name, data.B_Class, data.B_UDA),
+                Diaphragm1 = CreatePart(data.D_Profile, data.D_Material, data.D_PartPref, data.D_PartNo, data.D_AssyPref, data.D_AssyNo, data.D_Name, data.D_Class, data.D_UDA),
+                Diaphragm2 = CreatePart(data.D2_Profile, data.D2_Material, data.D2_PartPref, data.D2_PartNo, data.D2_AssyPref, data.D2_AssyNo, data.D2_Name, data.D2_Class, data.D2_UDA),
+
+                Lacing = lacing, // Отдаем созданного донора
+
+                // --- МЕХАНИЗМ НАСЛЕДОВАНИЯ (Fallback) ---
+                LacingSplice = CreatePartWithFallback(data.LS_Profile, data.LS_Material, data.LS_PartPref, data.LS_PartNo, data.LS_AssyPref, data.LS_AssyNo, data.LS_Name, data.LS_Class, data.LS_UDA, lacing),
+                Strut = CreatePartWithFallback(data.S_Profile, data.S_Material, data.S_PartPref, data.S_PartNo, data.S_AssyPref, data.S_AssyNo, data.S_Name, data.S_Class, data.S_UDA, lacing),
+
+                GussetPlate = new PartSettings { Profile = "PL10*200", Material = "C245", Class = "99", Name = "ЛИСТ_РАСПОРКИ", PartPrefix = "пл", PartStartNo = 1, AssemblyPrefix = "", AssemblyStartNo = 1, UDA = "" }
+            };
+
+            return colData;
+        }
+
+        private static PartSettings CreatePart(string prof, string mat, string pPref, string pNo, string aPref, string aNo, string name, string cls, string uda)
+        {
+            return new PartSettings
+            {
+                Profile = prof,
+                Material = mat,
+                PartPrefix = pPref,
+                PartStartNo = ParseInt(pNo),
+                AssemblyPrefix = aPref,
+                AssemblyStartNo = ParseInt(aNo),
+                Name = name,
+                Class = cls,
+                UDA = uda
+            };
+        }
+
+        // Интеллектуальный сборщик. Если свойство пустое - берет его у fallback (донора)
+        private static PartSettings CreatePartWithFallback(string prof, string mat, string pPref, string pNo, string aPref, string aNo, string name, string cls, string uda, PartSettings fallback)
+        {
+            return new PartSettings
+            {
+                Profile = string.IsNullOrWhiteSpace(prof) ? fallback.Profile : prof,
+                Material = string.IsNullOrWhiteSpace(mat) ? fallback.Material : mat,
+                PartPrefix = string.IsNullOrWhiteSpace(pPref) ? fallback.PartPrefix : pPref,
+                PartStartNo = string.IsNullOrWhiteSpace(pNo) ? fallback.PartStartNo : ParseInt(pNo),
+                AssemblyPrefix = string.IsNullOrWhiteSpace(aPref) ? fallback.AssemblyPrefix : aPref,
+                AssemblyStartNo = string.IsNullOrWhiteSpace(aNo) ? fallback.AssemblyStartNo : ParseInt(aNo),
+                Name = string.IsNullOrWhiteSpace(name) ? fallback.Name : name,
+                Class = string.IsNullOrWhiteSpace(cls) ? fallback.Class : cls,
+                UDA = string.IsNullOrWhiteSpace(uda) ? fallback.UDA : uda
+            };
+        }
+
+        private static int ParseInt(string value, int fallback = 1)
+        {
+            if (int.TryParse(value, out int result)) return result;
+            return fallback;
+        }
+    }
+}

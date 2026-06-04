@@ -76,6 +76,7 @@
     <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="ModelPlugin.cs" />
     <Compile Include="Models\BuiltUpColumnData.cs" />
+    <Compile Include="Models\PartSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -91,9 +92,11 @@
     </Compile>
     <Compile Include="Services\ColumnGeometryBuilder.cs" />
     <Compile Include="Services\Logger.cs" />
+    <Compile Include="Services\PluginDataMapper.cs" />
     <Compile Include="Services\StringParserService.cs" />
     <Compile Include="Services\TeklaCatalogService.cs" />
     <Compile Include="Services\TeklaComponentService.cs" />
+    <Compile Include="Services\TeklaPartBuilder.cs" />
     <Compile Include="UIControls\ComponentSelectorControl.xaml.cs">
       <DependentUpon>ComponentSelectorControl.xaml</DependentUpon>
     </Compile>
