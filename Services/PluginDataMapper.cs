@@ -6,12 +6,10 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
     {
         public static BuiltUpColumnData Map(PluginData data)
         {
-            // 1. СНАЧАЛА СОБИРАЕМ БАЗОВЫЙ РАСКОС (ОН БУДЕТ ДОНОРОМ)
             var lacing = CreatePart(data.L_Profile, data.L_Material, data.L_PartPref, data.L_PartNo, data.L_AssyPref, data.L_AssyNo, data.L_Name, data.L_Class, data.L_UDA);
 
             var colData = new BuiltUpColumnData
             {
-                // Геометрия
                 Bcol = data.Bcol,
                 Br_Rot = data.Br_Rot,
                 Hcol_1 = data.Hcol_1,
@@ -19,7 +17,6 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                 Hcol_e2 = data.Hcol_e2,
                 Hcol_e3 = data.Hcol_e3,
 
-                // Стыки
                 SplicesText = data.SplicesText,
                 Splice1Component = data.Splice1Component,
                 Splice1Preset = data.Splice1Preset,
@@ -36,9 +33,7 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                 Splice5Preset = data.Splice5Preset,
                 Splice5Indexes = data.Splice5Indexes,
 
-                // Решетка
                 L_StepMode = data.L_StepMode,
-                Hr_base = data.Hr_base,
                 L_StepText = data.L_StepText,
                 L_Rasc = data.L_Rasc,
                 L_Rasc_Base = data.L_Rasc_Base,
@@ -48,7 +43,13 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                 L_Preset = data.L_Preset,
                 L_Offset = data.L_Offset,
 
-                // Планки
+                // --- МОСТ ALPHA 1.2 ЗАМКНУТ ---
+                L_Invert = data.L_Invert,
+                L_Exclude = data.L_Exclude ?? "",
+                L_MinRemainder = data.L_MinRemainder,
+                L_RemainPanels = data.L_RemainPanels,
+                S_KeyElev_Preset = data.S_KeyElev_Preset,
+
                 S_Base_Preset = data.S_Base_Preset,
                 S_Top_Preset = data.S_Top_Preset,
                 S_Splice_Preset = data.S_Splice_Preset,
@@ -60,17 +61,13 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                 S_NodesExcludePlate = data.S_NodesExcludePlate,
                 S_NodesExclude = data.S_NodesExclude,
 
-                // --- КОНВЕРТАЦИЯ СВОЙСТВ ДЕТАЛЕЙ ---
                 Branch = CreatePart(data.B_Profile, data.B_Material, data.B_PartPref, data.B_PartNo, data.B_AssyPref, data.B_AssyNo, data.B_Name, data.B_Class, data.B_UDA),
                 Diaphragm1 = CreatePart(data.D_Profile, data.D_Material, data.D_PartPref, data.D_PartNo, data.D_AssyPref, data.D_AssyNo, data.D_Name, data.D_Class, data.D_UDA),
                 Diaphragm2 = CreatePart(data.D2_Profile, data.D2_Material, data.D2_PartPref, data.D2_PartNo, data.D2_AssyPref, data.D2_AssyNo, data.D2_Name, data.D2_Class, data.D2_UDA),
 
-                Lacing = lacing, // Отдаем созданного донора
-
-                // --- МЕХАНИЗМ НАСЛЕДОВАНИЯ (Fallback) ---
+                Lacing = lacing,
                 LacingSplice = CreatePartWithFallback(data.LS_Profile, data.LS_Material, data.LS_PartPref, data.LS_PartNo, data.LS_AssyPref, data.LS_AssyNo, data.LS_Name, data.LS_Class, data.LS_UDA, lacing),
                 Strut = CreatePartWithFallback(data.S_Profile, data.S_Material, data.S_PartPref, data.S_PartNo, data.S_AssyPref, data.S_AssyNo, data.S_Name, data.S_Class, data.S_UDA, lacing),
-
                 GussetPlate = new PartSettings { Profile = "PL10*200", Material = "C245", Class = "99", Name = "ЛИСТ_РАСПОРКИ", PartPrefix = "пл", PartStartNo = 1, AssemblyPrefix = "", AssemblyStartNo = 1, UDA = "" }
             };
 
@@ -79,21 +76,9 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
 
         private static PartSettings CreatePart(string prof, string mat, string pPref, string pNo, string aPref, string aNo, string name, string cls, string uda)
         {
-            return new PartSettings
-            {
-                Profile = prof,
-                Material = mat,
-                PartPrefix = pPref,
-                PartStartNo = ParseInt(pNo),
-                AssemblyPrefix = aPref,
-                AssemblyStartNo = ParseInt(aNo),
-                Name = name,
-                Class = cls,
-                UDA = uda
-            };
+            return new PartSettings { Profile = prof, Material = mat, PartPrefix = pPref, PartStartNo = ParseInt(pNo), AssemblyPrefix = aPref, AssemblyStartNo = ParseInt(aNo), Name = name, Class = cls, UDA = uda };
         }
 
-        // Интеллектуальный сборщик. Если свойство пустое - берет его у fallback (донора)
         private static PartSettings CreatePartWithFallback(string prof, string mat, string pPref, string pNo, string aPref, string aNo, string name, string cls, string uda, PartSettings fallback)
         {
             return new PartSettings
@@ -110,10 +95,6 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
             };
         }
 
-        private static int ParseInt(string value, int fallback = 1)
-        {
-            if (int.TryParse(value, out int result)) return result;
-            return fallback;
-        }
+        private static int ParseInt(string value, int fallback = 1) { return int.TryParse(value, out int result) ? result : fallback; }
     }
 }

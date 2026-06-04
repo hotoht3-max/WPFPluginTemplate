@@ -9,7 +9,6 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
 {
     public static class ColumnGeometryBuilder
     {
-        // 1. РАЗБИВКА ВЕТВЕЙ СО СТЫКАМИ
         public static List<LineSegment> GetBranchLines(BuiltUpColumnData data)
         {
             List<LineSegment> lines = new List<LineSegment>();
@@ -18,7 +17,6 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
             double startZ = -data.Hcol_e1;
             double endZ = data.Hcol_1;
 
-            // Строгая математика: берем только те стыки, которые лежат строго внутри колонны
             List<double> splices = StringParserService.ParseSplices(data.SplicesText)
                 .Where(s => s > startZ && s < endZ)
                 .OrderBy(s => s).ToList();
@@ -27,26 +25,21 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
             zPoints.AddRange(splices);
             zPoints.Add(endZ);
 
-            // Ветвь 1
             for (int i = 0; i < zPoints.Count - 1; i++)
             {
                 Point pStart = new Point(data.BasePoint1); pStart.Translate(upVector * zPoints[i]);
                 Point pEnd = new Point(data.BasePoint1); pEnd.Translate(upVector * zPoints[i + 1]);
                 lines.Add(new LineSegment(pStart, pEnd));
             }
-
-            // Ветвь 2
             for (int i = 0; i < zPoints.Count - 1; i++)
             {
                 Point pStart = new Point(data.BasePoint2); pStart.Translate(upVector * zPoints[i]);
                 Point pEnd = new Point(data.BasePoint2); pEnd.Translate(upVector * zPoints[i + 1]);
                 lines.Add(new LineSegment(pStart, pEnd));
             }
-
             return lines;
         }
 
-        // 2. АБСОЛЮТНЫЕ Z-ОТМЕТКИ УЗЛОВ
         public static List<double> GetZNodes(BuiltUpColumnData data)
         {
             double startZ = -data.Hcol_e1 + data.Hcol_e2;
@@ -57,34 +50,84 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
             if (zoneLength <= 0) return zNodes;
 
             List<double> finalSteps = new List<double>();
+            var tokens = data.L_StepText.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-            if (data.L_StepMode == 0)
+            if (data.L_StepMode == 0) // 0: РАВНОМЕРНЫЙ (Шаг - Отметка)
             {
-                if (data.Hr_base > 0)
+                double currentZ = startZ;
+                int i = 0;
+                double lastStep = 1200; // Резервный шаг на случай ошибки
+
+                while (currentZ < endZ - 0.1)
                 {
-                    int panelsCount = (int)Math.Round(zoneLength / data.Hr_base);
-                    if (panelsCount < 1) panelsCount = 1;
-                    double step = zoneLength / panelsCount;
-                    for (int i = 0; i < panelsCount; i++) finalSteps.Add(step);
+                    double step = lastStep;
+                    double targetZ = endZ;
+
+                    if (i < tokens.Length)
+                    {
+                        if (double.TryParse(tokens[i], out double parsedStep) && parsedStep > 0)
+                        {
+                            step = parsedStep;
+                            lastStep = step;
+                            i++;
+
+                            if (i < tokens.Length && double.TryParse(tokens[i], out double elev))
+                            {
+                                targetZ = Math.Min(elev, endZ);
+                                i++;
+                            }
+                        }
+                        else i++;
+                    }
+
+                    double len = targetZ - currentZ;
+                    if (len > 0)
+                    {
+                        int panels = (int)Math.Round(len / step);
+                        if (panels < 1) panels = 1;
+                        double actualStep = Math.Round((len / panels) / 10.0) * 10.0;
+                        if (actualStep <= 0) actualStep = 10.0;
+
+                        double sum = 0;
+                        for (int p = 0; p < panels - 1; p++)
+                        {
+                            finalSteps.Add(actualStep);
+                            sum += actualStep;
+                        }
+                        finalSteps.Add(len - sum); // Хвост абсорбируется верхней панелью зоны
+                        currentZ = targetZ;
+                    }
+                    else break;
                 }
             }
-            else if (data.L_StepMode == 1)
+            else if (data.L_StepMode == 1) // 1: МАССИВ (с возвратом старой логики)
             {
                 var parsedSteps = StringParserService.ParseManualStep(data.L_StepText);
                 if (parsedSteps.Count == 0) parsedSteps.Add(1200.0);
 
                 double sum = 0;
                 int i = 0;
+                double minRem = data.L_MinRemainder > 0 ? data.L_MinRemainder : data.Bcol;
+                int remPanels = data.L_RemainPanels > 0 ? data.L_RemainPanels : 2;
+
                 while (sum < zoneLength - 0.1)
                 {
                     double s = i < parsedSteps.Count ? parsedSteps[i] : parsedSteps.Last();
                     double remain = zoneLength - sum;
 
-                    if (remain - s > 0.1 && remain - s < data.Bcol)
+                    // Умный остаток срабатывает, если хвост меньше ограничения
+                    if (remain - s > 0.1 && remain - s < minRem)
                     {
-                        double p1 = Math.Round((remain / 2.0) / 10.0) * 10.0;
-                        finalSteps.Add(p1);
-                        finalSteps.Add(remain - p1);
+                        double actualStep = Math.Round((remain / remPanels) / 10.0) * 10.0;
+                        if (actualStep <= 0) actualStep = 10.0;
+
+                        double tempSum = 0;
+                        for (int p = 0; p < remPanels - 1; p++)
+                        {
+                            finalSteps.Add(actualStep);
+                            tempSum += actualStep;
+                        }
+                        finalSteps.Add(remain - tempSum);
                         break;
                     }
                     if (remain <= s + 0.1)
@@ -97,25 +140,63 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                     i++;
                 }
             }
-            else if (data.L_StepMode == 2)
+            else if (data.L_StepMode == 2) // 2: КОЛ-ВО ПАНЕЛЕЙ И ОТМЕТКИ
             {
-                finalSteps = StringParserService.ParseCountAndElevation(data.L_StepText, startZ, endZ);
-                double sum = 0;
-                foreach (var s in finalSteps) sum += s;
-                if (zoneLength - sum > 1.0) finalSteps.Add(zoneLength - sum);
+                double currentZ = startZ;
+                int i = 0;
+                int lastCount = 1;
+
+                while (currentZ < endZ - 0.1)
+                {
+                    int count = lastCount;
+                    double targetZ = endZ;
+
+                    if (i < tokens.Length)
+                    {
+                        if (int.TryParse(tokens[i], out int parsedCount) && parsedCount > 0)
+                        {
+                            count = parsedCount;
+                            i++;
+
+                            if (i < tokens.Length && double.TryParse(tokens[i], out double elev))
+                            {
+                                targetZ = Math.Min(elev, endZ);
+                                i++;
+                            }
+                        }
+                        else i++;
+                    }
+                    else count = 1; // Если отметки закончились, оставшаяся часть - 1 панель
+
+                    double len = targetZ - currentZ;
+                    if (len > 0)
+                    {
+                        double actualStep = Math.Round((len / count) / 10.0) * 10.0;
+                        if (actualStep <= 0) actualStep = 10.0;
+
+                        double sum = 0;
+                        for (int p = 0; p < count - 1; p++)
+                        {
+                            finalSteps.Add(actualStep);
+                            sum += actualStep;
+                        }
+                        finalSteps.Add(len - sum);
+                        currentZ = targetZ;
+                    }
+                    else break;
+                }
             }
 
-            double currentZ = startZ;
+            double currentZNode = startZ;
             foreach (var step in finalSteps)
             {
-                currentZ += step;
-                zNodes.Add(currentZ);
+                currentZNode += step;
+                zNodes.Add(currentZNode);
             }
 
             return zNodes;
         }
 
-        // 3. ГЕНЕРАЦИЯ РАСКОСОВ С УМНОЙ РАСЦЕНТРОВКОЙ
         public static List<LineSegment> GetLacingLines(BuiltUpColumnData data, List<double> zNodes)
         {
             List<LineSegment> lines = new List<LineSegment>();
@@ -124,7 +205,9 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
             Vector upVector = VectorExtension.Z;
             var overrides = StringParserService.ParseRascOverrides(data.L_RascOverrides, zNodes.Count);
 
-            bool toggleToRight = true;
+            // ИНВЕРСИЯ (Абсолютно изолированная логика)
+            bool toggleToRight = data.L_Invert == 0;
+
             for (int i = 0; i < zNodes.Count - 1; i++)
             {
                 Point currentLeft = new Point(data.BasePoint1); currentLeft.Translate(upVector * zNodes[i]);
@@ -168,7 +251,6 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
             return data.L_Rasc;
         }
 
-        // 4. ТЕОРЕТИЧЕСКИЕ ОСИ ПЛАНОК
         public static List<LineSegment> GetStrutLines(BuiltUpColumnData data, List<double> zNodes)
         {
             List<LineSegment> lines = new List<LineSegment>();
@@ -184,7 +266,6 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
             return lines;
         }
 
-        // 5. ПОИСК УЗЛОВ ВОКРУГ СТЫКА
         public static HashSet<int> GetSpliceAdjacentNodes(List<double> zNodes, List<double> splices)
         {
             var result = new HashSet<int>();
@@ -198,14 +279,43 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                 for (int i = 0; i < zNodes.Count; i++)
                 {
                     double diff = zNodes[i] - splice;
-                    // Ищем ближайший снизу
                     if (diff < -0.1 && Math.Abs(diff) < minDiffBelow) { minDiffBelow = Math.Abs(diff); idxBelow = i; }
-                    // Ищем ближайший сверху
                     if (diff > 0.1 && Math.Abs(diff) < minDiffAbove) { minDiffAbove = Math.Abs(diff); idxAbove = i; }
                 }
 
                 if (idxBelow != -1) result.Add(idxBelow);
                 if (idxAbove != -1) result.Add(idxAbove);
+            }
+            return result;
+        }
+
+        // ПОИСК КЛЮЧЕВЫХ УЗЛОВ (С ювелирной точностью)
+        public static HashSet<int> GetKeyElevationNodes(BuiltUpColumnData data, List<double> zNodes)
+        {
+            var result = new HashSet<int>();
+            if (data.L_StepMode == 1) return result; // В Режиме 1 ключевых отметок нет
+
+            var tokens = data.L_StepText.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var keys = new HashSet<double>();
+
+            int i = 0;
+            while (i < tokens.Length)
+            {
+                i++; // Пропускаем шаг или кол-во
+                if (i < tokens.Length && double.TryParse(tokens[i], out double elev))
+                {
+                    keys.Add(elev);
+                    i++;
+                }
+            }
+
+            // Ищем совпадения. Благодаря абсорбции остатка в верхних панелях, узлы будут стоять точно на отметках
+            for (int j = 0; j < zNodes.Count; j++)
+            {
+                foreach (var key in keys)
+                {
+                    if (Math.Abs(zNodes[j] - key) < 1.0) result.Add(j);
+                }
             }
             return result;
         }

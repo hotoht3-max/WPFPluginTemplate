@@ -39,6 +39,13 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresField("L_Preset")] public int L_Preset = 1;
         [StructuresField("L_Offset")] public double L_Offset = 0.0;
 
+        // --- НОВЫЕ СВОЙСТВА ALPHA 1.2 ---
+        [StructuresField("L_Invert")] public int L_Invert = 0;
+        [StructuresField("L_Exclude")] public string L_Exclude = "";
+        [StructuresField("L_MinRemainder")] public double L_MinRemainder = 0.0;
+        [StructuresField("L_RemainPanels")] public int L_RemainPanels = 2;
+        [StructuresField("S_KeyElev_Preset")] public int S_KeyElev_Preset = 0;
+
         // --- ПЛАНКИ (Правила и слоты) ---
         [StructuresField("S_Base_Preset")] public int S_Base_Preset = 2;
         [StructuresField("S_Top_Preset")] public int S_Top_Preset = 2;
@@ -163,23 +170,26 @@ namespace Apibim.Plugins.BuiltUpColumn
 
         private void BuildSplices(List<Beam> branches, BuiltUpColumnData colData)
         {
-            var idx2 = ParseIndexes(colData.Splice2Indexes);
-            var idx3 = ParseIndexes(colData.Splice3Indexes);
-            var idx4 = ParseIndexes(colData.Splice4Indexes);
-            var idx5 = ParseIndexes(colData.Splice5Indexes);
-
             int branchesPerSide = branches.Count / 2;
-            for (int i = 0; i < branchesPerSide - 1; i++)
+            int totalSplices = branchesPerSide - 1;
+
+            // ИСПОЛЬЗУЕМ УМНЫЙ ПАРСЕР ДЛЯ СТЫКОВ (Поддерживает диапазоны N-N)
+            // Парсер возвращает 0-based индексы, поэтому дальше будем сверять их прямо с `i`
+            var idx2 = StringParserService.ParseNodes(colData.Splice2Indexes, totalSplices);
+            var idx3 = StringParserService.ParseNodes(colData.Splice3Indexes, totalSplices);
+            var idx4 = StringParserService.ParseNodes(colData.Splice4Indexes, totalSplices);
+            var idx5 = StringParserService.ParseNodes(colData.Splice5Indexes, totalSplices);
+
+            for (int i = 0; i < totalSplices; i++)
             {
-                int currentLevel = i + 1;
                 string activeComp = colData.Splice1Component;
                 string activePreset = colData.Splice1Preset;
 
-                // Каскад переопределений
-                if (idx2.Contains(currentLevel)) { activeComp = colData.Splice2Component; activePreset = colData.Splice2Preset; }
-                if (idx3.Contains(currentLevel)) { activeComp = colData.Splice3Component; activePreset = colData.Splice3Preset; }
-                if (idx4.Contains(currentLevel)) { activeComp = colData.Splice4Component; activePreset = colData.Splice4Preset; }
-                if (idx5.Contains(currentLevel)) { activeComp = colData.Splice5Component; activePreset = colData.Splice5Preset; }
+                // Каскад переопределений (Используем `i` вместо `currentLevel`)
+                if (idx2.Contains(i)) { activeComp = colData.Splice2Component; activePreset = colData.Splice2Preset; }
+                if (idx3.Contains(i)) { activeComp = colData.Splice3Component; activePreset = colData.Splice3Preset; }
+                if (idx4.Contains(i)) { activeComp = colData.Splice4Component; activePreset = colData.Splice4Preset; }
+                if (idx5.Contains(i)) { activeComp = colData.Splice5Component; activePreset = colData.Splice5Preset; }
 
                 if (!string.IsNullOrWhiteSpace(activeComp))
                 {
@@ -191,9 +201,17 @@ namespace Apibim.Plugins.BuiltUpColumn
 
         private void BuildLacing(List<LineSegment> lacingLines, List<double> splices, BuiltUpColumnData colData, Vector localY, double autoBaseDist)
         {
-            foreach (var line in lacingLines)
+            // ПАРСИМ СПИСОК УДАЛЯЕМЫХ РАСКОСОВ (Механика п. 4.4)
+            var excludeList = StringParserService.ParseNodes(colData.L_Exclude, lacingLines.Count);
+
+            for (int i = 0; i < lacingLines.Count; i++)
             {
+                // ЗАЩИТА: Если раскос в списке на удаление, просто переходим к следующему
+                if (excludeList.Contains(i)) continue;
+
+                var line = lacingLines[i];
                 bool isSpliceDiagonal = false;
+
                 double minZ = Math.Min(line.Point1.Z, line.Point2.Z);
                 double maxZ = Math.Max(line.Point1.Z, line.Point2.Z);
 
@@ -213,16 +231,16 @@ namespace Apibim.Plugins.BuiltUpColumn
                 {
                     TeklaPartBuilder.CreateLacing(line.Point1, line.Point2, settings, activePreset, colData.L_Offset).Insert();
                 }
-                else // Сдвоенная решетка (Используем Tekla.Extension!)
+                else // Сдвоенная решетка (Tekla.Extension)
                 {
                     Vector shift = localY * (autoBaseDist / 2.0);
 
-                    // Ветвь А (Сдвиг по вектору)
+                    // Ветвь А
                     Point p1_A = new Point(line.Point1); p1_A.Translate(shift);
                     Point p2_A = new Point(line.Point2); p2_A.Translate(shift);
                     TeklaPartBuilder.CreateLacing(p1_A, p2_A, settings, activePreset, colData.L_Offset).Insert();
 
-                    // Ветвь Б (Сдвиг в обратную сторону через .Negative())
+                    // Ветвь Б
                     Point p1_B = new Point(line.Point1); p1_B.Translate(shift.Negative());
                     Point p2_B = new Point(line.Point2); p2_B.Translate(shift.Negative());
                     TeklaPartBuilder.CreateLacing(p2_B, p1_B, settings, activePreset, colData.L_Offset).Insert();
@@ -232,38 +250,45 @@ namespace Apibim.Plugins.BuiltUpColumn
 
         private void BuildStrutsAndDiaphragms(List<LineSegment> strutLines, List<double> zNodes, List<double> splices, BuiltUpColumnData colData, Vector localY, double autoBaseDist)
         {
-            var idxAngle = ParseIndexes(colData.S_NodesAngle);
-            var idxAnglePlate = ParseIndexes(colData.S_NodesAnglePlate);
-            var idxD1 = ParseIndexes(colData.S_NodesD1);
-            var idxD2 = ParseIndexes(colData.S_NodesD2);
-            var idxExcPlate = ParseIndexes(colData.S_NodesExcludePlate);
-            var idxExclude = ParseIndexes(colData.S_NodesExclude);
-
             int totalNodes = strutLines.Count;
+
+            // ИСПОЛЬЗУЕМ УМНЫЙ ПАРСЕР (Поддерживает N-N диапазоны!)
+            // Парсер возвращает 0-based индексы (начинаются с 0), поэтому сверяем их напрямую с `i`
+            var idxAngle = StringParserService.ParseNodes(colData.S_NodesAngle, totalNodes);
+            var idxAnglePlate = StringParserService.ParseNodes(colData.S_NodesAnglePlate, totalNodes);
+            var idxD1 = StringParserService.ParseNodes(colData.S_NodesD1, totalNodes);
+            var idxD2 = StringParserService.ParseNodes(colData.S_NodesD2, totalNodes);
+            var idxExcPlate = StringParserService.ParseNodes(colData.S_NodesExcludePlate, totalNodes);
+            var idxExclude = StringParserService.ParseNodes(colData.S_NodesExclude, totalNodes);
+
             var spliceNodes = ColumnGeometryBuilder.GetSpliceAdjacentNodes(zNodes, splices);
+
+            // Внедрение правила: Планки на ключевых отметках
+            var keyElevNodes = ColumnGeometryBuilder.GetKeyElevationNodes(colData, zNodes);
 
             for (int i = 0; i < totalNodes; i++)
             {
-                int currentLevel = i + 1;
+                int currentLevel = i + 1; // 1-based номер узла (только для вывода текста ошибок)
                 int slotType = 0;
 
                 // 1. ФОНОВАЯ ЗАЛИВКА
                 if (i == 0) slotType = colData.S_Base_Preset;
                 else if (i == totalNodes - 1) slotType = colData.S_Top_Preset;
                 else if (spliceNodes.Contains(i)) slotType = colData.S_Splice_Preset;
+                else if (keyElevNodes.Contains(i)) slotType = colData.S_KeyElev_Preset; // <--- НОВОЕ КАСКАДНОЕ ПРАВИЛО!
                 else slotType = colData.S_Preset;
 
-                // 2. РУЧНОЕ СОЗИДАНИЕ
-                if (idxAngle.Contains(currentLevel)) slotType = 1;
-                if (idxAnglePlate.Contains(currentLevel)) slotType = 2;
-                if (idxD1.Contains(currentLevel)) slotType = 3;
-                if (idxD2.Contains(currentLevel)) slotType = 4;
+                // 2. РУЧНОЕ СОЗИДАНИЕ (Используем `i` для сверки с массивами 0-based индексов)
+                if (idxAngle.Contains(i)) slotType = 1;
+                if (idxAnglePlate.Contains(i)) slotType = 2;
+                if (idxD1.Contains(i)) slotType = 3;
+                if (idxD2.Contains(i)) slotType = 4;
 
                 // 3. ДЕГРАДАЦИЯ (Снос листа)
-                if (idxExcPlate.Contains(currentLevel) && slotType == 2) slotType = 1;
+                if (idxExcPlate.Contains(i) && slotType == 2) slotType = 1;
 
                 // 4. АННИГИЛЯЦИЯ
-                if (idxExclude.Contains(currentLevel)) slotType = 0;
+                if (idxExclude.Contains(i)) slotType = 0;
 
                 if (slotType == 0) continue;
 
@@ -271,7 +296,6 @@ namespace Apibim.Plugins.BuiltUpColumn
 
                 if (slotType == 1 || slotType == 2)
                 {
-                    // --- ЗАЩИТА ОТ ДУРАКА ---
                     if (string.IsNullOrWhiteSpace(colData.Strut.Profile))
                         throw new Exception($"Узел {currentLevel}: Назначена Распорка, но её 'Профиль' пуст во вкладке Атрибуты!");
 
@@ -283,7 +307,6 @@ namespace Apibim.Plugins.BuiltUpColumn
                     }
                     else
                     {
-                        // Сдвоенная распорка (Используем Tekla.Extension!)
                         Vector shift = localY * (autoBaseDist / 2.0);
 
                         Point p1_A = new Point(line.Point1); p1_A.Translate(shift);
@@ -302,7 +325,6 @@ namespace Apibim.Plugins.BuiltUpColumn
                 }
                 else if (slotType == 3)
                 {
-                    // --- ЗАЩИТА ОТ ДУРАКА ---
                     if (string.IsNullOrWhiteSpace(colData.Diaphragm1.Profile))
                         throw new Exception($"Узел {currentLevel}: Назначена Диафрагма (Тип 1), но её 'Профиль' пуст во вкладке Атрибуты!");
 
@@ -310,25 +332,12 @@ namespace Apibim.Plugins.BuiltUpColumn
                 }
                 else if (slotType == 4)
                 {
-                    // --- ЗАЩИТА ОТ ДУРАКА ---
                     if (string.IsNullOrWhiteSpace(colData.Diaphragm2.Profile))
                         throw new Exception($"Узел {currentLevel}: Назначена Диафрагма (Тип 2), но её 'Профиль' пуст во вкладке Атрибуты!");
 
                     TeklaPartBuilder.CreateDiaphragm(line.Point1, line.Point2, colData.Diaphragm2).Insert();
                 }
             }
-        }
-
-        private HashSet<int> ParseIndexes(string text)
-        {
-            var set = new HashSet<int>();
-            if (string.IsNullOrWhiteSpace(text)) return set;
-            var parts = text.Split(new[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var p in parts)
-            {
-                if (int.TryParse(p, out int val)) set.Add(val);
-            }
-            return set;
         }
     }
 }

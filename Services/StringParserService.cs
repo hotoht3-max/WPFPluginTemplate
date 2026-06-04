@@ -1,83 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Tekla.Extension; // <--- ОБЯЗАТЕЛЬНО ДОБАВЛЯЕМ
 
 namespace Apibim.Plugins.BuiltUpColumn.Services
 {
     public static class StringParserService
     {
-        // 1. ПАРСЕР ШАГОВ (Заменен на мощь Tekla.Extension)
+        // 1. ПАРСЕР МАССИВОВ (Альфа 1.1) - Строгий и рабочий
         public static List<double> ParseManualStep(string input)
         {
             var steps = new List<double>();
             if (string.IsNullOrWhiteSpace(input)) return steps;
 
-            try
-            {
-                // Метод GetDistances сам распарсит "3*200 150" и переведет в [200, 200, 200, 150]
-                steps = input.GetDistances().ToList();
-            }
-            catch
-            {
-                // Защита: если ввели абракадабру, вернем пустой список, чтобы колонна не упала
-            }
-
-            return steps;
-        }
-
-        // Теперь принимает абсолютные отметки начала и конца зоны решетки
-        public static List<double> ParseCountAndElevation(string input, double startElev, double endElev)
-        {
-            var steps = new List<double>();
-            if (string.IsNullOrWhiteSpace(input)) return steps;
-
             var tokens = input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            double currentElev = startElev;
-            int i = 0;
-
-            while (i < tokens.Length)
+            foreach (var token in tokens)
             {
-                if (int.TryParse(tokens[i], out int count))
+                if (token.Contains("*"))
                 {
-                    i++;
-                    double targetElev = endElev;
-
-                    if (i < tokens.Length && double.TryParse(tokens[i], out double parsedElev))
+                    var parts = token.Split('*');
+                    if (parts.Length == 2 && int.TryParse(parts[0], out int count) && double.TryParse(parts[1], out double val))
                     {
-                        targetElev = Math.Min(parsedElev, endElev);
-                        i++;
+                        for (int i = 0; i < count; i++) steps.Add(val);
                     }
-
-                    double zoneLen = targetElev - currentElev;
-                    if (zoneLen > 0 && count > 0)
-                    {
-                        if (count == 1) steps.Add(zoneLen);
-                        else
-                        {
-                            double roundedStep = Math.Round((zoneLen / count) / 10.0) * 10.0;
-                            if (roundedStep <= 0) roundedStep = 10.0;
-
-                            for (int j = 0; j < count - 1; j++) steps.Add(roundedStep);
-                            steps.Add(zoneLen - (roundedStep * (count - 1)));
-                        }
-                    }
-                    currentElev = targetElev;
                 }
-                else i++;
+                else if (double.TryParse(token, out double val)) steps.Add(val);
             }
             return steps;
         }
 
+        // 2. УНИВЕРСАЛЬНЫЙ ПАРСЕР УЗЛОВ (Поддерживает N-N)
         public static HashSet<int> ParseNodes(string input, int maxNodes)
         {
             var nodes = new HashSet<int>();
             if (string.IsNullOrWhiteSpace(input)) return nodes;
 
-            var tokens = input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var tokens = input.Split(new[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var token in tokens)
             {
-                if (int.TryParse(token, out int nodeIndex) && nodeIndex >= 1 && nodeIndex <= maxNodes)
+                if (token.Contains("-"))
+                {
+                    var parts = token.Split('-');
+                    if (parts.Length == 2 && int.TryParse(parts[0], out int start) && int.TryParse(parts[1], out int end))
+                    {
+                        int min = Math.Min(start, end);
+                        int max = Math.Max(start, end);
+                        for (int i = min; i <= max; i++)
+                        {
+                            if (i >= 1 && i <= maxNodes) nodes.Add(i - 1);
+                        }
+                    }
+                }
+                else if (int.TryParse(token, out int nodeIndex) && nodeIndex >= 1 && nodeIndex <= maxNodes)
                 {
                     nodes.Add(nodeIndex - 1);
                 }
@@ -85,7 +58,7 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
             return nodes;
         }
 
-        // Парсер отметок стыков ветвей
+        // 3. ПАРСЕР СТЫКОВ ВЕТВЕЙ
         public static List<double> ParseSplices(string input)
         {
             var splices = new List<double>();
@@ -99,31 +72,53 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
             return splices;
         }
 
-        // Парсер исключений расцентровок (Узел:Вверх/Вниз)
+        // 4. ПАРСЕР РАСЦЕНТРОВОК (Поддерживает диапазоны N-N:50/100)
         public static Dictionary<int, (double Up, double Down)> ParseRascOverrides(string input, int maxNodes)
         {
             var dict = new Dictionary<int, (double Up, double Down)>();
             if (string.IsNullOrWhiteSpace(input)) return dict;
 
-            var tokens = input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var tokens = input.Split(new[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var token in tokens)
             {
                 if (token.Contains(":"))
                 {
                     var parts = token.Split(':');
-                    if (parts.Length == 2 && int.TryParse(parts[0], out int nodeIndex))
+                    if (parts.Length == 2)
                     {
-                        int idx = nodeIndex - 1;
-                        if (idx >= 0 && idx < maxNodes)
+                        var nodesDef = parts[0];
+                        var vals = parts[1].Split('/');
+                        double up = 0, down = 0;
+                        bool validVals = false;
+
+                        if (vals.Length == 2 && double.TryParse(vals[0], out up) && double.TryParse(vals[1], out down))
+                            validVals = true;
+                        else if (vals.Length == 1 && double.TryParse(vals[0], out double val))
                         {
-                            var vals = parts[1].Split('/');
-                            if (vals.Length == 2 && double.TryParse(vals[0], out double up) && double.TryParse(vals[1], out double down))
+                            up = down = val;
+                            validVals = true;
+                        }
+
+                        if (validVals)
+                        {
+                            if (nodesDef.Contains("-"))
                             {
-                                dict[idx] = (up, down);
+                                var rangeParts = nodesDef.Split('-');
+                                if (rangeParts.Length == 2 && int.TryParse(rangeParts[0], out int start) && int.TryParse(rangeParts[1], out int end))
+                                {
+                                    int min = Math.Min(start, end);
+                                    int max = Math.Max(start, end);
+                                    for (int i = min; i <= max; i++)
+                                    {
+                                        int idx = i - 1;
+                                        if (idx >= 0 && idx < maxNodes) dict[idx] = (up, down);
+                                    }
+                                }
                             }
-                            else if (vals.Length == 1 && double.TryParse(vals[0], out double val))
+                            else if (int.TryParse(nodesDef, out int nodeIndex))
                             {
-                                dict[idx] = (val, val); // Если указано одно число (например для базы)
+                                int idx = nodeIndex - 1;
+                                if (idx >= 0 && idx < maxNodes) dict[idx] = (up, down);
                             }
                         }
                     }

@@ -37,6 +37,43 @@ namespace Apibim.Plugins.BuiltUpColumn
         private string _ls_Profile = ""; private string _ls_Material = ""; private string _ls_AssyPref = ""; private string _ls_AssyNo = ""; private string _ls_PartPref = "рс"; private string _ls_PartNo = "1"; private string _ls_Name = "РАСКОС СТЫКОВОЙ"; private string _ls_Class = "3"; private string _ls_uda = "";
         private string _s_Profile = ""; private string _s_Material = ""; private string _s_AssyPref = ""; private string _s_AssyNo = ""; private string _s_PartPref = "рп"; private string _s_PartNo = "1"; private string _s_Name = "РАСПОРКА"; private string _s_Class = "4"; private string _s_uda = "";
 
+        // --- НОВЫЕ СВОЙСТВА ALPHA 1.2 ---
+
+        private int _l_Invert;
+        public int L_Invert
+        {
+            get { return _l_Invert; }
+            set { _l_Invert = value; OnPropertyChanged(); }
+        }
+
+        private string _l_Exclude;
+        public string L_Exclude
+        {
+            get { return _l_Exclude; }
+            set { _l_Exclude = value; OnPropertyChanged(); }
+        }
+
+        private double _l_MinRemainder;
+        public double L_MinRemainder
+        {
+            get { return _l_MinRemainder; }
+            set { _l_MinRemainder = value; OnPropertyChanged(); }
+        }
+
+        private int _l_RemainPanels;
+        public int L_RemainPanels
+        {
+            get { return _l_RemainPanels; }
+            set { _l_RemainPanels = value; OnPropertyChanged(); }
+        }
+
+        private int _s_KeyElev_Preset;
+        public int S_KeyElev_Preset
+        {
+            get { return _s_KeyElev_Preset; }
+            set { _s_KeyElev_Preset = value; OnPropertyChanged(); }
+        }
+
         [StructuresDialog("Bcol", typeof(TD.Double))] public double Bcol { get => _bcol; set => Set(ref _bcol, value); }
         [StructuresDialog("Br_Rot", typeof(TD.Double))] public double Br_Rot { get => _br_Rot; set => Set(ref _br_Rot, value); }
         [StructuresDialog("Hcol_1", typeof(TD.Double))] public double Hcol_1 { get => _hcol_1; set => Set(ref _hcol_1, value); }
