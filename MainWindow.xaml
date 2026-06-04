@@ -40,7 +40,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <UIControls:WpfSaveLoad Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,5,0,5"/>
+        <localUI:HeaderSystemControl Grid.Row="0" Margin="0,5,0,5"/>
 
         <TabControl Grid.Row="1" Margin="5">
 
