@@ -56,7 +56,7 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
             {
                 double currentZ = startZ;
                 int i = 0;
-                double lastStep = 1200; // Резервный шаг на случай ошибки
+                double lastStep = 1200;
 
                 while (currentZ < endZ - 0.1)
                 {
@@ -94,31 +94,45 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                             finalSteps.Add(actualStep);
                             sum += actualStep;
                         }
-                        finalSteps.Add(len - sum); // Хвост абсорбируется верхней панелью зоны
+                        finalSteps.Add(len - sum);
                         currentZ = targetZ;
                     }
                     else break;
                 }
             }
-            else if (data.L_StepMode == 1) // 1: МАССИВ (с возвратом старой логики)
+            else if (data.L_StepMode == 1) // 1: МАССИВ (УМНЫЙ ХВОСТ V2)
             {
                 var parsedSteps = StringParserService.ParseManualStep(data.L_StepText);
                 if (parsedSteps.Count == 0) parsedSteps.Add(1200.0);
 
                 double sum = 0;
                 int i = 0;
+
                 double minRem = data.L_MinRemainder > 0 ? data.L_MinRemainder : data.Bcol;
                 int remPanels = data.L_RemainPanels > 0 ? data.L_RemainPanels : 2;
+                int mergePanels = data.L_MergePanels > 1 ? data.L_MergePanels : 2; // Минимум 2 (хвост + 1 панель)
 
                 while (sum < zoneLength - 0.1)
                 {
                     double s = i < parsedSteps.Count ? parsedSteps[i] : parsedSteps.Last();
                     double remain = zoneLength - sum;
 
-                    // Умный остаток срабатывает, если хвост меньше ограничения
                     if (remain - s > 0.1 && remain - s < minRem)
                     {
-                        double actualStep = Math.Round((remain / remPanels) / 10.0) * 10.0;
+                        // remain УЖЕ содержит в себе 2 панели: нормальную (s) и хвост (remain - s).
+                        double totalMerged = remain;
+
+                        // Если просят захватить больше 2 панелей, откусываем их из уже готового массива (защита от дурака включена)
+                        int panelsToExtract = mergePanels - 2;
+                        while (panelsToExtract > 0 && finalSteps.Count > 0)
+                        {
+                            totalMerged += finalSteps.Last();
+                            finalSteps.RemoveAt(finalSteps.Count - 1);
+                            panelsToExtract--;
+                        }
+
+                        // Делим нашу гигантскую схлопнутую панель на нужное количество
+                        double actualStep = Math.Round((totalMerged / remPanels) / 10.0) * 10.0;
                         if (actualStep <= 0) actualStep = 10.0;
 
                         double tempSum = 0;
@@ -127,7 +141,7 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                             finalSteps.Add(actualStep);
                             tempSum += actualStep;
                         }
-                        finalSteps.Add(remain - tempSum);
+                        finalSteps.Add(totalMerged - tempSum); // Погрешность наверх
                         break;
                     }
                     if (remain <= s + 0.1)
@@ -166,7 +180,7 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                         }
                         else i++;
                     }
-                    else count = 1; // Если отметки закончились, оставшаяся часть - 1 панель
+                    else count = 1;
 
                     double len = targetZ - currentZ;
                     if (len > 0)
@@ -205,7 +219,10 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
             Vector upVector = VectorExtension.Z;
             var overrides = StringParserService.ParseRascOverrides(data.L_RascOverrides, zNodes.Count);
 
-            // ИНВЕРСИЯ (Абсолютно изолированная логика)
+            // Читаем исключения прямо на этапе просчета геометрии (Количество раскосов = узлов - 1)
+            var excludeList = StringParserService.ParseNodes(data.L_Exclude, zNodes.Count - 1);
+
+            // ИНВЕРСИЯ: С какой ветви начинаем
             bool toggleToRight = data.L_Invert == 0;
 
             for (int i = 0; i < zNodes.Count - 1; i++)
@@ -231,7 +248,19 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                 if (toggleToRight) lines.Add(new LineSegment(pStart, pEnd));
                 else lines.Add(new LineSegment(pEnd, pStart));
 
-                toggleToRight = !toggleToRight;
+                // --- НОВАЯ МЕХАНИКА ЗАМОРОЗКИ ФАЗЫ ---
+                bool isExcluded = excludeList.Contains(i);
+
+                if (data.L_HoldPhase == 1 && isExcluded)
+                {
+                    // БЛОКИРОВКА: Раскос удален, фаза заморожена.
+                    // Следующий раскос начнется с той же ветви, на которой мы остановились.
+                }
+                else
+                {
+                    // ОБЫЧНЫЙ РЕЖИМ: Перекидываем зигзаг на другую ветвь
+                    toggleToRight = !toggleToRight;
+                }
             }
 
             return lines;

@@ -39,40 +39,33 @@ namespace Apibim.Plugins.BuiltUpColumn
 
         // --- НОВЫЕ СВОЙСТВА ALPHA 1.2 ---
 
-        private int _l_Invert;
-        public int L_Invert
-        {
-            get { return _l_Invert; }
-            set { _l_Invert = value; OnPropertyChanged(); }
-        }
+        private int _l_Invert = 0;
+        [StructuresDialog("L_Invert", typeof(TD.Integer))]
+        public int L_Invert { get => _l_Invert; set => Set(ref _l_Invert, value); }
 
-        private string _l_Exclude;
-        public string L_Exclude
-        {
-            get { return _l_Exclude; }
-            set { _l_Exclude = value; OnPropertyChanged(); }
-        }
+        private string _l_Exclude = "";
+        [StructuresDialog("L_Exclude", typeof(TD.String))]
+        public string L_Exclude { get => _l_Exclude; set => Set(ref _l_Exclude, value); }
 
-        private double _l_MinRemainder;
-        public double L_MinRemainder
-        {
-            get { return _l_MinRemainder; }
-            set { _l_MinRemainder = value; OnPropertyChanged(); }
-        }
+        private double _l_MinRemainder = 0.0;
+        [StructuresDialog("L_MinRemainder", typeof(TD.Double))]
+        public double L_MinRemainder { get => _l_MinRemainder; set => Set(ref _l_MinRemainder, value); }
 
-        private int _l_RemainPanels;
-        public int L_RemainPanels
-        {
-            get { return _l_RemainPanels; }
-            set { _l_RemainPanels = value; OnPropertyChanged(); }
-        }
+        private int _l_RemainPanels = 2;
+        [StructuresDialog("L_RemainPanels", typeof(TD.Integer))]
+        public int L_RemainPanels { get => _l_RemainPanels; set => Set(ref _l_RemainPanels, value); }
 
-        private int _s_KeyElev_Preset;
-        public int S_KeyElev_Preset
-        {
-            get { return _s_KeyElev_Preset; }
-            set { _s_KeyElev_Preset = value; OnPropertyChanged(); }
-        }
+        private int _s_KeyElev_Preset = 0;
+        [StructuresDialog("S_KeyElev_Preset", typeof(TD.Integer))]
+        public int S_KeyElev_Preset { get => _s_KeyElev_Preset; set => Set(ref _s_KeyElev_Preset, value); }
+
+        private int _l_MergePanels = 2;
+        [StructuresDialog("L_MergePanels", typeof(TD.Integer))]
+        public int L_MergePanels { get => _l_MergePanels; set => Set(ref _l_MergePanels, value); }
+
+        private int _l_HoldPhase = 0;
+        [StructuresDialog("L_HoldPhase", typeof(TD.Integer))]
+        public int L_HoldPhase { get => _l_HoldPhase; set => Set(ref _l_HoldPhase, value); }
 
         [StructuresDialog("Bcol", typeof(TD.Double))] public double Bcol { get => _bcol; set => Set(ref _bcol, value); }
         [StructuresDialog("Br_Rot", typeof(TD.Double))] public double Br_Rot { get => _br_Rot; set => Set(ref _br_Rot, value); }

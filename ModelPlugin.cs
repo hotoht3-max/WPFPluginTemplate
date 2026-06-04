@@ -45,6 +45,8 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresField("L_MinRemainder")] public double L_MinRemainder = 0.0;
         [StructuresField("L_RemainPanels")] public int L_RemainPanels = 2;
         [StructuresField("S_KeyElev_Preset")] public int S_KeyElev_Preset = 0;
+        [StructuresField("L_MergePanels")] public int L_MergePanels = 2;
+        [StructuresField("L_HoldPhase")] public int L_HoldPhase = 0;
 
         // --- ПЛАНКИ (Правила и слоты) ---
         [StructuresField("S_Base_Preset")] public int S_Base_Preset = 2;

@@ -45,6 +45,8 @@ namespace Apibim.Plugins.BuiltUpColumn.Models
         public string L_Exclude { get; set; }
         public double L_MinRemainder { get; set; }
         public int L_RemainPanels { get; set; }
+        public int L_MergePanels { get; set; }
+        public int L_HoldPhase { get; set; }
 
         // Планки
         public int S_Base_Preset { get; set; }

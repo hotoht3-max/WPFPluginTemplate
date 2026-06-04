@@ -46,9 +46,11 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                 // --- МОСТ ALPHA 1.2 ЗАМКНУТ ---
                 L_Invert = data.L_Invert,
                 L_Exclude = data.L_Exclude ?? "",
+                L_HoldPhase = data.L_HoldPhase,
                 L_MinRemainder = data.L_MinRemainder,
                 L_RemainPanels = data.L_RemainPanels,
                 S_KeyElev_Preset = data.S_KeyElev_Preset,
+                L_MergePanels = data.L_MergePanels,
 
                 S_Base_Preset = data.S_Base_Preset,
                 S_Top_Preset = data.S_Top_Preset,
