@@ -12,6 +12,9 @@ namespace Apibim.Plugins.BuiltUpColumn
 {
     public class PluginData
     {
+        // =========================================================
+        // --- ALPHA 1.0: БАЗОВАЯ ГЕОМЕТРИЯ ---
+        // =========================================================
         [StructuresField("Bcol")] public double Bcol = 500.0;
         [StructuresField("Br_Rot")] public double Br_Rot = 90.0;
         [StructuresField("Hcol_1")] public double Hcol_1 = 10000.0;
@@ -19,17 +22,29 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresField("Hcol_e2")] public double Hcol_e2 = 600.0;
         [StructuresField("Hcol_e3")] public double Hcol_e3 = 600.0;
 
+        // =========================================================
+        // --- ALPHA 1.1: СТЫКИ ВЕТВЕЙ ---
+        // =========================================================
         [StructuresField("SplicesText")] public string SplicesText = "";
-
         [StructuresField("Splice1Component")] public string Splice1Component = "77"; [StructuresField("Splice1Preset")] public string Splice1Preset = "standard";
         [StructuresField("Splice2Component")] public string Splice2Component = ""; [StructuresField("Splice2Preset")] public string Splice2Preset = ""; [StructuresField("Splice2Indexes")] public string Splice2Indexes = "";
         [StructuresField("Splice3Component")] public string Splice3Component = ""; [StructuresField("Splice3Preset")] public string Splice3Preset = ""; [StructuresField("Splice3Indexes")] public string Splice3Indexes = "";
         [StructuresField("Splice4Component")] public string Splice4Component = ""; [StructuresField("Splice4Preset")] public string Splice4Preset = ""; [StructuresField("Splice4Indexes")] public string Splice4Indexes = "";
         [StructuresField("Splice5Component")] public string Splice5Component = ""; [StructuresField("Splice5Preset")] public string Splice5Preset = ""; [StructuresField("Splice5Indexes")] public string Splice5Indexes = "";
 
+        // =========================================================
+        // --- ALPHA 1.2: УМНАЯ РЕШЕТКА И ПЛАНКИ ---
+        // =========================================================
         [StructuresField("L_StepMode")] public int L_StepMode = 0;
-        [StructuresField("Hr_base")] public double Hr_base = 1200.0;
-        [StructuresField("L_StepText")] public string L_StepText = "";
+        [StructuresField("L_StepText")] public string L_StepText = ""; // Заменил жесткий Hr_base
+        [StructuresField("L_MinRemainder")] public double L_MinRemainder = 0.0;
+        [StructuresField("L_MergePanels")] public int L_MergePanels = 2;
+        [StructuresField("L_RemainPanels")] public int L_RemainPanels = 2;
+
+        [StructuresField("L_Invert")] public int L_Invert = 0;
+        [StructuresField("L_Exclude")] public string L_Exclude = "";
+        [StructuresField("L_HoldPhase")] public int L_HoldPhase = 0;
+
         [StructuresField("L_Rasc")] public double L_Rasc = 50.0;
         [StructuresField("L_Rasc_Base")] public double L_Rasc_Base = 50.0;
         [StructuresField("L_Rasc_Top")] public double L_Rasc_Top = 50.0;
@@ -39,21 +54,12 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresField("L_Preset")] public int L_Preset = 1;
         [StructuresField("L_Offset")] public double L_Offset = 0.0;
 
-        // --- НОВЫЕ СВОЙСТВА ALPHA 1.2 ---
-        [StructuresField("L_Invert")] public int L_Invert = 0;
-        [StructuresField("L_Exclude")] public string L_Exclude = "";
-        [StructuresField("L_MinRemainder")] public double L_MinRemainder = 0.0;
-        [StructuresField("L_RemainPanels")] public int L_RemainPanels = 2;
-        [StructuresField("S_KeyElev_Preset")] public int S_KeyElev_Preset = 0;
-        [StructuresField("L_MergePanels")] public int L_MergePanels = 2;
-        [StructuresField("L_HoldPhase")] public int L_HoldPhase = 0;
-
-        // --- ПЛАНКИ (Правила и слоты) ---
+        // Каскад планок
         [StructuresField("S_Base_Preset")] public int S_Base_Preset = 2;
         [StructuresField("S_Top_Preset")] public int S_Top_Preset = 2;
         [StructuresField("S_Splice_Preset")] public int S_Splice_Preset = 2;
+        [StructuresField("S_KeyElev_Preset")] public int S_KeyElev_Preset = 0;
         [StructuresField("S_Preset")] public int S_Preset = 1;
-
         [StructuresField("S_NodesAngle")] public string S_NodesAngle = "";
         [StructuresField("S_NodesAnglePlate")] public string S_NodesAnglePlate = "";
         [StructuresField("S_NodesD1")] public string S_NodesD1 = "";
@@ -61,13 +67,39 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresField("S_NodesExcludePlate")] public string S_NodesExcludePlate = "";
         [StructuresField("S_NodesExclude")] public string S_NodesExclude = "";
 
-        // Плоские свойства для связи с UI
+        // =========================================================
+        // --- ALPHA 1.3: ВРЕЗКА И ПОЗИЦИОНИРОВАНИЕ ДИАФРАГМ ---
+        // =========================================================
+        [StructuresField("D1_CutComp")] public string D1_CutComp = "123";
+        [StructuresField("D1_CutAttr")] public string D1_CutAttr = "standard";
+        [StructuresField("D2_CutComp")] public string D2_CutComp = "123";
+        [StructuresField("D2_CutAttr")] public string D2_CutAttr = "standard";
+        [StructuresField("GP_CutMode")] public int GP_CutMode = 1; // 0 - Габарит, 1 - Стенка
+        [StructuresField("D1_CutMode")] public int D1_CutMode = 1;
+        [StructuresField("D2_CutMode")] public int D2_CutMode = 1;
+        [StructuresField("D_GapW")] public double D_GapW = 0.0;
+        [StructuresField("D_GapL")] public double D_GapL = 0.0;
+
+        [StructuresField("D1_PosPlane")] public int D1_PosPlane = 0; [StructuresField("D1_PosPlaneOff")] public double D1_PosPlaneOff = 0.0;
+        [StructuresField("D1_PosRot")] public int D1_PosRot = 0; [StructuresField("D1_PosRotOff")] public double D1_PosRotOff = 0.0;
+        [StructuresField("D1_PosDepth")] public int D1_PosDepth = 0; [StructuresField("D1_PosDepthOff")] public double D1_PosDepthOff = 0.0;
+
+        [StructuresField("D2_PosPlane")] public int D2_PosPlane = 0; [StructuresField("D2_PosPlaneOff")] public double D2_PosPlaneOff = 0.0;
+        [StructuresField("D2_PosRot")] public int D2_PosRot = 0; [StructuresField("D2_PosRotOff")] public double D2_PosRotOff = 0.0;
+        [StructuresField("D2_PosDepth")] public int D2_PosDepth = 0; [StructuresField("D2_PosDepthOff")] public double D2_PosDepthOff = 0.0;
+
+        // =========================================================
+        // --- ALPHA 1.0 - 1.3: АТРИБУТЫ ПРОФИЛЕЙ (Деталировка) ---
+        // =========================================================
         [StructuresField("B_Profile")] public string B_Profile = "I20K1_57837_2017"; [StructuresField("B_Material")] public string B_Material = "C355Б"; [StructuresField("B_AssyPref")] public string B_AssyPref = "К"; [StructuresField("B_AssyNo")] public string B_AssyNo = "1"; [StructuresField("B_PartPref")] public string B_PartPref = "к"; [StructuresField("B_PartNo")] public string B_PartNo = "1"; [StructuresField("B_Name")] public string B_Name = "ВЕТВЬ"; [StructuresField("B_Class")] public string B_Class = "1"; [StructuresField("B_UDA")] public string B_UDA = "";
         [StructuresField("D_Profile")] public string D_Profile = "16P_8240_97"; [StructuresField("D_Material")] public string D_Material = "C245"; [StructuresField("D_AssyPref")] public string D_AssyPref = ""; [StructuresField("D_AssyNo")] public string D_AssyNo = ""; [StructuresField("D_PartPref")] public string D_PartPref = "д1"; [StructuresField("D_PartNo")] public string D_PartNo = "1"; [StructuresField("D_Name")] public string D_Name = "ДИАФРАГМА 1"; [StructuresField("D_Class")] public string D_Class = "4"; [StructuresField("D_UDA")] public string D_UDA = "";
         [StructuresField("D2_Profile")] public string D2_Profile = "20B1_57837_2017"; [StructuresField("D2_Material")] public string D2_Material = "C245"; [StructuresField("D2_AssyPref")] public string D2_AssyPref = ""; [StructuresField("D2_AssyNo")] public string D2_AssyNo = ""; [StructuresField("D2_PartPref")] public string D2_PartPref = "д2"; [StructuresField("D2_PartNo")] public string D2_PartNo = "1"; [StructuresField("D2_Name")] public string D2_Name = "ДИАФРАГМА 2"; [StructuresField("D2_Class")] public string D2_Class = "4"; [StructuresField("D2_UDA")] public string D2_UDA = "";
-        [StructuresField("S_Profile")] public string S_Profile = "L75X6_8509_93"; [StructuresField("S_Material")] public string S_Material = "C245"; [StructuresField("S_AssyPref")] public string S_AssyPref = ""; [StructuresField("S_AssyNo")] public string S_AssyNo = ""; [StructuresField("S_PartPref")] public string S_PartPref = "рп"; [StructuresField("S_PartNo")] public string S_PartNo = "1"; [StructuresField("S_Name")] public string S_Name = "РАСПОРКА"; [StructuresField("S_Class")] public string S_Class = "4"; [StructuresField("S_UDA")] public string S_UDA = "";
         [StructuresField("L_Profile")] public string L_Profile = "L75X6_8509_93"; [StructuresField("L_Material")] public string L_Material = "C245"; [StructuresField("L_AssyPref")] public string L_AssyPref = ""; [StructuresField("L_AssyNo")] public string L_AssyNo = ""; [StructuresField("L_PartPref")] public string L_PartPref = "р"; [StructuresField("L_PartNo")] public string L_PartNo = "1"; [StructuresField("L_Name")] public string L_Name = "РАСКОС"; [StructuresField("L_Class")] public string L_Class = "3"; [StructuresField("L_UDA")] public string L_UDA = "";
         [StructuresField("LS_Profile")] public string LS_Profile = ""; [StructuresField("LS_Material")] public string LS_Material = ""; [StructuresField("LS_AssyPref")] public string LS_AssyPref = ""; [StructuresField("LS_AssyNo")] public string LS_AssyNo = ""; [StructuresField("LS_PartPref")] public string LS_PartPref = "рс"; [StructuresField("LS_PartNo")] public string LS_PartNo = "1"; [StructuresField("LS_Name")] public string LS_Name = "РАСКОС СТЫКОВОЙ"; [StructuresField("LS_Class")] public string LS_Class = "3"; [StructuresField("LS_UDA")] public string LS_UDA = "";
+        [StructuresField("S_Profile")] public string S_Profile = "L75X6_8509_93"; [StructuresField("S_Material")] public string S_Material = "C245"; [StructuresField("S_AssyPref")] public string S_AssyPref = ""; [StructuresField("S_AssyNo")] public string S_AssyNo = ""; [StructuresField("S_PartPref")] public string S_PartPref = "рп"; [StructuresField("S_PartNo")] public string S_PartNo = "1"; [StructuresField("S_Name")] public string S_Name = "РАСПОРКА"; [StructuresField("S_Class")] public string S_Class = "4"; [StructuresField("S_UDA")] public string S_UDA = "";
+
+        // Лист распорки (Альфа 1.3)
+        [StructuresField("GP_Thickness")] public string GP_Thickness = "10"; [StructuresField("GP_Material")] public string GP_Material = "C245"; [StructuresField("GP_AssyPref")] public string GP_AssyPref = ""; [StructuresField("GP_AssyNo")] public string GP_AssyNo = ""; [StructuresField("GP_PartPref")] public string GP_PartPref = "пл"; [StructuresField("GP_PartNo")] public string GP_PartNo = "1"; [StructuresField("GP_Name")] public string GP_Name = "ЛИСТ РАСПОРКИ"; [StructuresField("GP_Class")] public string GP_Class = "99"; [StructuresField("GP_UDA")] public string GP_UDA = "";
     }
 
     [Plugin("Apibim_BuiltUpColumn")]
@@ -134,10 +166,18 @@ namespace Apibim.Plugins.BuiltUpColumn
                 var splices = StringParserService.ParseSplices(colData.SplicesText);
 
                 // --- 4. ОРКЕСТРАЦИЯ (Вызов Фабрик) ---
-                var branches = BuildBranches(branchLines, colData, planeAngleDeg, out double autoBaseDist);
+
+                // 1. Честное расстояние между теоретическими осями ветвей (Для вычисления ДЛИНЫ листа)
+                double distBetweenAxes = Tekla.Structures.Geometry3d.Distance.PointToPoint(branchLines[0].Point1, branchLines[1].Point1);
+
+                // 2. Строим ветви и получаем габариты, включая толщину стенки
+                var branches = BuildBranches(branchLines, colData, planeAngleDeg, out double autoBaseDist, out double branchWidth, out double branchWebThick);
+
                 BuildSplices(branches, colData);
                 BuildLacing(lacingLines, splices, colData, localY, autoBaseDist);
-                BuildStrutsAndDiaphragms(strutLines, zNodes, splices, colData, localY, autoBaseDist);
+
+                // 3. Передаем branchWebThick в фабрику распорок
+                BuildStrutsAndDiaphragms(strutLines, zNodes, splices, colData, localY, autoBaseDist, distBetweenAxes, branchWidth, branchWebThick, branches);
 
                 return true;
             }
@@ -152,9 +192,11 @@ namespace Apibim.Plugins.BuiltUpColumn
         // ОРКЕСТРАТОРЫ ПОСТРОЕНИЯ (Дирижируют фабриками)
         // =========================================================================
 
-        private List<Beam> BuildBranches(List<LineSegment> branchLines, BuiltUpColumnData colData, double planeAngleDeg, out double autoBaseDist)
+        private List<Beam> BuildBranches(List<LineSegment> branchLines, BuiltUpColumnData colData, double planeAngleDeg, out double autoBaseDist, out double branchWidth, out double branchWebThick)
         {
             autoBaseDist = 0.0;
+            branchWidth = 0.0;
+            branchWebThick = 0.0; // <--- НОВОЕ
             List<Beam> createdBranches = new List<Beam>();
 
             foreach (var line in branchLines)
@@ -163,10 +205,19 @@ namespace Apibim.Plugins.BuiltUpColumn
                 if (!branch.Insert()) throw new Exception($"Не удалось построить ветвь: {colData.Branch.Profile}");
 
                 createdBranches.Add(branch);
-                if (autoBaseDist == 0.0) branch.GetReportProperty("PROFILE.HEIGHT", ref autoBaseDist);
+
+                if (autoBaseDist == 0.0)
+                {
+                    Services.TeklaProfileHelper.GetActualDimensions(branch, planeAngleDeg + colData.Br_Rot, out double hAlongY, out double wAlongX, out double twAlongX);
+                    autoBaseDist = hAlongY;
+                    branchWidth = wAlongX;
+                    branchWebThick = twAlongX; // <--- НОВОЕ
+                }
             }
+            // ... (дальше без изменений)
 
             if (autoBaseDist <= 0.0) autoBaseDist = 200.0;
+            if (branchWidth <= 0.0) branchWidth = 200.0;
             return createdBranches;
         }
 
@@ -250,12 +301,11 @@ namespace Apibim.Plugins.BuiltUpColumn
             }
         }
 
-        private void BuildStrutsAndDiaphragms(List<LineSegment> strutLines, List<double> zNodes, List<double> splices, BuiltUpColumnData colData, Vector localY, double autoBaseDist)
+        private void BuildStrutsAndDiaphragms(List<LineSegment> strutLines, List<double> zNodes, List<double> splices, BuiltUpColumnData colData, Vector localY, double autoBaseDist, double distBetweenAxes, double branchWidth, double branchWebThick, List<Beam> branches)
         {
             int totalNodes = strutLines.Count;
 
-            // ИСПОЛЬЗУЕМ УМНЫЙ ПАРСЕР (Поддерживает N-N диапазоны!)
-            // Парсер возвращает 0-based индексы (начинаются с 0), поэтому сверяем их напрямую с `i`
+            // --- 1. ПАРСИНГ И ПОДГОТОВКА ---
             var idxAngle = StringParserService.ParseNodes(colData.S_NodesAngle, totalNodes);
             var idxAnglePlate = StringParserService.ParseNodes(colData.S_NodesAnglePlate, totalNodes);
             var idxD1 = StringParserService.ParseNodes(colData.S_NodesD1, totalNodes);
@@ -264,81 +314,160 @@ namespace Apibim.Plugins.BuiltUpColumn
             var idxExclude = StringParserService.ParseNodes(colData.S_NodesExclude, totalNodes);
 
             var spliceNodes = ColumnGeometryBuilder.GetSpliceAdjacentNodes(zNodes, splices);
-
-            // Внедрение правила: Планки на ключевых отметках
             var keyElevNodes = ColumnGeometryBuilder.GetKeyElevationNodes(colData, zNodes);
 
+            // --- 2. ЦИКЛ ОРКЕСТРАЦИИ СЛОТОВ ---
             for (int i = 0; i < totalNodes; i++)
             {
-                int currentLevel = i + 1; // 1-based номер узла (только для вывода текста ошибок)
+                int currentLevel = i + 1;
                 int slotType = 0;
 
-                // 1. ФОНОВАЯ ЗАЛИВКА
+                // Фоновая заливка
                 if (i == 0) slotType = colData.S_Base_Preset;
                 else if (i == totalNodes - 1) slotType = colData.S_Top_Preset;
                 else if (spliceNodes.Contains(i)) slotType = colData.S_Splice_Preset;
-                else if (keyElevNodes.Contains(i)) slotType = colData.S_KeyElev_Preset; // <--- НОВОЕ КАСКАДНОЕ ПРАВИЛО!
+                else if (keyElevNodes.Contains(i)) slotType = colData.S_KeyElev_Preset;
                 else slotType = colData.S_Preset;
 
-                // 2. РУЧНОЕ СОЗИДАНИЕ (Используем `i` для сверки с массивами 0-based индексов)
+                // Ручное созидание
                 if (idxAngle.Contains(i)) slotType = 1;
                 if (idxAnglePlate.Contains(i)) slotType = 2;
                 if (idxD1.Contains(i)) slotType = 3;
                 if (idxD2.Contains(i)) slotType = 4;
 
-                // 3. ДЕГРАДАЦИЯ (Снос листа)
+                // Деградация и Аннигиляция
                 if (idxExcPlate.Contains(i) && slotType == 2) slotType = 1;
-
-                // 4. АННИГИЛЯЦИЯ
                 if (idxExclude.Contains(i)) slotType = 0;
 
                 if (slotType == 0) continue;
 
                 var line = strutLines[i];
 
+                // --- 3. ВЫЗОВЫ СТРОИТЕЛЕЙ (Инкапсуляция) ---
                 if (slotType == 1 || slotType == 2)
                 {
-                    if (string.IsNullOrWhiteSpace(colData.Strut.Profile))
-                        throw new Exception($"Узел {currentLevel}: Назначена Распорка, но её 'Профиль' пуст во вкладке Атрибуты!");
-
-                    int activePreset = colData.L_Type == 1 ? 1 : colData.L_Preset;
-
-                    if (colData.L_Type == 0)
-                    {
-                        TeklaPartBuilder.CreateLacing(line.Point1, line.Point2, colData.Strut, activePreset, colData.L_Offset).Insert();
-                    }
-                    else
-                    {
-                        Vector shift = localY * (autoBaseDist / 2.0);
-
-                        Point p1_A = new Point(line.Point1); p1_A.Translate(shift);
-                        Point p2_A = new Point(line.Point2); p2_A.Translate(shift);
-                        TeklaPartBuilder.CreateLacing(p1_A, p2_A, colData.Strut, activePreset, colData.L_Offset).Insert();
-
-                        Point p1_B = new Point(line.Point1); p1_B.Translate(shift.Negative());
-                        Point p2_B = new Point(line.Point2); p2_B.Translate(shift.Negative());
-                        TeklaPartBuilder.CreateLacing(p2_B, p1_B, colData.Strut, activePreset, colData.L_Offset).Insert();
-                    }
-
-                    if (slotType == 2 && colData.L_Type == 1) // Лист (только для сдвоенной)
-                    {
-                        TeklaPartBuilder.CreateGussetPlate(line.Point1, line.Point2, colData.GussetPlate).Insert();
-                    }
+                    BuildStrutSlot(line, slotType, currentLevel, colData, localY, autoBaseDist, distBetweenAxes, branchWidth, branchWebThick);
                 }
                 else if (slotType == 3)
                 {
-                    if (string.IsNullOrWhiteSpace(colData.Diaphragm1.Profile))
-                        throw new Exception($"Узел {currentLevel}: Назначена Диафрагма (Тип 1), но её 'Профиль' пуст во вкладке Атрибуты!");
-
-                    TeklaPartBuilder.CreateDiaphragm(line.Point1, line.Point2, colData.Diaphragm1).Insert();
+                    BuildDiaphragmSlot(line, colData.Diaphragm1, currentLevel, colData.L_Type, colData.L_Preset, colData.L_Offset,
+                        colData.D1_PosPlane, colData.D1_PosPlaneOff, colData.D1_PosRot, colData.D1_PosRotOff, colData.D1_PosDepth, colData.D1_PosDepthOff,
+                        colData.D1_CutMode, colData.D1_CutComp, colData.D1_CutAttr, branches, distBetweenAxes, branchWidth, branchWebThick);
                 }
                 else if (slotType == 4)
                 {
-                    if (string.IsNullOrWhiteSpace(colData.Diaphragm2.Profile))
-                        throw new Exception($"Узел {currentLevel}: Назначена Диафрагма (Тип 2), но её 'Профиль' пуст во вкладке Атрибуты!");
-
-                    TeklaPartBuilder.CreateDiaphragm(line.Point1, line.Point2, colData.Diaphragm2).Insert();
+                    BuildDiaphragmSlot(line, colData.Diaphragm2, currentLevel, colData.L_Type, colData.L_Preset, colData.L_Offset,
+                        colData.D2_PosPlane, colData.D2_PosPlaneOff, colData.D2_PosRot, colData.D2_PosRotOff, colData.D2_PosDepth, colData.D2_PosDepthOff,
+                        colData.D2_CutMode, colData.D2_CutComp, colData.D2_CutAttr, branches, distBetweenAxes, branchWidth, branchWebThick);
                 }
+            }
+        }
+
+        // ==================================================================================================
+        // Вспомогательный метод: Построение Распорки (+ Лист)
+        // ==================================================================================================
+        private void BuildStrutSlot(LineSegment line, int slotType, int currentLevel, BuiltUpColumnData colData, Vector localY, double autoBaseDist, double distBetweenAxes, double branchWidth, double branchWebThick)
+        {
+            if (string.IsNullOrWhiteSpace(colData.Strut.Profile))
+                throw new Exception($"Узел {currentLevel}: Назначена Распорка, но её 'Профиль' пуст во вкладке Атрибуты!");
+
+            int activePreset = colData.L_Type == 1 ? 1 : colData.L_Preset;
+            Beam strutA = null;
+
+            if (colData.L_Type == 0)
+            {
+                strutA = TeklaPartBuilder.CreateLacing(line.Point1, line.Point2, colData.Strut, activePreset, colData.L_Offset);
+                strutA.Insert();
+            }
+            else
+            {
+                Vector shift = localY * (autoBaseDist / 2.0);
+
+                Point p1_A = new Point(line.Point1); p1_A.Translate(shift);
+                Point p2_A = new Point(line.Point2); p2_A.Translate(shift);
+                strutA = TeklaPartBuilder.CreateLacing(p1_A, p2_A, colData.Strut, activePreset, colData.L_Offset);
+                strutA.Insert();
+
+                Point p1_B = new Point(line.Point1); p1_B.Translate(shift.Negative());
+                Point p2_B = new Point(line.Point2); p2_B.Translate(shift.Negative());
+                TeklaPartBuilder.CreateLacing(p2_B, p1_B, colData.Strut, activePreset, colData.L_Offset).Insert();
+            }
+
+            // МАТЕМАТИКА ЛИСТА
+            if (slotType == 2 && colData.L_Type == 1 && strutA != null)
+            {
+                double W = autoBaseDist - 2 * colData.L_Offset - (colData.D_GapW * 2);
+                if (W < 10) W = 10;
+
+                double t = 10.0;
+                string prof = colData.GussetPlate.Profile.ToUpper().Replace("PL", "");
+                if (prof.Contains("*") && double.TryParse(prof.Split('*')[0], out double parsedT)) t = parsedT;
+
+                colData.GussetPlate.Profile = $"PL{t}*{Math.Round(W)}";
+
+                double baseClearanceDist = (colData.GP_CutMode == 1) ? branchWebThick : branchWidth;
+                double actualClearDist = distBetweenAxes - baseClearanceDist;
+                double L = actualClearDist - colData.D_GapL;
+                if (L < 10) L = 10;
+
+                Vector dir = PointExtension.GetVector(line.Point1, line.Point2);
+                dir.Normalize();
+
+                Point center = new Point(line.Point1);
+                center.Translate(dir * (distBetweenAxes / 2.0));
+
+                Point pStart = new Point(center); pStart.Translate(dir * (-L / 2.0));
+                Point pEnd = new Point(center); pEnd.Translate(dir * (L / 2.0));
+
+                double angleWidth = 0.0;
+                strutA.GetReportProperty("PROFILE.WIDTH", ref angleWidth);
+                double zOffset = (angleWidth / 2.0) + (t / 2.0);
+
+                Beam plate = TeklaPartBuilder.CreateGussetPlate(pStart, pEnd, colData.GussetPlate);
+                plate.Position.DepthOffset = zOffset;
+                plate.Position.Rotation = Tekla.Structures.Model.Position.RotationEnum.BACK;
+                plate.Insert();
+            }
+        }
+
+        // ==================================================================================================
+        // Вспомогательный метод: Построение Диафрагмы (+ Внедренный Шаг 2: Позиционирование)
+        // ==================================================================================================
+        private void BuildDiaphragmSlot(LineSegment line, PartSettings partSettings, int currentLevel, int lType, int lPreset, double lOffset,
+            int plane, double planeOff, int rot, double rotOff, int depth, double depthOff,
+            int cutMode, string compName, string compAttr, System.Collections.Generic.List<Beam> branches, double distBetweenAxes, double branchWidth, double branchWebThick)
+        {
+            if (string.IsNullOrWhiteSpace(partSettings.Profile))
+                throw new Exception($"Узел {currentLevel}: Назначена Диафрагма, но её 'Профиль' пуст во вкладке Атрибуты!");
+
+            int activePreset = lType == 1 ? 1 : lPreset;
+            Beam diaphragm = TeklaPartBuilder.CreateLacing(line.Point1, line.Point2, partSettings, activePreset, lOffset);
+
+            // ПОЗИЦИОНИРОВАНИЕ ИЗ UI
+            diaphragm.Position.Plane = (Tekla.Structures.Model.Position.PlaneEnum)plane;
+            diaphragm.Position.PlaneOffset = planeOff;
+
+            diaphragm.Position.Rotation = (Tekla.Structures.Model.Position.RotationEnum)rot;
+            diaphragm.Position.RotationOffset = rotOff;
+
+            diaphragm.Position.Depth = (Tekla.Structures.Model.Position.DepthEnum)depth;
+            diaphragm.Position.DepthOffset = depthOff;
+
+            diaphragm.Insert();
+
+            // --- ШАГ 3: SOLID ВЫРЕЗЫ ---
+            if (cutMode != 0 && branches != null && branches.Count >= 2)
+            {
+                // Передаем строки в Фабрику!
+                Services.ICuttingStrategy strategy = Services.CuttingStrategyFactory.GetStrategy(cutMode, compName, compAttr);
+
+                Point colCenter = new Point(line.Point1);
+                Vector dir = PointExtension.GetVector(line.Point1, line.Point2);
+                dir.Normalize();
+                colCenter.Translate(dir * (distBetweenAxes / 2.0));
+
+                strategy.ApplyCut(diaphragm, branches[0], colCenter, line.Point1, branchWidth, branchWebThick);
+                strategy.ApplyCut(diaphragm, branches[1], colCenter, line.Point2, branchWidth, branchWebThick);
             }
         }
     }

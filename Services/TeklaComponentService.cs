@@ -51,8 +51,8 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                     conn.LoadAttributesFromFile(preset);
 
                     // Имплементируем твою идею: Жестко глушим Автостандарты
-                    conn.SetAttribute("ac_root", "albl_no_root");
-                    conn.SetAttribute("ad_root", "albl_no_root");
+                    conn.SetAttribute("ac_root", 0);
+                    conn.SetAttribute("ad_root", 0);
 
                     // Достаем спрятанный класс (group_no) и инъектируем его
                     int classValue = 0;

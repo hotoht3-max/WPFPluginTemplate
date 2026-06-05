@@ -52,6 +52,31 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                 S_KeyElev_Preset = data.S_KeyElev_Preset,
                 L_MergePanels = data.L_MergePanels,
 
+                // --- ALPHA 1.3 ЗАМКНУТ ---
+                D1_CutComp = data.D1_CutComp,
+                D1_CutAttr = data.D1_CutAttr,
+                D2_CutComp = data.D2_CutComp,
+                D2_CutAttr = data.D2_CutAttr,
+                GP_CutMode = data.GP_CutMode,
+                D1_CutMode = data.D1_CutMode,
+                D2_CutMode = data.D2_CutMode,
+                D_GapW = data.D_GapW,
+                D_GapL = data.D_GapL,
+
+                D1_PosPlane = data.D1_PosPlane,
+                D1_PosPlaneOff = data.D1_PosPlaneOff,
+                D1_PosRot = data.D1_PosRot,
+                D1_PosRotOff = data.D1_PosRotOff,
+                D1_PosDepth = data.D1_PosDepth,
+                D1_PosDepthOff = data.D1_PosDepthOff,
+
+                D2_PosPlane = data.D2_PosPlane,
+                D2_PosPlaneOff = data.D2_PosPlaneOff,
+                D2_PosRot = data.D2_PosRot,
+                D2_PosRotOff = data.D2_PosRotOff,
+                D2_PosDepth = data.D2_PosDepth,
+                D2_PosDepthOff = data.D2_PosDepthOff,
+
                 S_Base_Preset = data.S_Base_Preset,
                 S_Top_Preset = data.S_Top_Preset,
                 S_Splice_Preset = data.S_Splice_Preset,
@@ -70,7 +95,8 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                 Lacing = lacing,
                 LacingSplice = CreatePartWithFallback(data.LS_Profile, data.LS_Material, data.LS_PartPref, data.LS_PartNo, data.LS_AssyPref, data.LS_AssyNo, data.LS_Name, data.LS_Class, data.LS_UDA, lacing),
                 Strut = CreatePartWithFallback(data.S_Profile, data.S_Material, data.S_PartPref, data.S_PartNo, data.S_AssyPref, data.S_AssyNo, data.S_Name, data.S_Class, data.S_UDA, lacing),
-                GussetPlate = new PartSettings { Profile = "PL10*200", Material = "C245", Class = "99", Name = "ЛИСТ_РАСПОРКИ", PartPrefix = "пл", PartStartNo = 1, AssemblyPrefix = "", AssemblyStartNo = 1, UDA = "" }
+                // Забираем GP_Thickness из UI и вклеиваем в профиль донора "PL{t}*200"
+                GussetPlate = CreatePart($"PL{data.GP_Thickness}*200", data.GP_Material, data.GP_PartPref, data.GP_PartNo, data.GP_AssyPref, data.GP_AssyNo, data.GP_Name, data.GP_Class, data.GP_UDA)
             };
 
             return colData;

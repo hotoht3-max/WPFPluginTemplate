@@ -6,6 +6,9 @@ namespace Apibim.Plugins.BuiltUpColumn
 {
     public class MainWindowViewModel : BaseViewModel
     {
+        // =========================================================
+        // ВНУТРЕННИЕ ПОЛЯ (Backing fields)
+        // =========================================================
         private double _bcol = 500.0; private double _br_Rot = 90.0;
         private double _hcol_1 = 10000.0; private double _hcol_e1 = 500.0; private double _hcol_e2 = 600.0; private double _hcol_e3 = 600.0;
 
@@ -16,19 +19,19 @@ namespace Apibim.Plugins.BuiltUpColumn
         private string _splice4Component = ""; private string _splice4Preset = ""; private string _splice4Indexes = "";
         private string _splice5Component = ""; private string _splice5Preset = ""; private string _splice5Indexes = "";
 
-        private int _l_StepMode = 0; private double _hr_base = 1200.0; private string _l_StepText = "";
+        private int _l_StepMode = 0; private string _l_StepText = "";
+        private double _l_MinRemainder = 0.0; private int _l_MergePanels = 2; private int _l_RemainPanels = 2;
+        private int _l_Invert = 0; private string _l_Exclude = ""; private int _l_HoldPhase = 0;
         private double _l_Rasc = 50.0; private double _l_Rasc_Base = 50.0; private double _l_Rasc_Top = 50.0; private string _l_RascOverrides = "";
         private int _l_Type = 1; private int _l_Preset = 1; private double _l_Offset = 0.0;
 
-        private int _s_Base_Preset = 2; private int _s_Top_Preset = 2; private int _s_Splice_Preset = 2; private int _s_Preset = 1;
+        private int _s_Base_Preset = 2; private int _s_Top_Preset = 2; private int _s_Splice_Preset = 2; private int _s_KeyElev_Preset = 0; private int _s_Preset = 1;
+        private string _s_NodesAngle = ""; private string _s_NodesAnglePlate = ""; private string _s_NodesD1 = ""; private string _s_NodesD2 = ""; private string _s_NodesExcludePlate = ""; private string _s_NodesExclude = "";
 
-        // Новые текстовые поля для слотов
-        private string _s_NodesAngle = "";
-        private string _s_NodesAnglePlate = "";
-        private string _s_NodesD1 = "";
-        private string _s_NodesD2 = "";
-        private string _s_NodesExcludePlate = "";
-        private string _s_NodesExclude = "";
+        private int _gp_CutMode = 0; 
+        private int _d1_CutMode = 1; private int _d2_CutMode = 1; private double _d_GapW = 0.0; private double _d_GapL = 0.0;
+        private int _d1_PosPlane = 0; private double _d1_PosPlaneOff = 0.0; private int _d1_PosRot = 0; private double _d1_PosRotOff = 0.0; private int _d1_PosDepth = 0; private double _d1_PosDepthOff = 0.0;
+        private int _d2_PosPlane = 0; private double _d2_PosPlaneOff = 0.0; private int _d2_PosRot = 0; private double _d2_PosRotOff = 0.0; private int _d2_PosDepth = 0; private double _d2_PosDepthOff = 0.0;
 
         private string _b_Profile = "I20K1_57837_2017"; private string _b_Material = "C355Б"; private string _b_AssyPref = "К"; private string _b_AssyNo = "1"; private string _b_PartPref = "к"; private string _b_PartNo = "1"; private string _b_Name = "ВЕТВЬ"; private string _b_Class = "1"; private string _b_uda = "";
         private string _d_Profile = "16P_8240_97"; private string _d_Material = "C245"; private string _d_AssyPref = ""; private string _d_AssyNo = ""; private string _d_PartPref = "д1"; private string _d_PartNo = "1"; private string _d_Name = "ДИАФРАГМА 1"; private string _d_Class = "4"; private string _d_uda = "";
@@ -36,36 +39,12 @@ namespace Apibim.Plugins.BuiltUpColumn
         private string _l_Profile = "L75X6_8509_93"; private string _l_Material = "C245"; private string _l_AssyPref = ""; private string _l_AssyNo = ""; private string _l_PartPref = "р"; private string _l_PartNo = "1"; private string _l_Name = "РАСКОС"; private string _l_Class = "3"; private string _l_uda = "";
         private string _ls_Profile = ""; private string _ls_Material = ""; private string _ls_AssyPref = ""; private string _ls_AssyNo = ""; private string _ls_PartPref = "рс"; private string _ls_PartNo = "1"; private string _ls_Name = "РАСКОС СТЫКОВОЙ"; private string _ls_Class = "3"; private string _ls_uda = "";
         private string _s_Profile = ""; private string _s_Material = ""; private string _s_AssyPref = ""; private string _s_AssyNo = ""; private string _s_PartPref = "рп"; private string _s_PartNo = "1"; private string _s_Name = "РАСПОРКА"; private string _s_Class = "4"; private string _s_uda = "";
+        private string _gp_Thickness = "10"; private string _gp_Material = "C245"; private string _gp_AssyPref = ""; private string _gp_AssyNo = ""; private string _gp_PartPref = "пл"; private string _gp_PartNo = "1"; private string _gp_Name = "ЛИСТ РАСПОРКИ"; private string _gp_Class = "99"; private string _gp_uda = "";
+        private string _d1_CutComp = "123"; private string _d1_CutAttr = "standard"; private string _d2_CutComp = "123"; private string _d2_CutAttr = "standard";
 
-        // --- НОВЫЕ СВОЙСТВА ALPHA 1.2 ---
-
-        private int _l_Invert = 0;
-        [StructuresDialog("L_Invert", typeof(TD.Integer))]
-        public int L_Invert { get => _l_Invert; set => Set(ref _l_Invert, value); }
-
-        private string _l_Exclude = "";
-        [StructuresDialog("L_Exclude", typeof(TD.String))]
-        public string L_Exclude { get => _l_Exclude; set => Set(ref _l_Exclude, value); }
-
-        private double _l_MinRemainder = 0.0;
-        [StructuresDialog("L_MinRemainder", typeof(TD.Double))]
-        public double L_MinRemainder { get => _l_MinRemainder; set => Set(ref _l_MinRemainder, value); }
-
-        private int _l_RemainPanels = 2;
-        [StructuresDialog("L_RemainPanels", typeof(TD.Integer))]
-        public int L_RemainPanels { get => _l_RemainPanels; set => Set(ref _l_RemainPanels, value); }
-
-        private int _s_KeyElev_Preset = 0;
-        [StructuresDialog("S_KeyElev_Preset", typeof(TD.Integer))]
-        public int S_KeyElev_Preset { get => _s_KeyElev_Preset; set => Set(ref _s_KeyElev_Preset, value); }
-
-        private int _l_MergePanels = 2;
-        [StructuresDialog("L_MergePanels", typeof(TD.Integer))]
-        public int L_MergePanels { get => _l_MergePanels; set => Set(ref _l_MergePanels, value); }
-
-        private int _l_HoldPhase = 0;
-        [StructuresDialog("L_HoldPhase", typeof(TD.Integer))]
-        public int L_HoldPhase { get => _l_HoldPhase; set => Set(ref _l_HoldPhase, value); }
+        // =========================================================
+        // СВОЙСТВА (Properties for Binding)
+        // =========================================================
 
         [StructuresDialog("Bcol", typeof(TD.Double))] public double Bcol { get => _bcol; set => Set(ref _bcol, value); }
         [StructuresDialog("Br_Rot", typeof(TD.Double))] public double Br_Rot { get => _br_Rot; set => Set(ref _br_Rot, value); }
@@ -91,8 +70,15 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresDialog("Splice5Indexes", typeof(TD.String))] public string Splice5Indexes { get => _splice5Indexes; set => Set(ref _splice5Indexes, value); }
 
         [StructuresDialog("L_StepMode", typeof(TD.Integer))] public int L_StepMode { get => _l_StepMode; set => Set(ref _l_StepMode, value); }
-        [StructuresDialog("Hr_base", typeof(TD.Double))] public double Hr_base { get => _hr_base; set => Set(ref _hr_base, value); }
         [StructuresDialog("L_StepText", typeof(TD.String))] public string L_StepText { get => _l_StepText; set => Set(ref _l_StepText, value); }
+        [StructuresDialog("L_MinRemainder", typeof(TD.Double))] public double L_MinRemainder { get => _l_MinRemainder; set => Set(ref _l_MinRemainder, value); }
+        [StructuresDialog("L_MergePanels", typeof(TD.Integer))] public int L_MergePanels { get => _l_MergePanels; set => Set(ref _l_MergePanels, value); }
+        [StructuresDialog("L_RemainPanels", typeof(TD.Integer))] public int L_RemainPanels { get => _l_RemainPanels; set => Set(ref _l_RemainPanels, value); }
+
+        [StructuresDialog("L_Invert", typeof(TD.Integer))] public int L_Invert { get => _l_Invert; set => Set(ref _l_Invert, value); }
+        [StructuresDialog("L_Exclude", typeof(TD.String))] public string L_Exclude { get => _l_Exclude; set => Set(ref _l_Exclude, value); }
+        [StructuresDialog("L_HoldPhase", typeof(TD.Integer))] public int L_HoldPhase { get => _l_HoldPhase; set => Set(ref _l_HoldPhase, value); }
+
         [StructuresDialog("L_Rasc", typeof(TD.Double))] public double L_Rasc { get => _l_Rasc; set => Set(ref _l_Rasc, value); }
         [StructuresDialog("L_Rasc_Base", typeof(TD.Double))] public double L_Rasc_Base { get => _l_Rasc_Base; set => Set(ref _l_Rasc_Base, value); }
         [StructuresDialog("L_Rasc_Top", typeof(TD.Double))] public double L_Rasc_Top { get => _l_Rasc_Top; set => Set(ref _l_Rasc_Top, value); }
@@ -104,14 +90,38 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresDialog("S_Base_Preset", typeof(TD.Integer))] public int S_Base_Preset { get => _s_Base_Preset; set => Set(ref _s_Base_Preset, value); }
         [StructuresDialog("S_Top_Preset", typeof(TD.Integer))] public int S_Top_Preset { get => _s_Top_Preset; set => Set(ref _s_Top_Preset, value); }
         [StructuresDialog("S_Splice_Preset", typeof(TD.Integer))] public int S_Splice_Preset { get => _s_Splice_Preset; set => Set(ref _s_Splice_Preset, value); }
+        [StructuresDialog("S_KeyElev_Preset", typeof(TD.Integer))] public int S_KeyElev_Preset { get => _s_KeyElev_Preset; set => Set(ref _s_KeyElev_Preset, value); }
         [StructuresDialog("S_Preset", typeof(TD.Integer))] public int S_Preset { get => _s_Preset; set => Set(ref _s_Preset, value); }
-
         [StructuresDialog("S_NodesAngle", typeof(TD.String))] public string S_NodesAngle { get => _s_NodesAngle; set => Set(ref _s_NodesAngle, value); }
         [StructuresDialog("S_NodesAnglePlate", typeof(TD.String))] public string S_NodesAnglePlate { get => _s_NodesAnglePlate; set => Set(ref _s_NodesAnglePlate, value); }
         [StructuresDialog("S_NodesD1", typeof(TD.String))] public string S_NodesD1 { get => _s_NodesD1; set => Set(ref _s_NodesD1, value); }
         [StructuresDialog("S_NodesD2", typeof(TD.String))] public string S_NodesD2 { get => _s_NodesD2; set => Set(ref _s_NodesD2, value); }
         [StructuresDialog("S_NodesExcludePlate", typeof(TD.String))] public string S_NodesExcludePlate { get => _s_NodesExcludePlate; set => Set(ref _s_NodesExcludePlate, value); }
         [StructuresDialog("S_NodesExclude", typeof(TD.String))] public string S_NodesExclude { get => _s_NodesExclude; set => Set(ref _s_NodesExclude, value); }
+
+        [StructuresDialog("GP_CutMode", typeof(TD.Integer))] public int GP_CutMode { get => _gp_CutMode; set => Set(ref _gp_CutMode, value); }
+        [StructuresDialog("D1_CutComp", typeof(TD.String))] public string D1_CutComp { get => _d1_CutComp; set => Set(ref _d1_CutComp, value); }
+        [StructuresDialog("D1_CutAttr", typeof(TD.String))] public string D1_CutAttr { get => _d1_CutAttr; set => Set(ref _d1_CutAttr, value); }
+        [StructuresDialog("D2_CutComp", typeof(TD.String))] public string D2_CutComp { get => _d2_CutComp; set => Set(ref _d2_CutComp, value); }
+        [StructuresDialog("D2_CutAttr", typeof(TD.String))] public string D2_CutAttr { get => _d2_CutAttr; set => Set(ref _d2_CutAttr, value); }
+        [StructuresDialog("D1_CutMode", typeof(TD.Integer))] public int D1_CutMode { get => _d1_CutMode; set => Set(ref _d1_CutMode, value); }
+        [StructuresDialog("D2_CutMode", typeof(TD.Integer))] public int D2_CutMode { get => _d2_CutMode; set => Set(ref _d2_CutMode, value); }
+        [StructuresDialog("D_GapW", typeof(TD.Double))] public double D_GapW { get => _d_GapW; set => Set(ref _d_GapW, value); }
+        [StructuresDialog("D_GapL", typeof(TD.Double))] public double D_GapL { get => _d_GapL; set => Set(ref _d_GapL, value); }
+
+        [StructuresDialog("D1_PosPlane", typeof(TD.Integer))] public int D1_PosPlane { get => _d1_PosPlane; set => Set(ref _d1_PosPlane, value); }
+        [StructuresDialog("D1_PosPlaneOff", typeof(TD.Double))] public double D1_PosPlaneOff { get => _d1_PosPlaneOff; set => Set(ref _d1_PosPlaneOff, value); }
+        [StructuresDialog("D1_PosRot", typeof(TD.Integer))] public int D1_PosRot { get => _d1_PosRot; set => Set(ref _d1_PosRot, value); }
+        [StructuresDialog("D1_PosRotOff", typeof(TD.Double))] public double D1_PosRotOff { get => _d1_PosRotOff; set => Set(ref _d1_PosRotOff, value); }
+        [StructuresDialog("D1_PosDepth", typeof(TD.Integer))] public int D1_PosDepth { get => _d1_PosDepth; set => Set(ref _d1_PosDepth, value); }
+        [StructuresDialog("D1_PosDepthOff", typeof(TD.Double))] public double D1_PosDepthOff { get => _d1_PosDepthOff; set => Set(ref _d1_PosDepthOff, value); }
+
+        [StructuresDialog("D2_PosPlane", typeof(TD.Integer))] public int D2_PosPlane { get => _d2_PosPlane; set => Set(ref _d2_PosPlane, value); }
+        [StructuresDialog("D2_PosPlaneOff", typeof(TD.Double))] public double D2_PosPlaneOff { get => _d2_PosPlaneOff; set => Set(ref _d2_PosPlaneOff, value); }
+        [StructuresDialog("D2_PosRot", typeof(TD.Integer))] public int D2_PosRot { get => _d2_PosRot; set => Set(ref _d2_PosRot, value); }
+        [StructuresDialog("D2_PosRotOff", typeof(TD.Double))] public double D2_PosRotOff { get => _d2_PosRotOff; set => Set(ref _d2_PosRotOff, value); }
+        [StructuresDialog("D2_PosDepth", typeof(TD.Integer))] public int D2_PosDepth { get => _d2_PosDepth; set => Set(ref _d2_PosDepth, value); }
+        [StructuresDialog("D2_PosDepthOff", typeof(TD.Double))] public double D2_PosDepthOff { get => _d2_PosDepthOff; set => Set(ref _d2_PosDepthOff, value); }
 
         [StructuresDialog("B_Profile", typeof(TD.String))] public string B_Profile { get => _b_Profile; set => Set(ref _b_Profile, value); }
         [StructuresDialog("B_Material", typeof(TD.String))] public string B_Material { get => _b_Material; set => Set(ref _b_Material, value); }
@@ -172,5 +182,15 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresDialog("S_Name", typeof(TD.String))] public string S_Name { get => _s_Name; set => Set(ref _s_Name, value); }
         [StructuresDialog("S_Class", typeof(TD.String))] public string S_Class { get => _s_Class; set => Set(ref _s_Class, value); }
         [StructuresDialog("S_UDA", typeof(TD.String))] public string S_UDA { get => _s_uda; set => Set(ref _s_uda, value); }
+
+        [StructuresDialog("GP_Thickness", typeof(TD.String))] public string GP_Thickness { get => _gp_Thickness; set => Set(ref _gp_Thickness, value); }
+        [StructuresDialog("GP_Material", typeof(TD.String))] public string GP_Material { get => _gp_Material; set => Set(ref _gp_Material, value); }
+        [StructuresDialog("GP_AssyPref", typeof(TD.String))] public string GP_AssyPref { get => _gp_AssyPref; set => Set(ref _gp_AssyPref, value); }
+        [StructuresDialog("GP_AssyNo", typeof(TD.String))] public string GP_AssyNo { get => _gp_AssyNo; set => Set(ref _gp_AssyNo, value); }
+        [StructuresDialog("GP_PartPref", typeof(TD.String))] public string GP_PartPref { get => _gp_PartPref; set => Set(ref _gp_PartPref, value); }
+        [StructuresDialog("GP_PartNo", typeof(TD.String))] public string GP_PartNo { get => _gp_PartNo; set => Set(ref _gp_PartNo, value); }
+        [StructuresDialog("GP_Name", typeof(TD.String))] public string GP_Name { get => _gp_Name; set => Set(ref _gp_Name, value); }
+        [StructuresDialog("GP_Class", typeof(TD.String))] public string GP_Class { get => _gp_Class; set => Set(ref _gp_Class, value); }
+        [StructuresDialog("GP_UDA", typeof(TD.String))] public string GP_UDA { get => _gp_uda; set => Set(ref _gp_uda, value); }
     }
 }

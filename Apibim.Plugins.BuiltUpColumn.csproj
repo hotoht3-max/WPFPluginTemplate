@@ -91,14 +91,20 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Services\ColumnGeometryBuilder.cs" />
+    <Compile Include="Services\CuttingStrategies.cs" />
+    <Compile Include="Services\ICuttingStrategy.cs" />
     <Compile Include="Services\Logger.cs" />
     <Compile Include="Services\PluginDataMapper.cs" />
     <Compile Include="Services\StringParserService.cs" />
     <Compile Include="Services\TeklaCatalogService.cs" />
     <Compile Include="Services\TeklaComponentService.cs" />
     <Compile Include="Services\TeklaPartBuilder.cs" />
+    <Compile Include="Services\TeklaProfileHelper.cs" />
     <Compile Include="UIControls\ComponentSelectorControl.xaml.cs">
       <DependentUpon>ComponentSelectorControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UIControls\DiaphragmPositioningControl.xaml.cs">
+      <DependentUpon>DiaphragmPositioningControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UIControls\HeaderSystemControl.xaml.cs">
       <DependentUpon>HeaderSystemControl.xaml</DependentUpon>
@@ -108,6 +114,12 @@
     </Compile>
     <Compile Include="UIControls\PartAttributesRowControl.xaml.cs">
       <DependentUpon>PartAttributesRowControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UIControls\PlateAttributesRowControl.xaml.cs">
+      <DependentUpon>PlateAttributesRowControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UIControls\PositioningRowControl.xaml.cs">
+      <DependentUpon>PositioningRowControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UIControls\ProfileSelectorControl.xaml.cs">
       <DependentUpon>ProfileSelectorControl.xaml</DependentUpon>
@@ -163,6 +175,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UIControls\DiaphragmPositioningControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UIControls\HeaderSystemControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -172,6 +188,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UIControls\PartAttributesRowControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UIControls\PlateAttributesRowControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UIControls\PositioningRowControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

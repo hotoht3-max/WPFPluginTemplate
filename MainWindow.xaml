@@ -236,6 +236,7 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Настройки планок по зонам (Фон)" FontWeight="Bold" Margin="0,10,0,5"/>
@@ -315,6 +316,8 @@
                         <UIControls:WpfFilterCheckBox Grid.Row="12" Grid.Column="0" AttributeName="S_NodesExclude"/>
                         <Label Grid.Row="12" Grid.Column="1" Content="Глобально исключить узлы:" Foreground="DarkRed" FontWeight="SemiBold"/>
                         <TextBox Grid.Row="12" Grid.Column="2" Text="{Binding S_NodesExclude}"/>
+
+                        <localUI:DiaphragmPositioningControl Grid.Row="13" Grid.ColumnSpan="3"/>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
@@ -402,7 +405,7 @@
                         <Grid Margin="0,0,0,10">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="145"/>
-                                <ColumnDefinition Width="165"/>
+                                <ColumnDefinition Width="180"/>
                                 <ColumnDefinition Width="135"/>
                                 <ColumnDefinition Width="75"/>
                                 <ColumnDefinition Width="75"/>
@@ -489,6 +492,17 @@
                             PartName="{Binding S_Name}" PartNameAttr="S_Name"
                             PartClass="{Binding S_Class}" PartClassAttr="S_Class"
                             UdaAttr="S_UDA"/>
+
+                        <localUI:PlateAttributesRowControl RowLabel="Лист распорки:"
+                            Thickness="{Binding GP_Thickness}" ThicknessAttr="GP_Thickness"
+                            Material="{Binding GP_Material}" MaterialAttr="GP_Material"
+                            PartPrefix="{Binding GP_PartPref}" PartPrefixAttr="GP_PartPref"
+                            PartStartNo="{Binding GP_PartNo}" PartStartNoAttr="GP_PartNo"
+                            AssemblyPrefix="{Binding GP_AssyPref}" AssemblyPrefixAttr="GP_AssyPref"
+                            AssemblyStartNo="{Binding GP_AssyNo}" AssemblyStartNoAttr="GP_AssyNo"
+                            PartName="{Binding GP_Name}" PartNameAttr="GP_Name"
+                            PartClass="{Binding GP_Class}" PartClassAttr="GP_Class"
+                            UdaAttr="GP_UDA"/>
 
                     </StackPanel>
                 </ScrollViewer>
