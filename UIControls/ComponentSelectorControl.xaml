@@ -23,6 +23,6 @@
 
         <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding PresetLabel, ElementName=Root}" VerticalAlignment="Center" Margin="0,0,10,0"/>
         <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding PresetText, ElementName=Root, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="24" Margin="0" VerticalContentAlignment="Center"/>
-        <Button Grid.Row="1" Grid.Column="2" Content="..." Width="28" Height="24" Margin="2,0,0,0" Click="PresetButton_Click"/>
+        <Button Grid.Row="1" Grid.Column="2" Content="..." Margin="5,0,0,0" Click="PresetButton_Click" Height="18" VerticalAlignment="Center" HorizontalAlignment="Left" Width="18"/>
     </Grid>
 </UserControl>

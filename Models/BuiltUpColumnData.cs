@@ -98,5 +98,13 @@ namespace Apibim.Plugins.BuiltUpColumn.Models
         // --- БАЗОВЫЕ ТОЧКИ ---
         public Tekla.Structures.Geometry3d.Point BasePoint1 { get; set; }
         public Tekla.Structures.Geometry3d.Point BasePoint2 { get; set; }
+
+        // --- ALPHA 1.4: НАДКОЛОННИК ---
+        public int NK_Mode { get; set; }
+        public int NK_HeightType { get; set; }
+        public double NK_Value { get; set; }
+        public double NK_Offset { get; set; }
+        public double NK_Rot { get; set; }
+        public PartSettings Nadkolonnik { get; set; }
     }
 }

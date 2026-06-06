@@ -42,6 +42,10 @@ namespace Apibim.Plugins.BuiltUpColumn
         private string _gp_Thickness = "10"; private string _gp_Material = "C245"; private string _gp_AssyPref = ""; private string _gp_AssyNo = ""; private string _gp_PartPref = "пл"; private string _gp_PartNo = "1"; private string _gp_Name = "ЛИСТ РАСПОРКИ"; private string _gp_Class = "99"; private string _gp_uda = "";
         private string _d1_CutComp = "123"; private string _d1_CutAttr = "standard"; private string _d2_CutComp = "123"; private string _d2_CutAttr = "standard";
 
+        // Надколонник (Альфа 1.4)
+        private int _nk_Mode = 0; private int _nk_HeightType = 0; private double _nk_Value = 1000.0; private double _nk_Offset = 0.0; private double _nk_Rot = 0.0;
+        private string _nk_Profile = "40K1_57837_2017"; private string _nk_Material = "C355Б"; private string _nk_AssyPref = "К"; private string _nk_AssyNo = "1"; private string _nk_PartPref = "нк"; private string _nk_PartNo = "1"; private string _nk_Name = "НАДКОЛОННИК"; private string _nk_Class = "1"; private string _nk_uda = "";
+        
         // =========================================================
         // СВОЙСТВА (Properties for Binding)
         // =========================================================
@@ -192,5 +196,22 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresDialog("GP_Name", typeof(TD.String))] public string GP_Name { get => _gp_Name; set => Set(ref _gp_Name, value); }
         [StructuresDialog("GP_Class", typeof(TD.String))] public string GP_Class { get => _gp_Class; set => Set(ref _gp_Class, value); }
         [StructuresDialog("GP_UDA", typeof(TD.String))] public string GP_UDA { get => _gp_uda; set => Set(ref _gp_uda, value); }
+
+        // Надколонник (Альфа 1.4)
+        [StructuresDialog("NK_Mode", typeof(TD.Integer))] public int NK_Mode { get => _nk_Mode; set => Set(ref _nk_Mode, value); }
+        [StructuresDialog("NK_HeightType", typeof(TD.Integer))] public int NK_HeightType { get => _nk_HeightType; set => Set(ref _nk_HeightType, value); }
+        [StructuresDialog("NK_Value", typeof(TD.Double))] public double NK_Value { get => _nk_Value; set => Set(ref _nk_Value, value); }
+        [StructuresDialog("NK_Offset", typeof(TD.Double))] public double NK_Offset { get => _nk_Offset; set => Set(ref _nk_Offset, value); }
+        [StructuresDialog("NK_Rot", typeof(TD.Double))] public double NK_Rot { get => _nk_Rot; set => Set(ref _nk_Rot, value); }
+
+        [StructuresDialog("NK_Profile", typeof(TD.String))] public string NK_Profile { get => _nk_Profile; set => Set(ref _nk_Profile, value); }
+        [StructuresDialog("NK_Material", typeof(TD.String))] public string NK_Material { get => _nk_Material; set => Set(ref _nk_Material, value); }
+        [StructuresDialog("NK_AssyPref", typeof(TD.String))] public string NK_AssyPref { get => _nk_AssyPref; set => Set(ref _nk_AssyPref, value); }
+        [StructuresDialog("NK_AssyNo", typeof(TD.String))] public string NK_AssyNo { get => _nk_AssyNo; set => Set(ref _nk_AssyNo, value); }
+        [StructuresDialog("NK_PartPref", typeof(TD.String))] public string NK_PartPref { get => _nk_PartPref; set => Set(ref _nk_PartPref, value); }
+        [StructuresDialog("NK_PartNo", typeof(TD.String))] public string NK_PartNo { get => _nk_PartNo; set => Set(ref _nk_PartNo, value); }
+        [StructuresDialog("NK_Name", typeof(TD.String))] public string NK_Name { get => _nk_Name; set => Set(ref _nk_Name, value); }
+        [StructuresDialog("NK_Class", typeof(TD.String))] public string NK_Class { get => _nk_Class; set => Set(ref _nk_Class, value); }
+        [StructuresDialog("NK_UDA", typeof(TD.String))] public string NK_UDA { get => _nk_uda; set => Set(ref _nk_uda, value); }
     }
 }

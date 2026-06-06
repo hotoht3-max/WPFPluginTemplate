@@ -88,6 +88,15 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                 S_NodesExcludePlate = data.S_NodesExcludePlate,
                 S_NodesExclude = data.S_NodesExclude,
 
+                // --- ALPHA 1.4: НАДКОЛОННИК ---
+                NK_Mode = data.NK_Mode,
+                NK_HeightType = data.NK_HeightType,
+                NK_Value = data.NK_Value,
+                NK_Offset = data.NK_Offset,
+                NK_Rot = data.NK_Rot,
+
+                Nadkolonnik = CreatePart(data.NK_Profile, data.NK_Material, data.NK_PartPref, data.NK_PartNo, data.NK_AssyPref, data.NK_AssyNo, data.NK_Name, data.NK_Class, data.NK_UDA),
+
                 Branch = CreatePart(data.B_Profile, data.B_Material, data.B_PartPref, data.B_PartNo, data.B_AssyPref, data.B_AssyNo, data.B_Name, data.B_Class, data.B_UDA),
                 Diaphragm1 = CreatePart(data.D_Profile, data.D_Material, data.D_PartPref, data.D_PartNo, data.D_AssyPref, data.D_AssyNo, data.D_Name, data.D_Class, data.D_UDA),
                 Diaphragm2 = CreatePart(data.D2_Profile, data.D2_Material, data.D2_PartPref, data.D2_PartNo, data.D2_AssyPref, data.D2_AssyNo, data.D2_Name, data.D2_Class, data.D2_UDA),

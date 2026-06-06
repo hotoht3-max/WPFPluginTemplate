@@ -100,6 +100,25 @@ namespace Apibim.Plugins.BuiltUpColumn
 
         // Лист распорки (Альфа 1.3)
         [StructuresField("GP_Thickness")] public string GP_Thickness = "10"; [StructuresField("GP_Material")] public string GP_Material = "C245"; [StructuresField("GP_AssyPref")] public string GP_AssyPref = ""; [StructuresField("GP_AssyNo")] public string GP_AssyNo = ""; [StructuresField("GP_PartPref")] public string GP_PartPref = "пл"; [StructuresField("GP_PartNo")] public string GP_PartNo = "1"; [StructuresField("GP_Name")] public string GP_Name = "ЛИСТ РАСПОРКИ"; [StructuresField("GP_Class")] public string GP_Class = "99"; [StructuresField("GP_UDA")] public string GP_UDA = "";
+
+        // =========================================================
+        // --- ALPHA 1.4: НАДКОЛОННИК ---
+        // =========================================================
+        [StructuresField("NK_Mode")] public int NK_Mode = 0;
+        [StructuresField("NK_HeightType")] public int NK_HeightType = 0;
+        [StructuresField("NK_Value")] public double NK_Value = 1000.0;
+        [StructuresField("NK_Offset")] public double NK_Offset = 0.0;
+        [StructuresField("NK_Rot")] public double NK_Rot = 0.0;
+
+        [StructuresField("NK_Profile")] public string NK_Profile = "40K1_57837_2017";
+        [StructuresField("NK_Material")] public string NK_Material = "C355Б";
+        [StructuresField("NK_AssyPref")] public string NK_AssyPref = "К";
+        [StructuresField("NK_AssyNo")] public string NK_AssyNo = "1";
+        [StructuresField("NK_PartPref")] public string NK_PartPref = "нк";
+        [StructuresField("NK_PartNo")] public string NK_PartNo = "1";
+        [StructuresField("NK_Name")] public string NK_Name = "НАДКОЛОННИК";
+        [StructuresField("NK_Class")] public string NK_Class = "1";
+        [StructuresField("NK_UDA")] public string NK_UDA = "";
     }
 
     [Plugin("Apibim_BuiltUpColumn")]
@@ -179,6 +198,15 @@ namespace Apibim.Plugins.BuiltUpColumn
                 // 3. Передаем branchWebThick в фабрику распорок
                 BuildStrutsAndDiaphragms(strutLines, zNodes, splices, colData, localY, autoBaseDist, distBetweenAxes, branchWidth, branchWebThick, branches);
 
+                BuildSplices(branches, colData);
+                BuildLacing(lacingLines, splices, colData, localY, autoBaseDist);
+                BuildStrutsAndDiaphragms(strutLines, zNodes, splices, colData, localY, autoBaseDist, distBetweenAxes, branchWidth, branchWebThick, branches);
+
+                // ==========================================
+                // ВСТАВЛЯЕМ ВЫЗОВ НАДКОЛОННИКА СЮДА:
+                // ==========================================
+                BuildNadkolonnik(branches, colData, localX, planeAngleDeg, branchWidth);
+
                 return true;
             }
             catch (Exception ex)
@@ -201,6 +229,7 @@ namespace Apibim.Plugins.BuiltUpColumn
 
             foreach (var line in branchLines)
             {
+                // Физическое создание (оставляем сумму углов - это верно для глобальной ориентации)
                 Beam branch = TeklaPartBuilder.CreateBranch(line.Point1, line.Point2, colData.Branch, planeAngleDeg + colData.Br_Rot);
                 if (!branch.Insert()) throw new Exception($"Не удалось построить ветвь: {colData.Branch.Profile}");
 
@@ -208,10 +237,11 @@ namespace Apibim.Plugins.BuiltUpColumn
 
                 if (autoBaseDist == 0.0)
                 {
-                    Services.TeklaProfileHelper.GetActualDimensions(branch, planeAngleDeg + colData.Br_Rot, out double hAlongY, out double wAlongX, out double twAlongX);
+                    // ИСПРАВЛЕНИЕ: Передаем только локальный угол ветви (Br_Rot)
+                    Services.TeklaProfileHelper.GetActualDimensions(branch, colData.Br_Rot, out double hAlongY, out double wAlongX, out double twAlongX);
                     autoBaseDist = hAlongY;
                     branchWidth = wAlongX;
-                    branchWebThick = twAlongX; // <--- НОВОЕ
+                    branchWebThick = twAlongX;
                 }
             }
             // ... (дальше без изменений)
@@ -443,7 +473,6 @@ namespace Apibim.Plugins.BuiltUpColumn
             int activePreset = lType == 1 ? 1 : lPreset;
             Beam diaphragm = TeklaPartBuilder.CreateLacing(line.Point1, line.Point2, partSettings, activePreset, lOffset);
 
-            // ПОЗИЦИОНИРОВАНИЕ ИЗ UI
             diaphragm.Position.Plane = (Tekla.Structures.Model.Position.PlaneEnum)plane;
             diaphragm.Position.PlaneOffset = planeOff;
 
@@ -458,7 +487,6 @@ namespace Apibim.Plugins.BuiltUpColumn
             // --- ШАГ 3: SOLID ВЫРЕЗЫ ---
             if (cutMode != 0 && branches != null && branches.Count >= 2)
             {
-                // Передаем строки в Фабрику!
                 Services.ICuttingStrategy strategy = Services.CuttingStrategyFactory.GetStrategy(cutMode, compName, compAttr);
 
                 Point colCenter = new Point(line.Point1);
@@ -466,9 +494,119 @@ namespace Apibim.Plugins.BuiltUpColumn
                 dir.Normalize();
                 colCenter.Translate(dir * (distBetweenAxes / 2.0));
 
-                strategy.ApplyCut(diaphragm, branches[0], colCenter, line.Point1, branchWidth, branchWebThick);
-                strategy.ApplyCut(diaphragm, branches[1], colCenter, line.Point2, branchWidth, branchWebThick);
+                // --- ФИКС БАГА "СТАРТОВОЙ ВЕТВИ" ---
+                // Список branches хранит сначала все левые ветви, затем все правые.
+                int half = branches.Count / 2;
+                Beam targetLeft = branches[0];
+                Beam targetRight = branches[half];
+
+                double zLevel = line.Point1.Z;
+
+                // Динамически ищем ветви, которые физически пересекаются с диафрагмой по высоте
+                for (int j = 0; j < half; j++)
+                {
+                    Beam lBranch = branches[j];
+                    double minZ = Math.Min(lBranch.StartPoint.Z, lBranch.EndPoint.Z) - 10.0;
+                    double maxZ = Math.Max(lBranch.StartPoint.Z, lBranch.EndPoint.Z) + 10.0;
+                    if (zLevel >= minZ && zLevel <= maxZ) targetLeft = lBranch;
+
+                    Beam rBranch = branches[half + j];
+                    double minZR = Math.Min(rBranch.StartPoint.Z, rBranch.EndPoint.Z) - 10.0;
+                    double maxZR = Math.Max(rBranch.StartPoint.Z, rBranch.EndPoint.Z) + 10.0;
+                    if (zLevel >= minZR && zLevel <= maxZR) targetRight = rBranch;
+                }
+
+                // Теперь передаем в Фабрику строго нужную левую и нужную правую ветвь
+                strategy.ApplyCut(diaphragm, targetLeft, colCenter, line.Point1, branchWidth, branchWebThick);
+                strategy.ApplyCut(diaphragm, targetRight, colCenter, line.Point2, branchWidth, branchWebThick);
             }
+        }
+
+        // ==========================================
+        // МЕТОД: ПОСТРОЕНИЕ НАДКОЛОННИКА
+        // ==========================================
+        private void BuildNadkolonnik(List<Beam> branches, BuiltUpColumnData colData, Vector localX, double planeAngleDeg, double branchWidth)
+        {
+            if (colData.NK_Mode == 0 || branches == null || branches.Count < 2) return;
+
+            if (string.IsNullOrWhiteSpace(colData.Nadkolonnik.Profile))
+                throw new Exception("Назначен Надколонник, но его 'Профиль' пуст во вкладке Атрибуты!");
+
+            int half = branches.Count / 2;
+            Beam topLeftBranch = branches[half - 1];
+            Beam topRightBranch = branches[branches.Count - 1];
+
+            Point pTopLeft = topLeftBranch.EndPoint.Z > topLeftBranch.StartPoint.Z ? topLeftBranch.EndPoint : topLeftBranch.StartPoint;
+            Point pTopRight = topRightBranch.EndPoint.Z > topRightBranch.StartPoint.Z ? topRightBranch.EndPoint : topRightBranch.StartPoint;
+
+            Point pStart = new Point();
+            Vector inwardDir = new Vector();
+
+            if (colData.NK_Mode == 1) // Слева
+            {
+                pStart = new Point(pTopLeft);
+                // localX направлен слева направо. Для левой ветви "внутрь" = это прямо по localX
+                inwardDir = new Vector(localX.X, localX.Y, localX.Z);
+            }
+            else if (colData.NK_Mode == 2) // Справа
+            {
+                pStart = new Point(pTopRight);
+                // Для правой ветви "внутрь" = это против localX (справа налево)
+                inwardDir = new Vector(-localX.X, -localX.Y, -localX.Z);
+            }
+            else if (colData.NK_Mode == 3) // Центр
+            {
+                pStart = new Point((pTopLeft.X + pTopRight.X) / 2.0, (pTopLeft.Y + pTopRight.Y) / 2.0, (pTopLeft.Z + pTopRight.Z) / 2.0);
+                inwardDir = new Vector(localX.X, localX.Y, localX.Z);
+            }
+
+            // Вычисляем длину с использованием единой переменной NK_Value
+            double length = 0.0;
+            if (colData.NK_HeightType == 0) // По длине
+            {
+                length = colData.NK_Value;
+            }
+            else if (colData.NK_HeightType == 1) // По отметке
+            {
+                double targetAbsoluteZ = colData.BasePoint1.Z + colData.NK_Value;
+                length = targetAbsoluteZ - pStart.Z;
+            }
+
+            if (length <= 0)
+            {
+                System.Windows.MessageBox.Show($"Ошибка генерации Надколонника:\nВычисленная длина ({Math.Round(length, 1)} мм) меньше или равна нулю.\n(Низ: {Math.Round(pStart.Z, 1)}, Заданный Верх: {Math.Round(colData.BasePoint1.Z + colData.NK_Value, 1)})\n\nПроверьте отметки.", "RAM BIM", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                return;
+            }
+
+            Point pEnd = new Point(pStart);
+            pEnd.Translate(0, 0, length);
+
+            // Создаем виртуальную деталь со своим независимым углом поворота
+            Beam nk = TeklaPartBuilder.CreateBranch(pStart, pEnd, colData.Nadkolonnik, planeAngleDeg + colData.NK_Rot);
+
+            // ИСПРАВЛЕНИЕ: Передаем только локальный угол надколонника (NK_Rot)
+            Services.TeklaProfileHelper.GetActualDimensions(nk, colData.NK_Rot, out double _, out double nkWidth, out double _);
+
+            // Выравнивание "ВНУТРЬ"
+            double shiftValue = 0.0;
+            if (colData.NK_Mode == 1 || colData.NK_Mode == 2)
+            {
+                // Сдвигаем на разницу полуширин вдоль вектора inwardDir
+                shiftValue = (branchWidth / 2.0) - (nkWidth / 2.0);
+            }
+            shiftValue += colData.NK_Offset; // Ручная пользовательская надстройка (положительная - глубже в колонну)
+
+            // Применяем сдвиг координат, если он не нулевой
+            if (Math.Abs(shiftValue) > 0.01)
+            {
+                pStart.Translate(inwardDir.X * shiftValue, inwardDir.Y * shiftValue, inwardDir.Z * shiftValue);
+                pEnd.Translate(inwardDir.X * shiftValue, inwardDir.Y * shiftValue, inwardDir.Z * shiftValue);
+
+                nk.StartPoint = pStart;
+                nk.EndPoint = pEnd;
+            }
+
+            if (!nk.Insert()) throw new Exception("Не удалось вставить Надколонник.");
         }
     }
 }
