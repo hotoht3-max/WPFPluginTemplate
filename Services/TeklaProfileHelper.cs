@@ -20,17 +20,17 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
 
             double rot = Math.Abs(rotation % 180);
 
-            if (rot > 45 && rot < 135)
+            if (rot > 45 && rot < 135) // Например, Br_Rot = 90
             {
-                heightAlongY = w; // Разнос ветвей
-                widthAlongX = h;  // Габарит вдоль распорки
-                webThicknessAlongX = h; // Если ветвь повернута боком, мы упираемся в ширину полок. Стенка недоступна = Габарит.
+                heightAlongY = h; // Разнос решетки = полная высота двутавра
+                widthAlongX = w;  // Ширина ветви в плоскости колонны = ширина полки
+                webThicknessAlongX = tw; // Толщина стенки тоже повернулась и смотрит вдоль оси X
             }
-            else
+            else // Например, Br_Rot = 0
             {
-                heightAlongY = h;
-                widthAlongX = w;
-                webThicknessAlongX = tw; // Честная толщина стенки для двутавра
+                heightAlongY = w; // Разнос решетки = ширина полки
+                widthAlongX = h;  // Ширина ветви в плоскости колонны = полная высота двутавра
+                webThicknessAlongX = h; // При угле 0 стенка развернута поперек оси X, поэтому габарит по X = полной высоте h
             }
         }
     }

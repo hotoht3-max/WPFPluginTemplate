@@ -105,6 +105,6 @@ namespace Apibim.Plugins.BuiltUpColumn.Models
         public double NK_Value { get; set; }
         public double NK_Offset { get; set; }
         public double NK_Rot { get; set; }
-        public PartSettings Nadkolonnik { get; set; }
+        public PartSettings SupColumn { get; set; }
     }
 }

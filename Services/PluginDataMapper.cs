@@ -95,7 +95,7 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                 NK_Offset = data.NK_Offset,
                 NK_Rot = data.NK_Rot,
 
-                Nadkolonnik = CreatePart(data.NK_Profile, data.NK_Material, data.NK_PartPref, data.NK_PartNo, data.NK_AssyPref, data.NK_AssyNo, data.NK_Name, data.NK_Class, data.NK_UDA),
+                SupColumn = CreatePart(data.NK_Profile, data.NK_Material, data.NK_PartPref, data.NK_PartNo, data.NK_AssyPref, data.NK_AssyNo, data.NK_Name, data.NK_Class, data.NK_UDA),
 
                 Branch = CreatePart(data.B_Profile, data.B_Material, data.B_PartPref, data.B_PartNo, data.B_AssyPref, data.B_AssyNo, data.B_Name, data.B_Class, data.B_UDA),
                 Diaphragm1 = CreatePart(data.D_Profile, data.D_Material, data.D_PartPref, data.D_PartNo, data.D_AssyPref, data.D_AssyNo, data.D_Name, data.D_Class, data.D_UDA),

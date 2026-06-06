@@ -184,10 +184,11 @@ namespace Apibim.Plugins.BuiltUpColumn
                 var strutLines = ColumnGeometryBuilder.GetStrutLines(colData, zNodes);
                 var splices = StringParserService.ParseSplices(colData.SplicesText);
 
-                // --- 4. ОРКЕСТРАЦИЯ (Вызов Фабрик) ---
+                /// --- 4. ОРКЕСТРАЦИЯ (Вызов Фабрик) ---
 
                 // 1. Честное расстояние между теоретическими осями ветвей (Для вычисления ДЛИНЫ листа)
-                double distBetweenAxes = Tekla.Structures.Geometry3d.Distance.PointToPoint(branchLines[0].Point1, branchLines[1].Point1);
+                // ИСПРАВЛЕНИЕ: Берем строго из colData.Bcol, чтобы появление стыков не искажало расстояние
+                double distBetweenAxes = colData.Bcol;
 
                 // 2. Строим ветви и получаем габариты, включая толщину стенки
                 var branches = BuildBranches(branchLines, colData, planeAngleDeg, out double autoBaseDist, out double branchWidth, out double branchWebThick);
@@ -205,7 +206,7 @@ namespace Apibim.Plugins.BuiltUpColumn
                 // ==========================================
                 // ВСТАВЛЯЕМ ВЫЗОВ НАДКОЛОННИКА СЮДА:
                 // ==========================================
-                BuildNadkolonnik(branches, colData, localX, planeAngleDeg, branchWidth);
+                BuildSupColumn(branches, colData, localX, planeAngleDeg, branchWidth);
 
                 return true;
             }
@@ -525,11 +526,11 @@ namespace Apibim.Plugins.BuiltUpColumn
         // ==========================================
         // МЕТОД: ПОСТРОЕНИЕ НАДКОЛОННИКА
         // ==========================================
-        private void BuildNadkolonnik(List<Beam> branches, BuiltUpColumnData colData, Vector localX, double planeAngleDeg, double branchWidth)
+        private void BuildSupColumn(List<Beam> branches, BuiltUpColumnData colData, Vector localX, double planeAngleDeg, double branchWidth)
         {
             if (colData.NK_Mode == 0 || branches == null || branches.Count < 2) return;
 
-            if (string.IsNullOrWhiteSpace(colData.Nadkolonnik.Profile))
+            if (string.IsNullOrWhiteSpace(colData.SupColumn.Profile))
                 throw new Exception("Назначен Надколонник, но его 'Профиль' пуст во вкладке Атрибуты!");
 
             int half = branches.Count / 2;
@@ -581,22 +582,25 @@ namespace Apibim.Plugins.BuiltUpColumn
             Point pEnd = new Point(pStart);
             pEnd.Translate(0, 0, length);
 
-            // Создаем виртуальную деталь со своим независимым углом поворота
-            Beam nk = TeklaPartBuilder.CreateBranch(pStart, pEnd, colData.Nadkolonnik, planeAngleDeg + colData.NK_Rot);
+            // Создаем виртуальную деталь со своим независимым углом поворота (NK_Rot)
+            Beam nk = TeklaPartBuilder.CreateBranch(pStart, pEnd, colData.SupColumn, planeAngleDeg + colData.NK_Rot);
 
-            // ИСПРАВЛЕНИЕ: Передаем только локальный угол надколонника (NK_Rot)
+            // 1. СНАЧАЛА ВСТАВЛЯЕМ ДЕТАЛЬ В МОДЕЛЬ (Иначе Tekla не отдаст габариты через GetReportProperty!)
+            if (!nk.Insert()) throw new Exception("Не удалось вставить Надколонник.");
+
+            // 2. ТЕПЕРЬ ПОЛУЧАЕМ ЧЕСТНЫЕ ГАБАРИТЫ
             Services.TeklaProfileHelper.GetActualDimensions(nk, colData.NK_Rot, out double _, out double nkWidth, out double _);
 
-            // Выравнивание "ВНУТРЬ"
+            // 3. ВЫЧИСЛЯЕМ СДВИГ ПО НАРУЖНЫМ ГРАНЯМ
             double shiftValue = 0.0;
             if (colData.NK_Mode == 1 || colData.NK_Mode == 2)
             {
-                // Сдвигаем на разницу полуширин вдоль вектора inwardDir
-                shiftValue = (branchWidth / 2.0) - (nkWidth / 2.0);
+                // Алгебраически это в точности твоя логика с Max/Min
+                shiftValue = (nkWidth / 2.0) - (branchWidth / 2.0);
             }
-            shiftValue += colData.NK_Offset; // Ручная пользовательская надстройка (положительная - глубже в колонну)
+            shiftValue += colData.NK_Offset; // Ручная пользовательская надстройка
 
-            // Применяем сдвиг координат, если он не нулевой
+            // 4. ЕСЛИ НУЖЕН СДВИГ — ДВИГАЕМ ТОЧКИ И ОБНОВЛЯЕМ ДЕТАЛЬ
             if (Math.Abs(shiftValue) > 0.01)
             {
                 pStart.Translate(inwardDir.X * shiftValue, inwardDir.Y * shiftValue, inwardDir.Z * shiftValue);
@@ -604,9 +608,8 @@ namespace Apibim.Plugins.BuiltUpColumn
 
                 nk.StartPoint = pStart;
                 nk.EndPoint = pEnd;
+                nk.Modify(); // Применяем сдвиг к уже созданной детали
             }
-
-            if (!nk.Insert()) throw new Exception("Не удалось вставить Надколонник.");
         }
     }
 }
