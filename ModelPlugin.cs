@@ -198,15 +198,9 @@ namespace Apibim.Plugins.BuiltUpColumn
 
                 // 3. Передаем branchWebThick в фабрику распорок
                 BuildStrutsAndDiaphragms(strutLines, zNodes, splices, colData, localY, autoBaseDist, distBetweenAxes, branchWidth, branchWebThick, branches);
-
-                BuildSplices(branches, colData);
-                BuildLacing(lacingLines, splices, colData, localY, autoBaseDist);
-                BuildStrutsAndDiaphragms(strutLines, zNodes, splices, colData, localY, autoBaseDist, distBetweenAxes, branchWidth, branchWebThick, branches);
-
-                // ==========================================
-                // ВСТАВЛЯЕМ ВЫЗОВ НАДКОЛОННИКА СЮДА:
-                // ==========================================
-                BuildSupColumn(branches, colData, localX, planeAngleDeg, branchWidth);
+                               
+                // 4. Строим надколонник (Альфа 1.5)
+                BuildSupColumn(branches, colData, localX, planeAngleDeg, branchWidth, splices);
 
                 return true;
             }
@@ -524,9 +518,9 @@ namespace Apibim.Plugins.BuiltUpColumn
         }
 
         // ==========================================
-        // МЕТОД: ПОСТРОЕНИЕ НАДКОЛОННИКА
+        // МЕТОД: ПОСТРОЕНИЕ НАДКОЛОННИКА (Alpha 1.5)
         // ==========================================
-        private void BuildSupColumn(List<Beam> branches, BuiltUpColumnData colData, Vector localX, double planeAngleDeg, double branchWidth)
+        private void BuildSupColumn(List<Beam> branches, BuiltUpColumnData colData, Vector localX, double planeAngleDeg, double branchWidth, List<double> splices)
         {
             if (colData.NK_Mode == 0 || branches == null || branches.Count < 2) return;
 
@@ -546,13 +540,11 @@ namespace Apibim.Plugins.BuiltUpColumn
             if (colData.NK_Mode == 1) // Слева
             {
                 pStart = new Point(pTopLeft);
-                // localX направлен слева направо. Для левой ветви "внутрь" = это прямо по localX
                 inwardDir = new Vector(localX.X, localX.Y, localX.Z);
             }
             else if (colData.NK_Mode == 2) // Справа
             {
                 pStart = new Point(pTopRight);
-                // Для правой ветви "внутрь" = это против localX (справа налево)
                 inwardDir = new Vector(-localX.X, -localX.Y, -localX.Z);
             }
             else if (colData.NK_Mode == 3) // Центр
@@ -561,7 +553,6 @@ namespace Apibim.Plugins.BuiltUpColumn
                 inwardDir = new Vector(localX.X, localX.Y, localX.Z);
             }
 
-            // Вычисляем длину с использованием единой переменной NK_Value
             double length = 0.0;
             if (colData.NK_HeightType == 0) // По длине
             {
@@ -573,42 +564,93 @@ namespace Apibim.Plugins.BuiltUpColumn
                 length = targetAbsoluteZ - pStart.Z;
             }
 
-            if (length <= 0)
-            {
-                System.Windows.MessageBox.Show($"Ошибка генерации Надколонника:\nВычисленная длина ({Math.Round(length, 1)} мм) меньше или равна нулю.\n(Низ: {Math.Round(pStart.Z, 1)}, Заданный Верх: {Math.Round(colData.BasePoint1.Z + colData.NK_Value, 1)})\n\nПроверьте отметки.", "RAM BIM", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
-                return;
-            }
+            if (length <= 0) return;
 
             Point pEnd = new Point(pStart);
             pEnd.Translate(0, 0, length);
 
-            // Создаем виртуальную деталь со своим независимым углом поворота (NK_Rot)
-            Beam nk = TeklaPartBuilder.CreateBranch(pStart, pEnd, colData.SupColumn, planeAngleDeg + colData.NK_Rot);
+            // --- 1. ФИЛЬТРАЦИЯ СТЫКОВ В ЗОНЕ НАДКОЛОННИКА ---
+            List<double> nkSplices = new List<double>();
+            if (splices != null)
+            {
+                foreach (double z in splices)
+                {
+                    // Допуск 1 мм, чтобы не резать, если отметка идеально совпадает с верхом/низом
+                    if (z > pStart.Z + 1.0 && z < pEnd.Z - 1.0)
+                    {
+                        nkSplices.Add(z);
+                    }
+                }
+                nkSplices.Sort();
+            }
 
-            // 1. СНАЧАЛА ВСТАВЛЯЕМ ДЕТАЛЬ В МОДЕЛЬ (Иначе Tekla не отдаст габариты через GetReportProperty!)
-            if (!nk.Insert()) throw new Exception("Не удалось вставить Надколонник.");
+            // --- 2. ГЕНЕРАЦИЯ ПЕРВОГО СЕГМЕНТА (ДЛЯ ГАБАРИТОВ) ---
+            Point firstSegEnd = new Point(pStart);
+            firstSegEnd.Z = nkSplices.Count > 0 ? nkSplices[0] : pEnd.Z;
 
-            // 2. ТЕПЕРЬ ПОЛУЧАЕМ ЧЕСТНЫЕ ГАБАРИТЫ
-            Services.TeklaProfileHelper.GetActualDimensions(nk, colData.NK_Rot, out double _, out double nkWidth, out double _);
+            Beam firstNk = TeklaPartBuilder.CreateBranch(pStart, firstSegEnd, colData.SupColumn, planeAngleDeg + colData.NK_Rot);
+            if (!firstNk.Insert()) throw new Exception("Не удалось вставить Надколонник.");
 
-            // 3. ВЫЧИСЛЯЕМ СДВИГ ПО НАРУЖНЫМ ГРАНЯМ
+            Services.TeklaProfileHelper.GetActualDimensions(firstNk, colData.NK_Rot, out double _, out double nkWidth, out double _);
+
+            // --- 3. ВЫРАВНИВАНИЕ ОСИ (ВЕКТОР) ---
             double shiftValue = 0.0;
             if (colData.NK_Mode == 1 || colData.NK_Mode == 2)
             {
-                // Алгебраически это в точности твоя логика с Max/Min
                 shiftValue = (nkWidth / 2.0) - (branchWidth / 2.0);
             }
-            shiftValue += colData.NK_Offset; // Ручная пользовательская надстройка
+            shiftValue += colData.NK_Offset;
 
-            // 4. ЕСЛИ НУЖЕН СДВИГ — ДВИГАЕМ ТОЧКИ И ОБНОВЛЯЕМ ДЕТАЛЬ
             if (Math.Abs(shiftValue) > 0.01)
             {
+                // Сдвигаем базовые точки всей теоретической оси Надколонника
                 pStart.Translate(inwardDir.X * shiftValue, inwardDir.Y * shiftValue, inwardDir.Z * shiftValue);
                 pEnd.Translate(inwardDir.X * shiftValue, inwardDir.Y * shiftValue, inwardDir.Z * shiftValue);
+            }
 
-                nk.StartPoint = pStart;
-                nk.EndPoint = pEnd;
-                nk.Modify(); // Применяем сдвиг к уже созданной детали
+            // --- 4. ПРИМЕНЕНИЕ СДВИГА К ПЕРВОМУ СЕГМЕНТУ ---
+            List<Beam> nkSegments = new List<Beam>();
+            firstNk.StartPoint = new Point(pStart);
+            firstNk.EndPoint = new Point(pStart.X, pStart.Y, nkSplices.Count > 0 ? nkSplices[0] : pEnd.Z);
+            firstNk.Modify();
+            nkSegments.Add(firstNk);
+
+            // --- 5. ГЕНЕРАЦИЯ ОСТАЛЬНЫХ СЕГМЕНТОВ ---
+            for (int i = 0; i < nkSplices.Count; i++)
+            {
+                // X и Y берем от уже сдвинутого pStart, чтобы сегменты стояли идеально ровно
+                Point segStart = new Point(pStart.X, pStart.Y, nkSplices[i]);
+                Point segEnd = new Point(pStart.X, pStart.Y, (i + 1 < nkSplices.Count) ? nkSplices[i + 1] : pEnd.Z);
+
+                Beam nk = TeklaPartBuilder.CreateBranch(segStart, segEnd, colData.SupColumn, planeAngleDeg + colData.NK_Rot);
+                if (!nk.Insert()) throw new Exception("Не удалось вставить сегмент надколонника.");
+
+                nkSegments.Add(nk);
+            }
+
+            // --- 6. СОЗДАНИЕ КОМПОНЕНТОВ СТЫКА ---
+            if (nkSplices.Count > 0 && !string.IsNullOrWhiteSpace(colData.Splice5Component))
+            {
+                for (int i = 0; i < nkSegments.Count - 1; i++)
+                {
+                    Beam primary = nkSegments[i];   // Нижний хлыст
+                    Beam secondary = nkSegments[i + 1]; // Верхний хлыст
+
+                    // Вызываем наш правильный универсальный метод
+                    Services.TeklaComponentService.InsertConnection(
+                        colData.Splice5Component,
+                        colData.Splice5Preset,
+                        primary,
+                        new List<ModelObject> { secondary },
+                        null, // upVector оставляем null для авто-ориентации
+                        out string errorMessage);
+
+                    // Опционально можно вывести ошибку в консоль, если компонент не встал
+                    if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Ошибка генерации стыка НК: {errorMessage}");
+                    }
+                }
             }
         }
     }

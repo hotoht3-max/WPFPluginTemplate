@@ -9,7 +9,7 @@
         xmlns:UIControls="clr-namespace:Tekla.Structures.Dialog.UIControls;assembly=Tekla.Structures.Dialog" 
         x:Class="Apibim.Plugins.BuiltUpColumn.MainWindow"
         mc:Ignorable="d"
-        Title="Сквозная колонна RAM (Alpha)" FontSize="14" Height="700" Width="1200">
+        Title="Сквозная колонна RAM (Alpha)" FontSize="14" Height="900" Width="1200">
 
     <Grid>
         <Grid.Resources>
@@ -422,10 +422,12 @@
                         <UIControls:WpfFilterCheckBox Grid.Row="15" Grid.Column="0" AttributeName="Splice4Preset"/>
                         <localUI:ComponentSelectorControl Grid.Row="14" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" ComponentText="{Binding Splice4Component, Mode=TwoWay}" PresetText="{Binding Splice4Preset, Mode=TwoWay}"/>
 
-                        <TextBlock Grid.Row="16" Grid.Column="1" Grid.ColumnSpan="2" Text="Уровень 5 (Переопределить выбранные)" FontWeight="Bold" Margin="0,15,0,5"/>
-                        <UIControls:WpfFilterCheckBox Grid.Row="17" Grid.Column="0" AttributeName="Splice5Indexes"/>
-                        <Label Grid.Row="17" Grid.Column="1" Content="Номера стыков:"/>
-                        <TextBox Grid.Row="17" Grid.Column="2" Text="{Binding Splice5Indexes}"/>
+                        <TextBlock Grid.Row="16" Grid.Column="1" Grid.ColumnSpan="2" Text="Стыки надколонника" FontWeight="Bold" Foreground="#FF0055A4" Margin="0,15,0,5"/>
+
+                        <UIControls:WpfFilterCheckBox Grid.Row="17" Grid.Column="0" AttributeName="Splice5Indexes" Visibility="Collapsed"/>
+                        <Label Grid.Row="17" Grid.Column="1" Content="Номера стыков:" Visibility="Collapsed"/>
+                        <TextBox Grid.Row="17" Grid.Column="2" Text="{Binding Splice5Indexes}" Visibility="Collapsed"/>
+
                         <UIControls:WpfFilterCheckBox Grid.Row="18" Grid.Column="0" AttributeName="Splice5Component"/>
                         <UIControls:WpfFilterCheckBox Grid.Row="19" Grid.Column="0" AttributeName="Splice5Preset"/>
                         <localUI:ComponentSelectorControl Grid.Row="18" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" ComponentText="{Binding Splice5Component, Mode=TwoWay}" PresetText="{Binding Splice5Preset, Mode=TwoWay}"/>
