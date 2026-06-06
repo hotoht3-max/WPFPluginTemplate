@@ -22,6 +22,12 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresField("Hcol_e2")] public double Hcol_e2 = 600.0;
         [StructuresField("Hcol_e3")] public double Hcol_e3 = 600.0;
 
+        // --- ALPHA 1.6.1: СМЕЩЕНИЯ ---
+
+        [StructuresField("Global_Dx")] public double Global_Dx = 0.0;
+        [StructuresField("Global_Dy")] public double Global_Dy = 0.0;
+        [StructuresField("Global_Rot")] public double Global_Rot = 0.0;
+
         // =========================================================
         // --- ALPHA 1.1: СТЫКИ ВЕТВЕЙ ---
         // =========================================================
@@ -159,15 +165,30 @@ namespace Apibim.Plugins.BuiltUpColumn
                 Point p2Temp = (Point)Input[1].GetInput();
                 p2Temp = p2Temp.ResetZ(p1.Z); // Используем Extension!
 
-                Vector localX = PointExtension.GetVector(p1, p2Temp); // Получаем вектор без dx/dy
-                if (localX.GetLength() < 10.0) return false;          // Нативный расчет длины
+                // Исходное направление по двум точкам
+                Vector initialDir = PointExtension.GetVector(p1, p2Temp);
+                if (initialDir.GetLength() < 10.0) return false;
 
-                localX.Normalize(); // Делаем длину вектора равной 1
-                Vector localY = new Vector(-localX.Y, localX.X, 0);
-                double planeAngleDeg = Math.Atan2(localX.Y, localX.X) * (180.0 / Math.PI); // Угол оставляем для RotationOffset
+                // Вычисляем углы и применяем глобальный поворот
+                double initialAngleRad = Math.Atan2(initialDir.Y, initialDir.X);
+                double finalAngleRad = initialAngleRad + (Data.Global_Rot * Math.PI / 180.0);
 
+                // Формируем повернутые локальные векторы
+                Vector localX = new Vector(Math.Cos(finalAngleRad), Math.Sin(finalAngleRad), 0);
+                Vector localY = new Vector(-Math.Sin(finalAngleRad), Math.Cos(finalAngleRad), 0);
+                double planeAngleDeg = finalAngleRad * (180.0 / Math.PI);
+
+                // Сдвиг p1 в локальной плоскости (вдоль уже повернутых векторов)
+                Vector totalShift = new Vector(
+                    localX.X * Data.Global_Dx + localY.X * Data.Global_Dy,
+                    localX.Y * Data.Global_Dx + localY.Y * Data.Global_Dy,
+                    0);
+
+                p1.Translate(totalShift.X, totalShift.Y, totalShift.Z);
+
+                // p2 теперь жестко привязывается к p1 по вектору на расстоянии Bcol
                 Point p2 = new Point(p1);
-                p2.Translate(localX * Data.Bcol); // Сдвигаем точку по вектору (используем Extension)
+                p2.Translate(localX.X * Data.Bcol, localX.Y * Data.Bcol, localX.Z * Data.Bcol);
 
                 // --- 2. МАППИНГ ДАННЫХ (DataMapper) ---
                 var colData = PluginDataMapper.Map(Data);

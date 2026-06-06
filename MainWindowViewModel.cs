@@ -45,7 +45,10 @@ namespace Apibim.Plugins.BuiltUpColumn
         // Надколонник (Альфа 1.4)
         private int _nk_Mode = 0; private int _nk_HeightType = 0; private double _nk_Value = 1000.0; private double _nk_Offset = 0.0; private double _nk_Rot = 0.0;
         private string _nk_Profile = "40K1_57837_2017"; private string _nk_Material = "C355Б"; private string _nk_AssyPref = "К"; private string _nk_AssyNo = "1"; private string _nk_PartPref = "нк"; private string _nk_PartNo = "1"; private string _nk_Name = "НАДКОЛОННИК"; private string _nk_Class = "1"; private string _nk_uda = "";
-        
+
+        // Смещения (Alpha 1.6.1)
+        private double _global_Dx = 0.0; private double _global_Dy = 0.0; private double _global_Rot = 0.0;
+
         // =========================================================
         // СВОЙСТВА (Properties for Binding)
         // =========================================================
@@ -213,5 +216,10 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresDialog("NK_Name", typeof(TD.String))] public string NK_Name { get => _nk_Name; set => Set(ref _nk_Name, value); }
         [StructuresDialog("NK_Class", typeof(TD.String))] public string NK_Class { get => _nk_Class; set => Set(ref _nk_Class, value); }
         [StructuresDialog("NK_UDA", typeof(TD.String))] public string NK_UDA { get => _nk_uda; set => Set(ref _nk_uda, value); }
+
+        // Смещения Alpha 1.6.1
+        [StructuresDialog("Global_Dx", typeof(TD.Double))] public double Global_Dx { get => _global_Dx; set => Set(ref _global_Dx, value); }
+        [StructuresDialog("Global_Dy", typeof(TD.Double))] public double Global_Dy { get => _global_Dy; set => Set(ref _global_Dy, value); }
+        [StructuresDialog("Global_Rot", typeof(TD.Double))] public double Global_Rot { get => _global_Rot; set => Set(ref _global_Rot, value); }
     }
 }

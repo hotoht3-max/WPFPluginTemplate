@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Tekla.Structures.Plugins;
 
 namespace Apibim.Plugins.BuiltUpColumn.Models
 {
@@ -106,5 +107,11 @@ namespace Apibim.Plugins.BuiltUpColumn.Models
         public double NK_Offset { get; set; }
         public double NK_Rot { get; set; }
         public PartSettings SupColumn { get; set; }
-    }
+
+		// --- ALPHA 1.6.1: СМЕЩЕНИЯ ---
+		public double Global_Dx { get; set; }
+		public double Global_Dy { get; set; }
+		public double Global_Rot { get; set; }
+
+	}
 }
