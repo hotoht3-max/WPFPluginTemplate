@@ -142,6 +142,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="README.MD" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="PropertyChanged.Fody">
