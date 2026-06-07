@@ -111,6 +111,21 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
 				HB_PosDepth = data.HB_PosDepth,
 				HB_PosDepthOff = data.HB_PosDepthOff,
 
+				// --- ALPHA 1.6.3: УЗЛЫ БАЛКИ ---
+				HB_C1_Main = data.HB_C1_Main,
+				HB_C1_Comp = data.HB_C1_Comp,
+				HB_C1_Attr = data.HB_C1_Attr,
+
+				HB_C2_Main = data.HB_C2_Main,
+				HB_C2_Comp = data.HB_C2_Comp,
+				HB_C2_Attr = data.HB_C2_Attr,
+
+				HB_T1_Comp = data.HB_T1_Comp,
+				HB_T1_Attr = data.HB_T1_Attr,
+
+				HB_T2_Comp = data.HB_T2_Comp,
+				HB_T2_Attr = data.HB_T2_Attr,
+
 				SupColumn = CreatePart(data.NK_Profile, data.NK_Material, data.NK_PartPref, data.NK_PartNo, data.NK_AssyPref, data.NK_AssyNo, data.NK_Name, data.NK_Class, data.NK_UDA),
 				HeadBeam = CreatePart(data.HB_Profile, data.HB_Material, data.HB_PartPref, data.HB_PartNo, data.HB_AssyPref, data.HB_AssyNo, data.HB_Name, data.HB_Class, data.HB_UDA),
 				Branch = CreatePart(data.B_Profile, data.B_Material, data.B_PartPref, data.B_PartNo, data.B_AssyPref, data.B_AssyNo, data.B_Name, data.B_Class, data.B_UDA),

@@ -151,6 +151,21 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresField("HB_Name")] public string HB_Name = "БАЛКА ОГОЛОВКА";
         [StructuresField("HB_Class")] public string HB_Class = "6";
         [StructuresField("HB_UDA")] public string HB_UDA = "";
+
+        // --- ALPHA 1.6.3: КОМПОНЕНТЫ БАЛКИ ---
+        [StructuresField("HB_C1_Main")] public int HB_C1_Main = 0; // 0-Ветвь, 1-Балка (Левый узел)
+        [StructuresField("HB_C1_Comp")] public string HB_C1_Comp = "";
+        [StructuresField("HB_C1_Attr")] public string HB_C1_Attr = "";
+
+        [StructuresField("HB_C2_Main")] public int HB_C2_Main = 0; // 0-Ветвь, 1-Балка (Правый узел)
+        [StructuresField("HB_C2_Comp")] public string HB_C2_Comp = "";
+        [StructuresField("HB_C2_Attr")] public string HB_C2_Attr = "";
+
+        [StructuresField("HB_T1_Comp")] public string HB_T1_Comp = ""; // Левый торец
+        [StructuresField("HB_T1_Attr")] public string HB_T1_Attr = "";
+
+        [StructuresField("HB_T2_Comp")] public string HB_T2_Comp = ""; // Правый торец
+        [StructuresField("HB_T2_Attr")] public string HB_T2_Attr = "";
     }
 
     [Plugin("Apibim_BuiltUpColumn")]
@@ -260,7 +275,7 @@ namespace Apibim.Plugins.BuiltUpColumn
 
                 if (colData.Head_Type == 2 || colData.Head_Type == 3)
                 {
-                    BuildHeadBeam(p1, colData, localX, planeAngleDeg, colData.Hcol_1);
+                    BuildHeadBeam(p1, colData, localX, planeAngleDeg, colData.Hcol_1, branches);
                 }
 
                 return true;
@@ -687,41 +702,72 @@ namespace Apibim.Plugins.BuiltUpColumn
                 }
             }
         }
-        private void BuildHeadBeam(Point p1, BuiltUpColumnData colData, Vector localX, double planeAngleDeg, double zLevel)
+        private void BuildHeadBeam(Point p1, BuiltUpColumnData colData, Vector localX, double planeAngleDeg, double zLevel, List<Beam> branches)
         {
             if (string.IsNullOrWhiteSpace(colData.HeadBeam.Profile))
                 throw new Exception("Назначена Балка оголовка, но её 'Профиль' пуст во вкладке Атрибуты!");
 
-            // 1. Формируем осевую линию балки
             Point bStart = new Point(p1.X, p1.Y, p1.Z + zLevel);
             Point bEnd = new Point(bStart);
             bEnd.Translate(localX.X * colData.Bcol, localX.Y * colData.Bcol, localX.Z * colData.Bcol);
 
-            // 2. Применяем вылеты
             if (Math.Abs(colData.HB_OverhangLeft) > 0.01)
                 bStart.Translate(localX.X * -colData.HB_OverhangLeft, localX.Y * -colData.HB_OverhangLeft, localX.Z * -colData.HB_OverhangLeft);
 
             if (Math.Abs(colData.HB_OverhangRight) > 0.01)
                 bEnd.Translate(localX.X * colData.HB_OverhangRight, localX.Y * colData.HB_OverhangRight, localX.Z * colData.HB_OverhangRight);
 
-            // 3. Вызываем PartBuilder
             Beam headBeam = TeklaPartBuilder.CreateBranch(bStart, bEnd, colData.HeadBeam, planeAngleDeg);
 
-            // 4. ПЕРЕОПРЕДЕЛЯЕМ ПОЗИЦИОНИРОВАНИЕ ИЗ UI до вставки в модель
             headBeam.Position.Plane = (Tekla.Structures.Model.Position.PlaneEnum)colData.HB_PosPlane;
             headBeam.Position.PlaneOffset = colData.HB_PosPlaneOff;
-
-            // ИСПРАВЛЕНИЕ: Передаем только чистый угол из UI, без planeAngleDeg!
             headBeam.Position.Rotation = (Tekla.Structures.Model.Position.RotationEnum)colData.HB_PosRot;
             headBeam.Position.RotationOffset = colData.HB_PosRotOff;
-
             headBeam.Position.Depth = (Tekla.Structures.Model.Position.DepthEnum)colData.HB_PosDepth;
             headBeam.Position.DepthOffset = colData.HB_PosDepthOff;
 
-            // 5. ВСТАВЛЯЕМ ДЕТАЛЬ В БАЗУ ДАННЫХ
             if (!headBeam.Insert())
             {
                 throw new Exception("Не удалось вставить Балку оголовка в модель.");
+            }
+
+            // ==============================================================
+            // 6. КОМПОНЕНТЫ И ДЕТАЛИРОВКА (Alpha 1.6.3)
+            // ==============================================================
+            if (branches != null && branches.Count >= 2)
+            {
+                int half = branches.Count / 2;
+                Beam topLeftBranch = branches[half - 1]; // Верхний хлыст левой ветви
+                Beam topRightBranch = branches[branches.Count - 1]; // Верхний хлыст правой ветви
+
+                // 6.1 Узлы примыкания балки к ветвям
+                if (!string.IsNullOrWhiteSpace(colData.HB_C1_Comp))
+                {
+                    // Логика выбора Главной детали пользователем (0 - Ветвь, 1 - Балка)
+                    ModelObject primary = colData.HB_C1_Main == 0 ? (ModelObject)topLeftBranch : headBeam;
+                    ModelObject secondary = colData.HB_C1_Main == 0 ? (ModelObject)headBeam : topLeftBranch;
+                    Services.TeklaComponentService.InsertConnection(colData.HB_C1_Comp, colData.HB_C1_Attr, primary, new List<ModelObject> { secondary }, null, out _);
+                }
+
+                if (!string.IsNullOrWhiteSpace(colData.HB_C2_Comp))
+                {
+                    ModelObject primary = colData.HB_C2_Main == 0 ? (ModelObject)topRightBranch : headBeam;
+                    ModelObject secondary = colData.HB_C2_Main == 0 ? (ModelObject)headBeam : topRightBranch;
+                    Services.TeklaComponentService.InsertConnection(colData.HB_C2_Comp, colData.HB_C2_Attr, primary, new List<ModelObject> { secondary }, null, out _);
+                }
+            }
+
+            // 6.2 Торцевые детали (Терминалы)
+            if (!string.IsNullOrWhiteSpace(colData.HB_T1_Comp))
+            {
+                // Используем InsertDetail для левого торца по координатам bStart
+                Services.TeklaComponentService.InsertDetail(colData.HB_T1_Comp, colData.HB_T1_Attr, headBeam, bStart, null, out _);
+            }
+
+            if (!string.IsNullOrWhiteSpace(colData.HB_T2_Comp))
+            {
+                // Используем InsertDetail для правого торца по координатам bEnd
+                Services.TeklaComponentService.InsertDetail(colData.HB_T2_Comp, colData.HB_T2_Attr, headBeam, bEnd, null, out _);
             }
         }
     }

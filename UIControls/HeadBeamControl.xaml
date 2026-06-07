@@ -15,6 +15,12 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <UIControls:WpfFilterCheckBox Grid.Row="0" Grid.Column="0" AttributeName="HB_OverhangLeft" VerticalAlignment="Center" Margin="5,0"/>
@@ -57,6 +63,55 @@
                     PosDepth="{Binding HB_PosDepth}" PosDepthAttr="HB_PosDepth"
                     PosDepthOff="{Binding HB_PosDepthOff}" PosDepthOffAttr="HB_PosDepthOff"/>
             </Grid>
+            <TextBlock Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Text="Узлы примыкания к ветвям" FontWeight="Bold" Foreground="#FF0055A4" Margin="0,20,0,5"/>
+
+            <UIControls:WpfFilterCheckBox Grid.Row="5" Grid.Column="0" AttributeName="HB_C1_Main" VerticalAlignment="Center" Margin="5,0"/>
+            <UIControls:WpfFilterCheckBox Grid.Row="5" Grid.Column="0" AttributeName="HB_C1_Comp" Visibility="Collapsed"/>
+            <UIControls:WpfFilterCheckBox Grid.Row="5" Grid.Column="0" AttributeName="HB_C1_Attr" Visibility="Collapsed"/>
+
+            <Label Grid.Row="5" Grid.Column="1" Content="Левый узел (Главная дет.):" VerticalAlignment="Center" Margin="0,2"/>
+            <Grid Grid.Row="5" Grid.Column="2" Margin="0,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="90"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <ComboBox Grid.Column="0" SelectedIndex="{Binding HB_C1_Main}" Height="24" VerticalContentAlignment="Center" Margin="0,0,5,0">
+                    <ComboBoxItem Content="0 - Ветвь"/>
+                    <ComboBoxItem Content="1 - Балка"/>
+                </ComboBox>
+                <localUI:ComponentSelectorControl Grid.Column="1" ComponentText="{Binding HB_C1_Comp, Mode=TwoWay}" PresetText="{Binding HB_C1_Attr, Mode=TwoWay}"/>
+            </Grid>
+
+            <UIControls:WpfFilterCheckBox Grid.Row="6" Grid.Column="0" AttributeName="HB_C2_Main" VerticalAlignment="Center" Margin="5,0"/>
+            <UIControls:WpfFilterCheckBox Grid.Row="6" Grid.Column="0" AttributeName="HB_C2_Comp" Visibility="Collapsed"/>
+            <UIControls:WpfFilterCheckBox Grid.Row="6" Grid.Column="0" AttributeName="HB_C2_Attr" Visibility="Collapsed"/>
+
+            <Label Grid.Row="6" Grid.Column="1" Content="Правый узел (Главная дет.):" VerticalAlignment="Center" Margin="0,2"/>
+            <Grid Grid.Row="6" Grid.Column="2" Margin="0,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="90"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <ComboBox Grid.Column="0" SelectedIndex="{Binding HB_C2_Main}" Height="24" VerticalContentAlignment="Center" Margin="0,0,5,0">
+                    <ComboBoxItem Content="0 - Ветвь"/>
+                    <ComboBoxItem Content="1 - Балка"/>
+                </ComboBox>
+                <localUI:ComponentSelectorControl Grid.Column="1" ComponentText="{Binding HB_C2_Comp, Mode=TwoWay}" PresetText="{Binding HB_C2_Attr, Mode=TwoWay}"/>
+            </Grid>
+
+            <TextBlock Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2" Text="Торцевые компоненты (Detail)" FontWeight="Bold" Foreground="#FF0055A4" Margin="0,15,0,5"/>
+
+            <UIControls:WpfFilterCheckBox Grid.Row="8" Grid.Column="0" AttributeName="HB_T1_Comp" VerticalAlignment="Center" Margin="5,0"/>
+            <UIControls:WpfFilterCheckBox Grid.Row="8" Grid.Column="0" AttributeName="HB_T1_Attr" Visibility="Collapsed"/>
+
+            <Label Grid.Row="8" Grid.Column="1" Content="Левый торец балки:" VerticalAlignment="Center" Margin="0,2"/>
+            <localUI:ComponentSelectorControl Grid.Row="8" Grid.Column="2" VerticalAlignment="Center" Margin="0,2" ComponentText="{Binding HB_T1_Comp, Mode=TwoWay}" PresetText="{Binding HB_T1_Attr, Mode=TwoWay}"/>
+
+            <UIControls:WpfFilterCheckBox Grid.Row="9" Grid.Column="0" AttributeName="HB_T2_Comp" VerticalAlignment="Center" Margin="5,0"/>
+            <UIControls:WpfFilterCheckBox Grid.Row="9" Grid.Column="0" AttributeName="HB_T2_Attr" Visibility="Collapsed"/>
+
+            <Label Grid.Row="9" Grid.Column="1" Content="Правый торец балки:" VerticalAlignment="Center" Margin="0,2"/>
+            <localUI:ComponentSelectorControl Grid.Row="9" Grid.Column="2" VerticalAlignment="Center" Margin="0,2" ComponentText="{Binding HB_T2_Comp, Mode=TwoWay}" PresetText="{Binding HB_T2_Attr, Mode=TwoWay}"/>
         </Grid>
     </Expander>
 </UserControl>

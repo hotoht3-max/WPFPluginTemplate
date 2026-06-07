@@ -60,6 +60,12 @@ namespace Apibim.Plugins.BuiltUpColumn
         private string _hb_PartPref = "б"; private string _hb_PartNo = "1";
         private string _hb_Name = "БАЛКА ОГОЛОВКА"; private string _hb_Class = "6"; private string _hb_UDA = "";
 
+        // Узлы балки (Alpha 1.6.3)
+        private int _hb_C1_Main = 0; private string _hb_C1_Comp = ""; private string _hb_C1_Attr = "";
+        private int _hb_C2_Main = 0; private string _hb_C2_Comp = ""; private string _hb_C2_Attr = "";
+        private string _hb_T1_Comp = ""; private string _hb_T1_Attr = "";
+        private string _hb_T2_Comp = ""; private string _hb_T2_Attr = "";
+
         // =========================================================
         // СВОЙСТВА (Properties for Binding)
         // =========================================================
@@ -252,5 +258,20 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresDialog("HB_Name", typeof(TD.String))] public string HB_Name { get => _hb_Name; set => Set(ref _hb_Name, value); }
         [StructuresDialog("HB_Class", typeof(TD.String))] public string HB_Class { get => _hb_Class; set => Set(ref _hb_Class, value); }
         [StructuresDialog("HB_UDA", typeof(TD.String))] public string HB_UDA { get => _hb_UDA; set => Set(ref _hb_UDA, value); }
+
+        // Узлы балки Alpha 1.6.3
+        [StructuresDialog("HB_C1_Main", typeof(TD.Integer))] public int HB_C1_Main { get => _hb_C1_Main; set => Set(ref _hb_C1_Main, value); }
+        [StructuresDialog("HB_C1_Comp", typeof(TD.String))] public string HB_C1_Comp { get => _hb_C1_Comp; set => Set(ref _hb_C1_Comp, value); }
+        [StructuresDialog("HB_C1_Attr", typeof(TD.String))] public string HB_C1_Attr { get => _hb_C1_Attr; set => Set(ref _hb_C1_Attr, value); }
+
+        [StructuresDialog("HB_C2_Main", typeof(TD.Integer))] public int HB_C2_Main { get => _hb_C2_Main; set => Set(ref _hb_C2_Main, value); }
+        [StructuresDialog("HB_C2_Comp", typeof(TD.String))] public string HB_C2_Comp { get => _hb_C2_Comp; set => Set(ref _hb_C2_Comp, value); }
+        [StructuresDialog("HB_C2_Attr", typeof(TD.String))] public string HB_C2_Attr { get => _hb_C2_Attr; set => Set(ref _hb_C2_Attr, value); }
+
+        [StructuresDialog("HB_T1_Comp", typeof(TD.String))] public string HB_T1_Comp { get => _hb_T1_Comp; set => Set(ref _hb_T1_Comp, value); }
+        [StructuresDialog("HB_T1_Attr", typeof(TD.String))] public string HB_T1_Attr { get => _hb_T1_Attr; set => Set(ref _hb_T1_Attr, value); }
+
+        [StructuresDialog("HB_T2_Comp", typeof(TD.String))] public string HB_T2_Comp { get => _hb_T2_Comp; set => Set(ref _hb_T2_Comp, value); }
+        [StructuresDialog("HB_T2_Attr", typeof(TD.String))] public string HB_T2_Attr { get => _hb_T2_Attr; set => Set(ref _hb_T2_Attr, value); }
     }
 }

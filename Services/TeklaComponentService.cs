@@ -79,28 +79,51 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
         /// Задел на будущее: Универсальный метод для вставки Деталей (Detail).
         /// Подходит для опорных плит (напр. 1042), ребер жесткости и т.д.
         /// </summary>
-        public static bool InsertDetail(string nameOrNumber, string preset, ModelObject primary, Point position, Vector upVector, out string errorMessage)
+        public static bool InsertDetail(string componentName, string attributeFile, ModelObject primaryObject, Point referencePoint, Vector upVector, out string errorMessage)
         {
             errorMessage = string.Empty;
             try
             {
                 Detail detail = new Detail();
-                detail.Name = nameOrNumber;
 
-                if (int.TryParse(nameOrNumber, out int num)) detail.Number = num;
-                else detail.Number = BaseComponent.CUSTOM_OBJECT_NUMBER;
+                // Распознавание системного номера макроса или его имени
+                if (int.TryParse(componentName, out int compNumber))
+                {
+                    detail.Number = compNumber;
+                }
+                else
+                {
+                    detail.Name = componentName;
+                }
 
-                if (!string.IsNullOrWhiteSpace(preset)) detail.LoadAttributesFromFile(preset);
-                if (upVector != null) detail.UpVector = upVector;
+                detail.SetPrimaryObject(primaryObject);
+                detail.SetReferencePoint(referencePoint);
 
-                detail.SetPrimaryObject(primary);
-                detail.SetReferencePoint(position);
+                if (upVector != null)
+                {
+                    detail.UpVector = upVector;
+                }
+
+                // 1. Загружаем пресет до вставки
+                if (!string.IsNullOrWhiteSpace(attributeFile))
+                {
+                    detail.LoadAttributesFromFile(attributeFile);
+                }
 
                 if (!detail.Insert())
                 {
-                    errorMessage = "Tekla API вернул false при вставке Detail.";
+                    errorMessage = "Не удалось вставить торцевой компонент (Insert вернул false).";
                     return false;
                 }
+
+                // 2. ГАРАНТИРОВАННАЯ ЗАПИСЬ ПРЕСЕТА (Обход Автостандартов)
+                // Выполняем повторную подгрузку и Modify() после создания объекта в БД
+                if (!string.IsNullOrWhiteSpace(attributeFile))
+                {
+                    detail.LoadAttributesFromFile(attributeFile);
+                    detail.Modify();
+                }
+
                 return true;
             }
             catch (Exception ex)

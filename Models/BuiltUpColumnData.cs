@@ -124,5 +124,20 @@ namespace Apibim.Plugins.BuiltUpColumn.Models
 		public double HB_PosRotOff { get; set; }
 		public int HB_PosDepth { get; set; }
 		public double HB_PosDepthOff { get; set; }
+
+		// --- ALPHA 1.6.3: УЗЛЫ БАЛКИ ---
+		public int HB_C1_Main { get; set; }
+		public string HB_C1_Comp { get; set; }
+		public string HB_C1_Attr { get; set; }
+
+		public int HB_C2_Main { get; set; }
+		public string HB_C2_Comp { get; set; }
+		public string HB_C2_Attr { get; set; }
+
+		public string HB_T1_Comp { get; set; }
+		public string HB_T1_Attr { get; set; }
+
+		public string HB_T2_Comp { get; set; }
+		public string HB_T2_Attr { get; set; }
 	}
 }
