@@ -1,27 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace WPFPluginTemplate
+namespace Apibim.Plugins.BuiltUpColumn
 {
-    public abstract class BaseViewModel : INotifyPropertyChanged
+    public class BaseViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        protected void Set<T>(ref T field, T value, [CallerMemberName] string name = null)
+
+        // Наш обновленный, пуленепробиваемый метод Set
+        protected bool Set<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
         {
-            if(!field.Equals(value))
-            {
-                field = value;
-                OnPropertyChanged();
-            }
+            if (EqualityComparer<T>.Default.Equals(field, value))
+                return false;
+
+            field = value;
+            OnPropertyChanged(propertyName);
+            return true;
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Tekla.Structures.Dialog;
-using WPFPluginTemplate;
 using TD = Tekla.Structures.Datatype;
 
 namespace Apibim.Plugins.BuiltUpColumn
