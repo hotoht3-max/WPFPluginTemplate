@@ -46,12 +46,11 @@
 
             <TabItem Header="Общее">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <Grid Margin="5">
+                    <Grid Margin="10">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto" MinWidth="25"/>
+                            <ColumnDefinition Width="200"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -70,80 +69,93 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Позиционирование в плане" FontWeight="Bold" Margin="0,10,0,5"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Позиционирование в плане" FontWeight="Bold" Margin="0,5,0,5"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="Global_Dx"/>
-                        <Label Grid.Row="1" Grid.Column="1" Content="Смещение по оси X (Dx):"/>
-                        <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Global_Dx}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="Global_Dx" VerticalAlignment="Center"/>
+                        <Label Grid.Row="1" Grid.Column="1" Content="Смещение по оси X (Dx):" VerticalAlignment="Center" Margin="0,2"/>
+                        <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Global_Dx}" VerticalAlignment="Center" Height="24" Margin="0,2" VerticalContentAlignment="Center"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="Global_Dy"/>
-                        <Label Grid.Row="2" Grid.Column="1" Content="Смещение по оси Y (Dy):"/>
-                        <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding Global_Dy}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="Global_Dy" VerticalAlignment="Center"/>
+                        <Label Grid.Row="2" Grid.Column="1" Content="Смещение по оси Y (Dy):" VerticalAlignment="Center" Margin="0,2"/>
+                        <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding Global_Dy}" VerticalAlignment="Center" Height="24" Margin="0,2" VerticalContentAlignment="Center"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="3" Grid.Column="0" AttributeName="Global_Rot"/>
-                        <Label Grid.Row="3" Grid.Column="1" Content="Поворот колонны (Град):"/>
-                        <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding Global_Rot}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="3" Grid.Column="0" AttributeName="Global_Rot" VerticalAlignment="Center"/>
+                        <Label Grid.Row="3" Grid.Column="1" Content="Поворот колонны (Град):" VerticalAlignment="Center" Margin="0,2"/>
+                        <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding Global_Rot}" VerticalAlignment="Center" Height="24" Margin="0,2" VerticalContentAlignment="Center"/>
 
                         <TextBlock Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Text="Габариты сечения" FontWeight="Bold" Margin="0,15,0,5"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="5" Grid.Column="0" AttributeName="Bcol"/>
-                        <Label Grid.Row="5" Grid.Column="1" Content="Ширина колонны (Bcol):"/>
-                        <TextBox Grid.Row="5" Grid.Column="2" Text="{Binding Bcol}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="5" Grid.Column="0" AttributeName="Bcol" VerticalAlignment="Center"/>
+                        <Label Grid.Row="5" Grid.Column="1" Content="Ширина колонны (Bcol):" VerticalAlignment="Center" Margin="0,2"/>
+                        <TextBox Grid.Row="5" Grid.Column="2" Text="{Binding Bcol}" VerticalAlignment="Center" Height="24" Margin="0,2" VerticalContentAlignment="Center"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="6" Grid.Column="0" AttributeName="Br_Rot"/>
-                        <Label Grid.Row="6" Grid.Column="1" Content="Поворот ветвей (Br_Rot):"/>
-                        <TextBox Grid.Row="6" Grid.Column="2" Text="{Binding Br_Rot}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="6" Grid.Column="0" AttributeName="Br_Rot" VerticalAlignment="Center"/>
+                        <Label Grid.Row="6" Grid.Column="1" Content="Поворот ветвей (Br_Rot):" VerticalAlignment="Center" Margin="0,2"/>
+                        <TextBox Grid.Row="6" Grid.Column="2" Text="{Binding Br_Rot}" VerticalAlignment="Center" Height="24" Margin="0,2" VerticalContentAlignment="Center"/>
 
                         <TextBlock Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2" Text="Высотные отметки" FontWeight="Bold" Margin="0,15,0,5"/>
-                        <UIControls:WpfFilterCheckBox Grid.Row="8" Grid.Column="0" AttributeName="Hcol_1"/>
-                        <Label Grid.Row="8" Grid.Column="1" Content="Высота ветви вверх (Hcol_1):"/>
-                        <TextBox Grid.Row="8" Grid.Column="2" Text="{Binding Hcol_1}"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="9" Grid.Column="0" AttributeName="Hcol_e1"/>
-                        <Label Grid.Row="9" Grid.Column="1" Content="Глубина ветви вниз (Hcol_e1):"/>
-                        <TextBox Grid.Row="9" Grid.Column="2" Text="{Binding Hcol_e1}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="8" Grid.Column="0" AttributeName="Hcol_1" VerticalAlignment="Center"/>
+                        <Label Grid.Row="8" Grid.Column="1" Content="Отметка верха ветвей (Hcol_1):" VerticalAlignment="Center" Margin="0,2"/>
+                        <TextBox Grid.Row="8" Grid.Column="2" Text="{Binding Hcol_1}" VerticalAlignment="Center" Height="24" Margin="0,2" VerticalContentAlignment="Center"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="10" Grid.Column="0" AttributeName="Hcol_e2"/>
-                        <Label Grid.Row="10" Grid.Column="1" Content="Свободная зона снизу (Hcol_e2):"/>
-                        <TextBox Grid.Row="10" Grid.Column="2" Text="{Binding Hcol_e2}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="9" Grid.Column="0" AttributeName="Hcol_e1" VerticalAlignment="Center"/>
+                        <Label Grid.Row="9" Grid.Column="1" Content="Отметка низа (Hcol_e1):" VerticalAlignment="Center" Margin="0,2"/>
+                        <TextBox Grid.Row="9" Grid.Column="2" Text="{Binding Hcol_e1}" VerticalAlignment="Center" Height="24" Margin="0,2" VerticalContentAlignment="Center"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="11" Grid.Column="0" AttributeName="Hcol_e3"/>
-                        <Label Grid.Row="11" Grid.Column="1" Content="Свободная зона сверху (Hcol_e3):"/>
-                        <TextBox Grid.Row="11" Grid.Column="2" Text="{Binding Hcol_e3}"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="10" Grid.Column="0" AttributeName="Hcol_e2" VerticalAlignment="Center"/>
+                        <Label Grid.Row="10" Grid.Column="1" Content="Уровень базы (Hcol_e2):" VerticalAlignment="Center" Margin="0,2"/>
+                        <TextBox Grid.Row="10" Grid.Column="2" Text="{Binding Hcol_e2}" VerticalAlignment="Center" Height="24" Margin="0,2" VerticalContentAlignment="Center"/>
 
-                        <TextBlock Grid.Row="12" Grid.Column="1" Grid.ColumnSpan="2" Text="Надколонник" FontWeight="Bold" Margin="0,15,0,5"/>
+                        <UIControls:WpfFilterCheckBox Grid.Row="11" Grid.Column="0" AttributeName="Hcol_e3" VerticalAlignment="Center"/>
+                        <Label Grid.Row="11" Grid.Column="1" Content="Подрезка базы (Hcol_e3):" VerticalAlignment="Center" Margin="0,2"/>
+                        <TextBox Grid.Row="11" Grid.Column="2" Text="{Binding Hcol_e3}" VerticalAlignment="Center" Height="24" Margin="0,2" VerticalContentAlignment="Center"/>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="13" Grid.Column="0" AttributeName="NK_Mode"/>
-                        <Label Grid.Row="13" Grid.Column="1" Content="Позиция:"/>
-                        <ComboBox Grid.Row="13" Grid.Column="2" SelectedIndex="{Binding NK_Mode}">
+                        <TextBlock Grid.Row="12" Grid.Column="1" Grid.ColumnSpan="2" Text="Настройки оголовка" FontWeight="Bold" Margin="0,15,0,5"/>
+
+                        <UIControls:WpfFilterCheckBox Grid.Row="13" Grid.Column="0" AttributeName="Head_Type" VerticalAlignment="Center"/>
+                        <Label Grid.Row="13" Grid.Column="1" Content="Тип оголовка колонны:" VerticalAlignment="Center" Margin="0,2"/>
+                        <ComboBox Grid.Row="13" Grid.Column="2" SelectedIndex="{Binding Head_Type}" VerticalAlignment="Center" Height="24" Margin="0,2">
                             <ComboBoxItem Content="0 - Отсутствует"/>
-                            <ComboBoxItem Content="1 - Слева (по базовой)"/>
-                            <ComboBoxItem Content="2 - Справа (по второй)"/>
-                            <ComboBoxItem Content="3 - По центру"/>
+                            <ComboBoxItem Content="1 - Надколонник"/>
+                            <ComboBoxItem Content="2 - Балка"/>
+                            <ComboBoxItem Content="3 - Балка + Надколонник"/>
                         </ComboBox>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="14" Grid.Column="0" AttributeName="NK_Offset"/>
-                        <Label Grid.Row="14" Grid.Column="1" Content="Доп. смещение (мм):"/>
-                        <TextBox Grid.Row="14" Grid.Column="2" Text="{Binding NK_Offset, UpdateSourceTrigger=PropertyChanged}"/>
+                        <localUI:SupColumnControl Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="3">
+                            <localUI:SupColumnControl.Style>
+                                <Style TargetType="localUI:SupColumnControl">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Head_Type}" Value="1">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Head_Type}" Value="3">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </localUI:SupColumnControl.Style>
+                        </localUI:SupColumnControl>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="15" Grid.Column="0" AttributeName="NK_Rot"/>
-                        <Label Grid.Row="15" Grid.Column="1" Content="Поворот сечения (град.):"/>
-                        <TextBox Grid.Row="15" Grid.Column="2" Text="{Binding NK_Rot, UpdateSourceTrigger=PropertyChanged}"/>
+                        <localUI:HeadBeamControl Grid.Row="15" Grid.Column="0" Grid.ColumnSpan="3">
+                            <localUI:HeadBeamControl.Style>
+                                <Style TargetType="localUI:HeadBeamControl">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Head_Type}" Value="2">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Head_Type}" Value="3">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </localUI:HeadBeamControl.Style>
+                        </localUI:HeadBeamControl>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="16" Grid.Column="0" AttributeName="NK_HeightType"/>
-                        <Label Grid.Row="16" Grid.Column="1" Content="Режим высоты:"/>
-                        <ComboBox Grid.Row="16" Grid.Column="2" SelectedIndex="{Binding NK_HeightType}">
-                            <ComboBoxItem Content="0 - По длине"/>
-                            <ComboBoxItem Content="1 - По отметке"/>
-                        </ComboBox>
-
-                        <UIControls:WpfFilterCheckBox Grid.Row="17" Grid.Column="0" AttributeName="NK_Value"/>
-                        <Label Grid.Row="17" Grid.Column="1" Content="Высота надколонника (мм):"/>
-                        <TextBox Grid.Row="17" Grid.Column="2" Text="{Binding NK_Value, UpdateSourceTrigger=PropertyChanged}"/>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
@@ -372,7 +384,7 @@
                         <Label Grid.Row="12" Grid.Column="1" Content="Глобально исключить узлы:" Foreground="DarkRed" FontWeight="SemiBold"/>
                         <TextBox Grid.Row="12" Grid.Column="2" Text="{Binding S_NodesExclude}"/>
 
-                        <localUI:DiaphragmPositioningControl Grid.Row="13" Grid.ColumnSpan="3"/>
+                        <localUI:DiaphragmPositioningControl Grid.Row="13" Grid.ColumnSpan="3" Loaded="DiaphragmPositioningControl_Loaded"/>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
@@ -506,6 +518,17 @@
                             PartClass="{Binding NK_Class}" PartClassAttr="NK_Class"
                             UdaAttr="NK_UDA"/>
 
+                        <localUI:PartAttributesRowControl RowLabel="Балка:"
+                            Profile="{Binding HB_Profile}"
+                            Material="{Binding HB_Material}"
+                            PartPrefix="{Binding HB_PartPref}"
+                            PartStartNo="{Binding HB_PartNo}"
+                            AssemblyPrefix="{Binding HB_AssyPref}"
+                            AssemblyStartNo="{Binding HB_AssyNo}"
+                            PartName="{Binding HB_Name}"
+                            PartClass="{Binding HB_Class}"
+                            UdaAttr="{Binding HB_UDA}"/>
+                        
                         <localUI:PartAttributesRowControl RowLabel="Диафрагма (Тип 1):"
                             Profile="{Binding D_Profile}" ProfileAttr="D_Profile"
                             Material="{Binding D_Material}" MaterialAttr="D_Material"

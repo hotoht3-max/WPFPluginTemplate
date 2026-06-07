@@ -4,7 +4,7 @@
              xmlns:UIControls="clr-namespace:Tekla.Structures.Dialog.UIControls;assembly=Tekla.Structures.Dialog"
              xmlns:localUI="clr-namespace:Apibim.Plugins.BuiltUpColumn.UIControls">
 
-    <Expander Header="⚙ Настройки листа распорки и диафрагм" FontWeight="Bold" Margin="0,15,0,5" BorderBrush="LightGray" BorderThickness="1">
+    <Expander Header="⚙ Настройки листа распорки и диафрагм" FontWeight="Bold" Margin="0,15,0,5" BorderBrush="LightGray" BorderThickness="1" IsExpanded="False">
         <Grid Margin="10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>

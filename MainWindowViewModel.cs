@@ -49,6 +49,17 @@ namespace Apibim.Plugins.BuiltUpColumn
         // Смещения (Alpha 1.6.1)
         private double _global_Dx = 0.0; private double _global_Dy = 0.0; private double _global_Rot = 0.0;
 
+        // Оголовок (Alpha 1.6.2)
+        private int _head_Type = 0;
+        private double _hb_OverhangLeft = 0.0; private double _hb_OverhangRight = 0.0;
+        private int _hb_PosPlane = 0; private double _hb_PosPlaneOff = 0.0;
+        private int _hb_PosRot = 0; private double _hb_PosRotOff = 0.0;
+        private int _hb_PosDepth = 2; private double _hb_PosDepthOff = 0.0;
+        private string _hb_Profile = "40B1_57837_2017"; private string _hb_Material = "C245";
+        private string _hb_AssyPref = "Б"; private string _hb_AssyNo = "1";
+        private string _hb_PartPref = "б"; private string _hb_PartNo = "1";
+        private string _hb_Name = "БАЛКА ОГОЛОВКА"; private string _hb_Class = "6"; private string _hb_UDA = "";
+
         // =========================================================
         // СВОЙСТВА (Properties for Binding)
         // =========================================================
@@ -221,5 +232,25 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresDialog("Global_Dx", typeof(TD.Double))] public double Global_Dx { get => _global_Dx; set => Set(ref _global_Dx, value); }
         [StructuresDialog("Global_Dy", typeof(TD.Double))] public double Global_Dy { get => _global_Dy; set => Set(ref _global_Dy, value); }
         [StructuresDialog("Global_Rot", typeof(TD.Double))] public double Global_Rot { get => _global_Rot; set => Set(ref _global_Rot, value); }
+
+        // Оголовок Alpha 1.6.2
+        [StructuresDialog("Head_Type", typeof(TD.Integer))] public int Head_Type { get => _head_Type; set => Set(ref _head_Type, value); }
+        [StructuresDialog("HB_OverhangLeft", typeof(TD.Double))] public double HB_OverhangLeft { get => _hb_OverhangLeft; set => Set(ref _hb_OverhangLeft, value); }
+        [StructuresDialog("HB_OverhangRight", typeof(TD.Double))] public double HB_OverhangRight { get => _hb_OverhangRight; set => Set(ref _hb_OverhangRight, value); }
+        [StructuresDialog("HB_PosPlane", typeof(TD.Integer))] public int HB_PosPlane { get => _hb_PosPlane; set => Set(ref _hb_PosPlane, value); }
+        [StructuresDialog("HB_PosPlaneOff", typeof(TD.Double))] public double HB_PosPlaneOff { get => _hb_PosPlaneOff; set => Set(ref _hb_PosPlaneOff, value); }
+        [StructuresDialog("HB_PosRot", typeof(TD.Integer))] public int HB_PosRot { get => _hb_PosRot; set => Set(ref _hb_PosRot, value); }
+        [StructuresDialog("HB_PosRotOff", typeof(TD.Double))] public double HB_PosRotOff { get => _hb_PosRotOff; set => Set(ref _hb_PosRotOff, value); }
+        [StructuresDialog("HB_PosDepth", typeof(TD.Integer))] public int HB_PosDepth { get => _hb_PosDepth; set => Set(ref _hb_PosDepth, value); }
+        [StructuresDialog("HB_PosDepthOff", typeof(TD.Double))] public double HB_PosDepthOff { get => _hb_PosDepthOff; set => Set(ref _hb_PosDepthOff, value); }
+        [StructuresDialog("HB_Profile", typeof(TD.String))] public string HB_Profile { get => _hb_Profile; set => Set(ref _hb_Profile, value); }
+        [StructuresDialog("HB_Material", typeof(TD.String))] public string HB_Material { get => _hb_Material; set => Set(ref _hb_Material, value); }
+        [StructuresDialog("HB_AssyPref", typeof(TD.String))] public string HB_AssyPref { get => _hb_AssyPref; set => Set(ref _hb_AssyPref, value); }
+        [StructuresDialog("HB_AssyNo", typeof(TD.String))] public string HB_AssyNo { get => _hb_AssyNo; set => Set(ref _hb_AssyNo, value); }
+        [StructuresDialog("HB_PartPref", typeof(TD.String))] public string HB_PartPref { get => _hb_PartPref; set => Set(ref _hb_PartPref, value); }
+        [StructuresDialog("HB_PartNo", typeof(TD.String))] public string HB_PartNo { get => _hb_PartNo; set => Set(ref _hb_PartNo, value); }
+        [StructuresDialog("HB_Name", typeof(TD.String))] public string HB_Name { get => _hb_Name; set => Set(ref _hb_Name, value); }
+        [StructuresDialog("HB_Class", typeof(TD.String))] public string HB_Class { get => _hb_Class; set => Set(ref _hb_Class, value); }
+        [StructuresDialog("HB_UDA", typeof(TD.String))] public string HB_UDA { get => _hb_UDA; set => Set(ref _hb_UDA, value); }
     }
 }

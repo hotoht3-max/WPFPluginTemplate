@@ -125,6 +125,32 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresField("NK_Name")] public string NK_Name = "НАДКОЛОННИК";
         [StructuresField("NK_Class")] public string NK_Class = "1";
         [StructuresField("NK_UDA")] public string NK_UDA = "";
+
+        // =========================================================
+        // --- ALPHA 1.6.2: ОГОЛОВОК (Балка и Надколонник) ---
+        // =========================================================
+        [StructuresField("Head_Type")] public int Head_Type = 0; // 0-Нет, 1-Надколонник, 2-Балка, 3-Всё
+        [StructuresField("HB_OverhangLeft")] public double HB_OverhangLeft = 200.0;
+        [StructuresField("HB_OverhangRight")] public double HB_OverhangRight = 200.0;
+
+        // Позиционирование балки
+        [StructuresField("HB_PosPlane")] public int HB_PosPlane = 0;
+        [StructuresField("HB_PosPlaneOff")] public double HB_PosPlaneOff = 0.0;
+        [StructuresField("HB_PosRot")] public int HB_PosRot = 0;
+        [StructuresField("HB_PosRotOff")] public double HB_PosRotOff = 0.0;
+        [StructuresField("HB_PosDepth")] public int HB_PosDepth = 2; // По умолчанию "Позади" (сверху ветвей)
+        [StructuresField("HB_PosDepthOff")] public double HB_PosDepthOff = 0.0;
+
+        // Атрибуты детали балки
+        [StructuresField("HB_Profile")] public string HB_Profile = "40B1_57837_2017";
+        [StructuresField("HB_Material")] public string HB_Material = "C245";
+        [StructuresField("HB_AssyPref")] public string HB_AssyPref = "Б";
+        [StructuresField("HB_AssyNo")] public string HB_AssyNo = "1";
+        [StructuresField("HB_PartPref")] public string HB_PartPref = "б";
+        [StructuresField("HB_PartNo")] public string HB_PartNo = "1";
+        [StructuresField("HB_Name")] public string HB_Name = "БАЛКА ОГОЛОВКА";
+        [StructuresField("HB_Class")] public string HB_Class = "6";
+        [StructuresField("HB_UDA")] public string HB_UDA = "";
     }
 
     [Plugin("Apibim_BuiltUpColumn")]
@@ -223,10 +249,25 @@ namespace Apibim.Plugins.BuiltUpColumn
                 // 4. Строим надколонник (Альфа 1.5)
                 BuildSupColumn(branches, colData, localX, planeAngleDeg, branchWidth, splices);
 
+                // ==========================================
+                // ВЫЗОВЫ ОГОЛОВКА (Альфа 1.6.2)
+                // ==========================================
+                if (colData.Head_Type == 1 || colData.Head_Type == 3)
+                {
+                    // ОБЯЗАТЕЛЬНО ПЕРЕДАЕМ splices ШЕСТЫМ АРГУМЕНТОМ!
+                    BuildSupColumn(branches, colData, localX, planeAngleDeg, branchWidth, splices);
+                }
+
+                if (colData.Head_Type == 2 || colData.Head_Type == 3)
+                {
+                    BuildHeadBeam(p1, colData, localX, planeAngleDeg, colData.Hcol_1);
+                }
+
                 return true;
             }
             catch (Exception ex)
             {
+                // ...
                 System.Windows.MessageBox.Show($"Критическая ошибка построения (Run):\n\n{ex}", "RAM BIM: Ошибка", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 return false;
             }
@@ -539,16 +580,21 @@ namespace Apibim.Plugins.BuiltUpColumn
         }
 
         // ==========================================
-        // МЕТОД: ПОСТРОЕНИЕ НАДКОЛОННИКА (Alpha 1.5)
+        // МЕТОД: ПОСТРОЕНИЕ НАДКОЛОННИКА
         // ==========================================
         private void BuildSupColumn(List<Beam> branches, BuiltUpColumnData colData, Vector localX, double planeAngleDeg, double branchWidth, List<double> splices)
         {
-            if (colData.NK_Mode == 0 || branches == null || branches.Count < 2) return;
+            // 1. ЖЕЛЕЗОБЕТОННАЯ ЗАЩИТА: Строим только если режим 1 (Надколонник) или 3 (Всё)
+            if (colData.Head_Type == 0 || colData.Head_Type == 2) return;
+
+            if (branches == null || branches.Count < 2) return;
 
             if (string.IsNullOrWhiteSpace(colData.SupColumn.Profile))
                 throw new Exception("Назначен Надколонник, но его 'Профиль' пуст во вкладке Атрибуты!");
 
             int half = branches.Count / 2;
+
+            // 2. ИСПРАВЛЕНИЕ ВЫСОТЫ: Берем ВЕРХНИЕ сегменты ветвей (последние в своей подгруппе)
             Beam topLeftBranch = branches[half - 1];
             Beam topRightBranch = branches[branches.Count - 1];
 
@@ -558,54 +604,42 @@ namespace Apibim.Plugins.BuiltUpColumn
             Point pStart = new Point();
             Vector inwardDir = new Vector();
 
-            if (colData.NK_Mode == 1) // Слева
+            if (colData.NK_Mode == 0) // Слева
             {
                 pStart = new Point(pTopLeft);
                 inwardDir = new Vector(localX.X, localX.Y, localX.Z);
             }
-            else if (colData.NK_Mode == 2) // Справа
+            else if (colData.NK_Mode == 1) // Справа
             {
                 pStart = new Point(pTopRight);
                 inwardDir = new Vector(-localX.X, -localX.Y, -localX.Z);
             }
-            else if (colData.NK_Mode == 3) // Центр
+            else if (colData.NK_Mode == 2) // Центр
             {
                 pStart = new Point((pTopLeft.X + pTopRight.X) / 2.0, (pTopLeft.Y + pTopRight.Y) / 2.0, (pTopLeft.Z + pTopRight.Z) / 2.0);
                 inwardDir = new Vector(localX.X, localX.Y, localX.Z);
             }
 
             double length = 0.0;
-            if (colData.NK_HeightType == 0) // По длине
-            {
-                length = colData.NK_Value;
-            }
-            else if (colData.NK_HeightType == 1) // По отметке
-            {
-                double targetAbsoluteZ = colData.BasePoint1.Z + colData.NK_Value;
-                length = targetAbsoluteZ - pStart.Z;
-            }
+            if (colData.NK_HeightType == 0) length = colData.NK_Value;
+            else if (colData.NK_HeightType == 1) length = (colData.BasePoint1.Z + colData.NK_Value) - pStart.Z;
 
             if (length <= 0) return;
 
             Point pEnd = new Point(pStart);
             pEnd.Translate(0, 0, length);
 
-            // --- 1. ФИЛЬТРАЦИЯ СТЫКОВ В ЗОНЕ НАДКОЛОННИКА ---
+            // --- ФИЛЬТРАЦИЯ СТЫКОВ ВНУТРИ НАДКОЛОННИКА ---
             List<double> nkSplices = new List<double>();
             if (splices != null)
             {
                 foreach (double z in splices)
                 {
-                    // Допуск 1 мм, чтобы не резать, если отметка идеально совпадает с верхом/низом
-                    if (z > pStart.Z + 1.0 && z < pEnd.Z - 1.0)
-                    {
-                        nkSplices.Add(z);
-                    }
+                    if (z > pStart.Z + 1.0 && z < pEnd.Z - 1.0) nkSplices.Add(z);
                 }
                 nkSplices.Sort();
             }
 
-            // --- 2. ГЕНЕРАЦИЯ ПЕРВОГО СЕГМЕНТА (ДЛЯ ГАБАРИТОВ) ---
             Point firstSegEnd = new Point(pStart);
             firstSegEnd.Z = nkSplices.Count > 0 ? nkSplices[0] : pEnd.Z;
 
@@ -614,9 +648,8 @@ namespace Apibim.Plugins.BuiltUpColumn
 
             Services.TeklaProfileHelper.GetActualDimensions(firstNk, colData.NK_Rot, out double _, out double nkWidth, out double _);
 
-            // --- 3. ВЫРАВНИВАНИЕ ОСИ (ВЕКТОР) ---
             double shiftValue = 0.0;
-            if (colData.NK_Mode == 1 || colData.NK_Mode == 2)
+            if (colData.NK_Mode == 0 || colData.NK_Mode == 1)
             {
                 shiftValue = (nkWidth / 2.0) - (branchWidth / 2.0);
             }
@@ -624,54 +657,71 @@ namespace Apibim.Plugins.BuiltUpColumn
 
             if (Math.Abs(shiftValue) > 0.01)
             {
-                // Сдвигаем базовые точки всей теоретической оси Надколонника
                 pStart.Translate(inwardDir.X * shiftValue, inwardDir.Y * shiftValue, inwardDir.Z * shiftValue);
                 pEnd.Translate(inwardDir.X * shiftValue, inwardDir.Y * shiftValue, inwardDir.Z * shiftValue);
             }
 
-            // --- 4. ПРИМЕНЕНИЕ СДВИГА К ПЕРВОМУ СЕГМЕНТУ ---
             List<Beam> nkSegments = new List<Beam>();
             firstNk.StartPoint = new Point(pStart);
             firstNk.EndPoint = new Point(pStart.X, pStart.Y, nkSplices.Count > 0 ? nkSplices[0] : pEnd.Z);
             firstNk.Modify();
             nkSegments.Add(firstNk);
 
-            // --- 5. ГЕНЕРАЦИЯ ОСТАЛЬНЫХ СЕГМЕНТОВ ---
             for (int i = 0; i < nkSplices.Count; i++)
             {
-                // X и Y берем от уже сдвинутого pStart, чтобы сегменты стояли идеально ровно
                 Point segStart = new Point(pStart.X, pStart.Y, nkSplices[i]);
                 Point segEnd = new Point(pStart.X, pStart.Y, (i + 1 < nkSplices.Count) ? nkSplices[i + 1] : pEnd.Z);
 
                 Beam nk = TeklaPartBuilder.CreateBranch(segStart, segEnd, colData.SupColumn, planeAngleDeg + colData.NK_Rot);
                 if (!nk.Insert()) throw new Exception("Не удалось вставить сегмент надколонника.");
-
                 nkSegments.Add(nk);
             }
 
-            // --- 6. СОЗДАНИЕ КОМПОНЕНТОВ СТЫКА ---
             if (nkSplices.Count > 0 && !string.IsNullOrWhiteSpace(colData.Splice5Component))
             {
                 for (int i = 0; i < nkSegments.Count - 1; i++)
                 {
-                    Beam primary = nkSegments[i];   // Нижний хлыст
-                    Beam secondary = nkSegments[i + 1]; // Верхний хлыст
-
-                    // Вызываем наш правильный универсальный метод
                     Services.TeklaComponentService.InsertConnection(
-                        colData.Splice5Component,
-                        colData.Splice5Preset,
-                        primary,
-                        new List<ModelObject> { secondary },
-                        null, // upVector оставляем null для авто-ориентации
-                        out string errorMessage);
-
-                    // Опционально можно вывести ошибку в консоль, если компонент не встал
-                    if (!string.IsNullOrEmpty(errorMessage))
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Ошибка генерации стыка НК: {errorMessage}");
-                    }
+                        colData.Splice5Component, colData.Splice5Preset,
+                        nkSegments[i], new List<ModelObject> { nkSegments[i + 1] }, null, out _);
                 }
+            }
+        }
+        private void BuildHeadBeam(Point p1, BuiltUpColumnData colData, Vector localX, double planeAngleDeg, double zLevel)
+        {
+            if (string.IsNullOrWhiteSpace(colData.HeadBeam.Profile))
+                throw new Exception("Назначена Балка оголовка, но её 'Профиль' пуст во вкладке Атрибуты!");
+
+            // 1. Формируем осевую линию балки
+            Point bStart = new Point(p1.X, p1.Y, p1.Z + zLevel);
+            Point bEnd = new Point(bStart);
+            bEnd.Translate(localX.X * colData.Bcol, localX.Y * colData.Bcol, localX.Z * colData.Bcol);
+
+            // 2. Применяем вылеты
+            if (Math.Abs(colData.HB_OverhangLeft) > 0.01)
+                bStart.Translate(localX.X * -colData.HB_OverhangLeft, localX.Y * -colData.HB_OverhangLeft, localX.Z * -colData.HB_OverhangLeft);
+
+            if (Math.Abs(colData.HB_OverhangRight) > 0.01)
+                bEnd.Translate(localX.X * colData.HB_OverhangRight, localX.Y * colData.HB_OverhangRight, localX.Z * colData.HB_OverhangRight);
+
+            // 3. Вызываем PartBuilder
+            Beam headBeam = TeklaPartBuilder.CreateBranch(bStart, bEnd, colData.HeadBeam, planeAngleDeg);
+
+            // 4. ПЕРЕОПРЕДЕЛЯЕМ ПОЗИЦИОНИРОВАНИЕ ИЗ UI до вставки в модель
+            headBeam.Position.Plane = (Tekla.Structures.Model.Position.PlaneEnum)colData.HB_PosPlane;
+            headBeam.Position.PlaneOffset = colData.HB_PosPlaneOff;
+
+            // ИСПРАВЛЕНИЕ: Передаем только чистый угол из UI, без planeAngleDeg!
+            headBeam.Position.Rotation = (Tekla.Structures.Model.Position.RotationEnum)colData.HB_PosRot;
+            headBeam.Position.RotationOffset = colData.HB_PosRotOff;
+
+            headBeam.Position.Depth = (Tekla.Structures.Model.Position.DepthEnum)colData.HB_PosDepth;
+            headBeam.Position.DepthOffset = colData.HB_PosDepthOff;
+
+            // 5. ВСТАВЛЯЕМ ДЕТАЛЬ В БАЗУ ДАННЫХ
+            if (!headBeam.Insert())
+            {
+                throw new Exception("Не удалось вставить Балку оголовка в модель.");
             }
         }
     }

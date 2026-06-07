@@ -30,5 +30,10 @@ namespace Apibim.Plugins.BuiltUpColumn
             this.Close();
         }
         private void WpfOkApplyModifyGetOnOffCancel_OnOffClicked(object sender, EventArgs e) => this.ToggleSelection();
+
+        private void DiaphragmPositioningControl_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

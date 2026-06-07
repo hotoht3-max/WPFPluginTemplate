@@ -95,9 +95,10 @@ namespace Apibim.Plugins.BuiltUpColumn.Models
         public PartSettings LacingSplice { get; set; }
         public PartSettings Strut { get; set; }
         public PartSettings GussetPlate { get; set; }
+		public PartSettings HeadBeam { get; set; }
 
-        // --- БАЗОВЫЕ ТОЧКИ ---
-        public Tekla.Structures.Geometry3d.Point BasePoint1 { get; set; }
+		// --- БАЗОВЫЕ ТОЧКИ ---
+		public Tekla.Structures.Geometry3d.Point BasePoint1 { get; set; }
         public Tekla.Structures.Geometry3d.Point BasePoint2 { get; set; }
 
         // --- ALPHA 1.4: НАДКОЛОННИК ---
@@ -113,5 +114,15 @@ namespace Apibim.Plugins.BuiltUpColumn.Models
 		public double Global_Dy { get; set; }
 		public double Global_Rot { get; set; }
 
+		// --- ALPHA 1.6.2: ОГОЛОВОК ---
+		public int Head_Type { get; set; }
+		public double HB_OverhangLeft { get; set; }
+		public double HB_OverhangRight { get; set; }
+		public int HB_PosPlane { get; set; }
+		public double HB_PosPlaneOff { get; set; }
+		public int HB_PosRot { get; set; }
+		public double HB_PosRotOff { get; set; }
+		public int HB_PosDepth { get; set; }
+		public double HB_PosDepthOff { get; set; }
 	}
 }
