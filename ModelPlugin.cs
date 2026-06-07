@@ -246,43 +246,37 @@ namespace Apibim.Plugins.BuiltUpColumn
                 var strutLines = ColumnGeometryBuilder.GetStrutLines(colData, zNodes);
                 var splices = StringParserService.ParseSplices(colData.SplicesText);
 
-                /// --- 4. ОРКЕСТРАЦИЯ (Вызов Фабрик) ---
+                // --- 4. ОРКЕСТРАЦИЯ (Вызов Фабрик) ---
 
-                // 1. Честное расстояние между теоретическими осями ветвей (Для вычисления ДЛИНЫ листа)
-                // ИСПРАВЛЕНИЕ: Берем строго из colData.Bcol, чтобы появление стыков не искажало расстояние
                 double distBetweenAxes = colData.Bcol;
 
-                // 2. Строим ветви и получаем габариты, включая толщину стенки
-                var branches = BuildBranches(branchLines, colData, planeAngleDeg, out double autoBaseDist, out double branchWidth, out double branchWebThick);
+                // Используем класс результата вместо out-переменных
+                var branchResult = BuildBranches(branchLines, colData, planeAngleDeg);
 
-                BuildSplices(branches, colData);
-                BuildLacing(lacingLines, splices, colData, localY, autoBaseDist);
+                BuildSplices(branchResult.Beams, colData);
+                BuildLacing(lacingLines, splices, colData, localY, branchResult.AutoBaseDist);
 
-                // 3. Передаем branchWebThick в фабрику распорок
-                BuildStrutsAndDiaphragms(strutLines, zNodes, splices, colData, localY, autoBaseDist, distBetweenAxes, branchWidth, branchWebThick, branches);
-                               
-                // 4. Строим надколонник (Альфа 1.5)
-                BuildSupColumn(branches, colData, localX, planeAngleDeg, branchWidth, splices);
+                BuildStrutsAndDiaphragms(strutLines, zNodes, splices, colData, localY,
+                    branchResult.AutoBaseDist, distBetweenAxes, branchResult.BranchWidth, branchResult.BranchWebThick, branchResult.Beams);
 
                 // ==========================================
                 // ВЫЗОВЫ ОГОЛОВКА (Альфа 1.6.2)
                 // ==========================================
                 if (colData.Head_Type == 1 || colData.Head_Type == 3)
                 {
-                    // ОБЯЗАТЕЛЬНО ПЕРЕДАЕМ splices ШЕСТЫМ АРГУМЕНТОМ!
-                    BuildSupColumn(branches, colData, localX, planeAngleDeg, branchWidth, splices);
+                    BuildSupColumn(branchResult.Beams, colData, localX, planeAngleDeg, branchResult.BranchWidth, splices);
                 }
 
                 if (colData.Head_Type == 2 || colData.Head_Type == 3)
                 {
-                    BuildHeadBeam(p1, colData, localX, planeAngleDeg, colData.Hcol_1, branches);
+                    BuildHeadBeam(p1, colData, localX, planeAngleDeg, colData.Hcol_1, branchResult.Beams);
                 }
 
                 return true;
             }
             catch (Exception ex)
             {
-                // ...
+                if (ex.Message.Contains("User interrupt")) return false;
                 System.Windows.MessageBox.Show($"Критическая ошибка построения (Run):\n\n{ex}", "RAM BIM: Ошибка", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 return false;
             }
@@ -292,16 +286,39 @@ namespace Apibim.Plugins.BuiltUpColumn
         // ОРКЕСТРАТОРЫ ПОСТРОЕНИЯ (Дирижируют фабриками)
         // =========================================================================
 
-        private List<Beam> BuildBranches(List<LineSegment> branchLines, BuiltUpColumnData colData, double planeAngleDeg, out double autoBaseDist, out double branchWidth, out double branchWebThick)
+        private class BranchBuildResult
         {
-            autoBaseDist = 0.0;
-            branchWidth = 0.0;
-            branchWebThick = 0.0; // <--- НОВОЕ
+            public List<Beam> Beams { get; set; }
+            public double AutoBaseDist { get; set; }
+            public double BranchWidth { get; set; }
+            public double BranchWebThick { get; set; }
+        }
+
+        private class DiaphragmSlotContext
+        {
+            public int LType { get; set; }
+            public int LPreset { get; set; }
+            public double LOffset { get; set; }
+            public int Plane { get; set; }
+            public double PlaneOff { get; set; }
+            public int Rot { get; set; }
+            public double RotOff { get; set; }
+            public int Depth { get; set; }
+            public double DepthOff { get; set; }
+            public int CutMode { get; set; }
+            public string CompName { get; set; }
+            public string CompAttr { get; set; }
+        }
+
+        private BranchBuildResult BuildBranches(List<LineSegment> branchLines, BuiltUpColumnData colData, double planeAngleDeg)
+        {
+            double autoBaseDist = 0.0;
+            double branchWidth = 0.0;
+            double branchWebThick = 0.0;
             List<Beam> createdBranches = new List<Beam>();
 
             foreach (var line in branchLines)
             {
-                // Физическое создание (оставляем сумму углов - это верно для глобальной ориентации)
                 Beam branch = TeklaPartBuilder.CreateBranch(line.Point1, line.Point2, colData.Branch, planeAngleDeg + colData.Br_Rot);
                 if (!branch.Insert()) throw new Exception($"Не удалось построить ветвь: {colData.Branch.Profile}");
 
@@ -309,18 +326,23 @@ namespace Apibim.Plugins.BuiltUpColumn
 
                 if (autoBaseDist == 0.0)
                 {
-                    // ИСПРАВЛЕНИЕ: Передаем только локальный угол ветви (Br_Rot)
                     Services.TeklaProfileHelper.GetActualDimensions(branch, colData.Br_Rot, out double hAlongY, out double wAlongX, out double twAlongX);
                     autoBaseDist = hAlongY;
                     branchWidth = wAlongX;
                     branchWebThick = twAlongX;
                 }
             }
-            // ... (дальше без изменений)
 
             if (autoBaseDist <= 0.0) autoBaseDist = 200.0;
             if (branchWidth <= 0.0) branchWidth = 200.0;
-            return createdBranches;
+
+            return new BranchBuildResult
+            {
+                Beams = createdBranches,
+                AutoBaseDist = autoBaseDist,
+                BranchWidth = branchWidth,
+                BranchWebThick = branchWebThick
+            };
         }
 
         private void BuildSplices(List<Beam> branches, BuiltUpColumnData colData)
@@ -452,15 +474,41 @@ namespace Apibim.Plugins.BuiltUpColumn
                 }
                 else if (slotType == 3)
                 {
-                    BuildDiaphragmSlot(line, colData.Diaphragm1, currentLevel, colData.L_Type, colData.L_Preset, colData.L_Offset,
-                        colData.D1_PosPlane, colData.D1_PosPlaneOff, colData.D1_PosRot, colData.D1_PosRotOff, colData.D1_PosDepth, colData.D1_PosDepthOff,
-                        colData.D1_CutMode, colData.D1_CutComp, colData.D1_CutAttr, branches, distBetweenAxes, branchWidth, branchWebThick);
+                    var ctxD1 = new DiaphragmSlotContext
+                    {
+                        LType = colData.L_Type,
+                        LPreset = colData.L_Preset,
+                        LOffset = colData.L_Offset,
+                        Plane = colData.D1_PosPlane,
+                        PlaneOff = colData.D1_PosPlaneOff,
+                        Rot = colData.D1_PosRot,
+                        RotOff = colData.D1_PosRotOff,
+                        Depth = colData.D1_PosDepth,
+                        DepthOff = colData.D1_PosDepthOff,
+                        CutMode = colData.D1_CutMode,
+                        CompName = colData.D1_CutComp,
+                        CompAttr = colData.D1_CutAttr
+                    };
+                    BuildDiaphragmSlot(line, colData.Diaphragm1, currentLevel, ctxD1, branches, distBetweenAxes, branchWidth, branchWebThick);
                 }
                 else if (slotType == 4)
                 {
-                    BuildDiaphragmSlot(line, colData.Diaphragm2, currentLevel, colData.L_Type, colData.L_Preset, colData.L_Offset,
-                        colData.D2_PosPlane, colData.D2_PosPlaneOff, colData.D2_PosRot, colData.D2_PosRotOff, colData.D2_PosDepth, colData.D2_PosDepthOff,
-                        colData.D2_CutMode, colData.D2_CutComp, colData.D2_CutAttr, branches, distBetweenAxes, branchWidth, branchWebThick);
+                    var ctxD2 = new DiaphragmSlotContext
+                    {
+                        LType = colData.L_Type,
+                        LPreset = colData.L_Preset,
+                        LOffset = colData.L_Offset,
+                        Plane = colData.D2_PosPlane,
+                        PlaneOff = colData.D2_PosPlaneOff,
+                        Rot = colData.D2_PosRot,
+                        RotOff = colData.D2_PosRotOff,
+                        Depth = colData.D2_PosDepth,
+                        DepthOff = colData.D2_PosDepthOff,
+                        CutMode = colData.D2_CutMode,
+                        CompName = colData.D2_CutComp,
+                        CompAttr = colData.D2_CutAttr
+                    };
+                    BuildDiaphragmSlot(line, colData.Diaphragm2, currentLevel, ctxD2, branches, distBetweenAxes, branchWidth, branchWebThick);
                 }
             }
         }
@@ -505,7 +553,20 @@ namespace Apibim.Plugins.BuiltUpColumn
                 string prof = colData.GussetPlate.Profile.ToUpper().Replace("PL", "");
                 if (prof.Contains("*") && double.TryParse(prof.Split('*')[0], out double parsedT)) t = parsedT;
 
-                colData.GussetPlate.Profile = $"PL{t}*{Math.Round(W)}";
+                // --- ИСПРАВЛЕНИЕ ПО SOLID: Защита входных данных от мутации ---
+                string computedProfile = $"PL{t}*{Math.Round(W)}";
+                var plateSettings = new PartSettings
+                {
+                    Profile = computedProfile,
+                    Material = colData.GussetPlate.Material,
+                    PartPrefix = colData.GussetPlate.PartPrefix,
+                    PartStartNo = colData.GussetPlate.PartStartNo,
+                    AssemblyPrefix = colData.GussetPlate.AssemblyPrefix,
+                    AssemblyStartNo = colData.GussetPlate.AssemblyStartNo,
+                    Name = colData.GussetPlate.Name,
+                    Class = colData.GussetPlate.Class,
+                    UDA = colData.GussetPlate.UDA
+                };
 
                 double baseClearanceDist = (colData.GP_CutMode == 1) ? branchWebThick : branchWidth;
                 double actualClearDist = distBetweenAxes - baseClearanceDist;
@@ -525,7 +586,8 @@ namespace Apibim.Plugins.BuiltUpColumn
                 strutA.GetReportProperty("PROFILE.WIDTH", ref angleWidth);
                 double zOffset = (angleWidth / 2.0) + (t / 2.0);
 
-                Beam plate = TeklaPartBuilder.CreateGussetPlate(pStart, pEnd, colData.GussetPlate);
+                // Используем локальную копию plateSettings
+                Beam plate = TeklaPartBuilder.CreateGussetPlate(pStart, pEnd, plateSettings);
                 plate.Position.DepthOffset = zOffset;
                 plate.Position.Rotation = Tekla.Structures.Model.Position.RotationEnum.BACK;
                 plate.Insert();
@@ -535,31 +597,29 @@ namespace Apibim.Plugins.BuiltUpColumn
         // ==================================================================================================
         // Вспомогательный метод: Построение Диафрагмы (+ Внедренный Шаг 2: Позиционирование)
         // ==================================================================================================
-        private void BuildDiaphragmSlot(LineSegment line, PartSettings partSettings, int currentLevel, int lType, int lPreset, double lOffset,
-            int plane, double planeOff, int rot, double rotOff, int depth, double depthOff,
-            int cutMode, string compName, string compAttr, System.Collections.Generic.List<Beam> branches, double distBetweenAxes, double branchWidth, double branchWebThick)
+        private void BuildDiaphragmSlot(LineSegment line, PartSettings partSettings, int currentLevel, DiaphragmSlotContext ctx, System.Collections.Generic.List<Beam> branches, double distBetweenAxes, double branchWidth, double branchWebThick)
         {
             if (string.IsNullOrWhiteSpace(partSettings.Profile))
                 throw new Exception($"Узел {currentLevel}: Назначена Диафрагма, но её 'Профиль' пуст во вкладке Атрибуты!");
 
-            int activePreset = lType == 1 ? 1 : lPreset;
-            Beam diaphragm = TeklaPartBuilder.CreateLacing(line.Point1, line.Point2, partSettings, activePreset, lOffset);
+            int activePreset = ctx.LType == 1 ? 1 : ctx.LPreset;
+            Beam diaphragm = TeklaPartBuilder.CreateLacing(line.Point1, line.Point2, partSettings, activePreset, ctx.LOffset);
 
-            diaphragm.Position.Plane = (Tekla.Structures.Model.Position.PlaneEnum)plane;
-            diaphragm.Position.PlaneOffset = planeOff;
+            diaphragm.Position.Plane = (Tekla.Structures.Model.Position.PlaneEnum)ctx.Plane;
+            diaphragm.Position.PlaneOffset = ctx.PlaneOff;
 
-            diaphragm.Position.Rotation = (Tekla.Structures.Model.Position.RotationEnum)rot;
-            diaphragm.Position.RotationOffset = rotOff;
+            diaphragm.Position.Rotation = (Tekla.Structures.Model.Position.RotationEnum)ctx.Rot;
+            diaphragm.Position.RotationOffset = ctx.RotOff;
 
-            diaphragm.Position.Depth = (Tekla.Structures.Model.Position.DepthEnum)depth;
-            diaphragm.Position.DepthOffset = depthOff;
+            diaphragm.Position.Depth = (Tekla.Structures.Model.Position.DepthEnum)ctx.Depth;
+            diaphragm.Position.DepthOffset = ctx.DepthOff;
 
             diaphragm.Insert();
 
             // --- ШАГ 3: SOLID ВЫРЕЗЫ ---
-            if (cutMode != 0 && branches != null && branches.Count >= 2)
+            if (ctx.CutMode != 0 && branches != null && branches.Count >= 2)
             {
-                Services.ICuttingStrategy strategy = Services.CuttingStrategyFactory.GetStrategy(cutMode, compName, compAttr);
+                Services.ICuttingStrategy strategy = Services.CuttingStrategyFactory.GetStrategy(ctx.CutMode, ctx.CompName, ctx.CompAttr);
 
                 Point colCenter = new Point(line.Point1);
                 Vector dir = PointExtension.GetVector(line.Point1, line.Point2);
@@ -567,14 +627,12 @@ namespace Apibim.Plugins.BuiltUpColumn
                 colCenter.Translate(dir * (distBetweenAxes / 2.0));
 
                 // --- ФИКС БАГА "СТАРТОВОЙ ВЕТВИ" ---
-                // Список branches хранит сначала все левые ветви, затем все правые.
                 int half = branches.Count / 2;
                 Beam targetLeft = branches[0];
                 Beam targetRight = branches[half];
 
                 double zLevel = line.Point1.Z;
 
-                // Динамически ищем ветви, которые физически пересекаются с диафрагмой по высоте
                 for (int j = 0; j < half; j++)
                 {
                     Beam lBranch = branches[j];
@@ -588,7 +646,6 @@ namespace Apibim.Plugins.BuiltUpColumn
                     if (zLevel >= minZR && zLevel <= maxZR) targetRight = rBranch;
                 }
 
-                // Теперь передаем в Фабрику строго нужную левую и нужную правую ветвь
                 strategy.ApplyCut(diaphragm, targetLeft, colCenter, line.Point1, branchWidth, branchWebThick);
                 strategy.ApplyCut(diaphragm, targetRight, colCenter, line.Point2, branchWidth, branchWebThick);
             }

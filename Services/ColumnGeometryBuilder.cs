@@ -49,156 +49,21 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
             List<double> zNodes = new List<double> { startZ };
             if (zoneLength <= 0) return zNodes;
 
-            List<double> finalSteps = new List<double>();
-            var tokens = data.L_StepText.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            List<double> finalSteps;
 
-            if (data.L_StepMode == 0) // 0: РАВНОМЕРНЫЙ (Шаг - Отметка)
+            switch (data.L_StepMode)
             {
-                double currentZ = startZ;
-                int i = 0;
-                double lastStep = 1200;
-
-                while (currentZ < endZ - 0.1)
-                {
-                    double step = lastStep;
-                    double targetZ = endZ;
-
-                    if (i < tokens.Length)
-                    {
-                        if (double.TryParse(tokens[i], out double parsedStep) && parsedStep > 0)
-                        {
-                            step = parsedStep;
-                            lastStep = step;
-                            i++;
-
-                            if (i < tokens.Length && double.TryParse(tokens[i], out double elev))
-                            {
-                                targetZ = Math.Min(elev, endZ);
-                                i++;
-                            }
-                        }
-                        else i++;
-                    }
-
-                    double len = targetZ - currentZ;
-                    if (len > 0)
-                    {
-                        int panels = (int)Math.Round(len / step);
-                        if (panels < 1) panels = 1;
-                        double actualStep = Math.Round((len / panels) / 10.0) * 10.0;
-                        if (actualStep <= 0) actualStep = 10.0;
-
-                        double sum = 0;
-                        for (int p = 0; p < panels - 1; p++)
-                        {
-                            finalSteps.Add(actualStep);
-                            sum += actualStep;
-                        }
-                        finalSteps.Add(len - sum);
-                        currentZ = targetZ;
-                    }
-                    else break;
-                }
-            }
-            else if (data.L_StepMode == 1) // 1: МАССИВ (УМНЫЙ ХВОСТ V2)
-            {
-                var parsedSteps = StringParserService.ParseManualStep(data.L_StepText);
-                if (parsedSteps.Count == 0) parsedSteps.Add(1200.0);
-
-                double sum = 0;
-                int i = 0;
-
-                double minRem = data.L_MinRemainder > 0 ? data.L_MinRemainder : data.Bcol;
-                int remPanels = data.L_RemainPanels > 0 ? data.L_RemainPanels : 2;
-                int mergePanels = data.L_MergePanels > 1 ? data.L_MergePanels : 2; // Минимум 2 (хвост + 1 панель)
-
-                while (sum < zoneLength - 0.1)
-                {
-                    double s = i < parsedSteps.Count ? parsedSteps[i] : parsedSteps.Last();
-                    double remain = zoneLength - sum;
-
-                    if (remain - s > 0.1 && remain - s < minRem)
-                    {
-                        // remain УЖЕ содержит в себе 2 панели: нормальную (s) и хвост (remain - s).
-                        double totalMerged = remain;
-
-                        // Если просят захватить больше 2 панелей, откусываем их из уже готового массива (защита от дурака включена)
-                        int panelsToExtract = mergePanels - 2;
-                        while (panelsToExtract > 0 && finalSteps.Count > 0)
-                        {
-                            totalMerged += finalSteps.Last();
-                            finalSteps.RemoveAt(finalSteps.Count - 1);
-                            panelsToExtract--;
-                        }
-
-                        // Делим нашу гигантскую схлопнутую панель на нужное количество
-                        double actualStep = Math.Round((totalMerged / remPanels) / 10.0) * 10.0;
-                        if (actualStep <= 0) actualStep = 10.0;
-
-                        double tempSum = 0;
-                        for (int p = 0; p < remPanels - 1; p++)
-                        {
-                            finalSteps.Add(actualStep);
-                            tempSum += actualStep;
-                        }
-                        finalSteps.Add(totalMerged - tempSum); // Погрешность наверх
-                        break;
-                    }
-                    if (remain <= s + 0.1)
-                    {
-                        finalSteps.Add(remain);
-                        break;
-                    }
-                    finalSteps.Add(s);
-                    sum += s;
-                    i++;
-                }
-            }
-            else if (data.L_StepMode == 2) // 2: КОЛ-ВО ПАНЕЛЕЙ И ОТМЕТКИ
-            {
-                double currentZ = startZ;
-                int i = 0;
-                int lastCount = 1;
-
-                while (currentZ < endZ - 0.1)
-                {
-                    int count = lastCount;
-                    double targetZ = endZ;
-
-                    if (i < tokens.Length)
-                    {
-                        if (int.TryParse(tokens[i], out int parsedCount) && parsedCount > 0)
-                        {
-                            count = parsedCount;
-                            i++;
-
-                            if (i < tokens.Length && double.TryParse(tokens[i], out double elev))
-                            {
-                                targetZ = Math.Min(elev, endZ);
-                                i++;
-                            }
-                        }
-                        else i++;
-                    }
-                    else count = 1;
-
-                    double len = targetZ - currentZ;
-                    if (len > 0)
-                    {
-                        double actualStep = Math.Round((len / count) / 10.0) * 10.0;
-                        if (actualStep <= 0) actualStep = 10.0;
-
-                        double sum = 0;
-                        for (int p = 0; p < count - 1; p++)
-                        {
-                            finalSteps.Add(actualStep);
-                            sum += actualStep;
-                        }
-                        finalSteps.Add(len - sum);
-                        currentZ = targetZ;
-                    }
-                    else break;
-                }
+                case 0:
+                    finalSteps = GetSteps_Uniform(data, startZ, endZ);
+                    break;
+                case 1:
+                    finalSteps = GetSteps_Array(data, zoneLength);
+                    break;
+                case 2:
+                    finalSteps = GetSteps_Count(data, startZ, endZ);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(data.L_StepMode), $"Неизвестный режим шага решётки: {data.L_StepMode}");
             }
 
             double currentZNode = startZ;
@@ -209,6 +74,165 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
             }
 
             return zNodes;
+        }
+
+        // =========================================================================
+        // ПРИВАТНЫЕ МЕТОДЫ ГЕНЕРАЦИИ ШАГОВ РЕШЕТКИ (Инкапсуляция SOLID)
+        // =========================================================================
+
+        private static List<double> GetSteps_Uniform(BuiltUpColumnData data, double startZ, double endZ)
+        {
+            List<double> finalSteps = new List<double>();
+            var tokens = data.L_StepText.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            double currentZ = startZ;
+            int i = 0;
+            double lastStep = 1200;
+
+            while (currentZ < endZ - 0.1)
+            {
+                double step = lastStep;
+                double targetZ = endZ;
+
+                if (i < tokens.Length)
+                {
+                    if (double.TryParse(tokens[i], out double parsedStep) && parsedStep > 0)
+                    {
+                        step = parsedStep;
+                        lastStep = step;
+                        i++;
+
+                        if (i < tokens.Length && double.TryParse(tokens[i], out double elev))
+                        {
+                            targetZ = Math.Min(elev, endZ);
+                            i++;
+                        }
+                    }
+                    else i++;
+                }
+
+                double len = targetZ - currentZ;
+                if (len > 0)
+                {
+                    int panels = (int)Math.Round(len / step);
+                    if (panels < 1) panels = 1;
+                    double actualStep = Math.Round((len / panels) / 10.0) * 10.0;
+                    if (actualStep <= 0) actualStep = 10.0;
+
+                    double sum = 0;
+                    for (int p = 0; p < panels - 1; p++)
+                    {
+                        finalSteps.Add(actualStep);
+                        sum += actualStep;
+                    }
+                    finalSteps.Add(len - sum);
+                    currentZ = targetZ;
+                }
+                else break;
+            }
+            return finalSteps;
+        }
+
+        private static List<double> GetSteps_Array(BuiltUpColumnData data, double zoneLength)
+        {
+            List<double> finalSteps = new List<double>();
+            var parsedSteps = StringParserService.ParseManualStep(data.L_StepText);
+            if (parsedSteps.Count == 0) parsedSteps.Add(1200.0);
+
+            double sum = 0;
+            int i = 0;
+
+            double minRem = data.L_MinRemainder > 0 ? data.L_MinRemainder : data.Bcol;
+            int remPanels = data.L_RemainPanels > 0 ? data.L_RemainPanels : 2;
+            int mergePanels = data.L_MergePanels > 1 ? data.L_MergePanels : 2;
+
+            while (sum < zoneLength - 0.1)
+            {
+                double s = i < parsedSteps.Count ? parsedSteps[i] : parsedSteps.Last();
+                double remain = zoneLength - sum;
+
+                if (remain - s > 0.1 && remain - s < minRem)
+                {
+                    double totalMerged = remain;
+                    int panelsToExtract = mergePanels - 2;
+                    while (panelsToExtract > 0 && finalSteps.Count > 0)
+                    {
+                        totalMerged += finalSteps.Last();
+                        finalSteps.RemoveAt(finalSteps.Count - 1);
+                        panelsToExtract--;
+                    }
+
+                    double actualStep = Math.Round((totalMerged / remPanels) / 10.0) * 10.0;
+                    if (actualStep <= 0) actualStep = 10.0;
+
+                    double tempSum = 0;
+                    for (int p = 0; p < remPanels - 1; p++)
+                    {
+                        finalSteps.Add(actualStep);
+                        tempSum += actualStep;
+                    }
+                    finalSteps.Add(totalMerged - tempSum);
+                    break;
+                }
+                if (remain <= s + 0.1)
+                {
+                    finalSteps.Add(remain);
+                    break;
+                }
+                finalSteps.Add(s);
+                sum += s;
+                i++;
+            }
+            return finalSteps;
+        }
+
+        private static List<double> GetSteps_Count(BuiltUpColumnData data, double startZ, double endZ)
+        {
+            List<double> finalSteps = new List<double>();
+            var tokens = data.L_StepText.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            double currentZ = startZ;
+            int i = 0;
+            int lastCount = 1;
+
+            while (currentZ < endZ - 0.1)
+            {
+                int count = lastCount;
+                double targetZ = endZ;
+
+                if (i < tokens.Length)
+                {
+                    if (int.TryParse(tokens[i], out int parsedCount) && parsedCount > 0)
+                    {
+                        count = parsedCount;
+                        i++;
+
+                        if (i < tokens.Length && double.TryParse(tokens[i], out double elev))
+                        {
+                            targetZ = Math.Min(elev, endZ);
+                            i++;
+                        }
+                    }
+                    else i++;
+                }
+                else count = 1;
+
+                double len = targetZ - currentZ;
+                if (len > 0)
+                {
+                    double actualStep = Math.Round((len / count) / 10.0) * 10.0;
+                    if (actualStep <= 0) actualStep = 10.0;
+
+                    double sum = 0;
+                    for (int p = 0; p < count - 1; p++)
+                    {
+                        finalSteps.Add(actualStep);
+                        sum += actualStep;
+                    }
+                    finalSteps.Add(len - sum);
+                    currentZ = targetZ;
+                }
+                else break;
+            }
+            return finalSteps;
         }
 
         public static List<LineSegment> GetLacingLines(BuiltUpColumnData data, List<double> zNodes)
