@@ -51,38 +51,77 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
         /// <summary>
         /// Фабрика Раскоса (Рядового и Стыкового) и Распорок из уголков
         /// </summary>
-        public static Beam CreateLacing(Point p1, Point p2, PartSettings settings, int presetType, double offset)
+        public static Beam CreateLacing(Point p1, Point p2, PartSettings settings, int lType, int preset, double offset)
         {
             Beam beam = new Beam(p1, p2);
-            ApplySettings(beam, settings);
+            beam.Profile.ProfileString = settings.Profile;
+            beam.Material.MaterialString = settings.Material;
 
-            beam.Position.PlaneOffset = 0.0;
-            beam.Position.DepthOffset = 0.0;
+            // <-- Убрали парсинг, так как свойства уже имеют тип int
+            beam.PartNumber.Prefix = settings.PartPrefix;
+            beam.PartNumber.StartNumber = settings.PartStartNo;
+            beam.AssemblyNumber.Prefix = settings.AssemblyPrefix;
+            beam.AssemblyNumber.StartNumber = settings.AssemblyStartNo;
 
-            switch (presetType)
+            beam.Name = settings.Name;
+            beam.Class = settings.Class;
+
+            // --- АЛЬФА 2.01: ЖЕСТКИЕ ПРЕСЕТЫ ПОЗИЦИОНИРОВАНИЯ ---
+            if (lType == 0) // 0 - Одинарная решетка
             {
-                case 1: // Полка по оси
-                    beam.Position.Plane = Position.PlaneEnum.MIDDLE;
-                    beam.Position.Depth = Position.DepthEnum.FRONT;
-                    beam.Position.Rotation = Position.RotationEnum.TOP;
-                    beam.Position.RotationOffset = 90.0;
-                    beam.Position.DepthOffset = offset;
-                    break;
-                case 2: // Уголок по обушку
-                    beam.Position.Plane = Position.PlaneEnum.LEFT;
-                    beam.Position.Depth = Position.DepthEnum.MIDDLE;
-                    beam.Position.Rotation = Position.RotationEnum.FRONT;
-                    beam.Position.RotationOffset = 0.0;
-                    beam.Position.PlaneOffset = offset;
-                    break;
-                case 3: // Труба (по центру)
-                    beam.Position.Plane = Position.PlaneEnum.MIDDLE;
-                    beam.Position.Depth = Position.DepthEnum.MIDDLE;
-                    beam.Position.Rotation = Position.RotationEnum.FRONT;
-                    beam.Position.RotationOffset = 0.0;
-                    beam.Position.PlaneOffset = offset;
-                    break;
+                switch (preset)
+                {
+                    case 2: // Труба (по центру)
+                        beam.Position.Plane = Position.PlaneEnum.MIDDLE;
+                        beam.Position.Depth = Position.DepthEnum.MIDDLE;
+                        beam.Position.Rotation = Position.RotationEnum.BELOW;
+                        break;
+                    case 3: // Полка по оси
+                        beam.Position.Plane = Position.PlaneEnum.RIGHT;
+                        beam.Position.Depth = Position.DepthEnum.MIDDLE;
+                        beam.Position.Rotation = Position.RotationEnum.TOP;
+                        break;
+                    case 1: // Уголок по обушку (По умолчанию)
+                    default:
+                        beam.Position.Plane = Position.PlaneEnum.LEFT;
+                        beam.Position.Depth = Position.DepthEnum.MIDDLE;
+                        beam.Position.Rotation = Position.RotationEnum.BELOW;
+                        break;
+                }
             }
+            else // 1 - Сдвоенная решетка
+            {
+                switch (preset)
+                {
+                    case 2:
+                        beam.Position.Plane = Position.PlaneEnum.RIGHT;
+                        beam.Position.Depth = Position.DepthEnum.MIDDLE;
+                        beam.Position.Rotation = Position.RotationEnum.BACK;
+                        break;
+                    case 3:
+                        beam.Position.Plane = Position.PlaneEnum.LEFT;
+                        beam.Position.Depth = Position.DepthEnum.MIDDLE;
+                        beam.Position.Rotation = Position.RotationEnum.FRONT;
+                        break;
+                    case 4:
+                        beam.Position.Plane = Position.PlaneEnum.LEFT;
+                        beam.Position.Depth = Position.DepthEnum.MIDDLE;
+                        beam.Position.Rotation = Position.RotationEnum.BELOW;
+                        break;
+                    case 1: // По умолчанию
+                    default:
+                        beam.Position.Plane = Position.PlaneEnum.RIGHT;
+                        beam.Position.Depth = Position.DepthEnum.MIDDLE;
+                        beam.Position.Rotation = Position.RotationEnum.TOP;
+                        break;
+                }
+            }
+
+            // ЖЕСТКАЯ ПРИВЯЗКА СМЕЩЕНИЯ К ПЛОСКОСТИ (Всё уходит в PlaneOffset)
+            beam.Position.PlaneOffset = offset;
+            beam.Position.DepthOffset = 0.0;
+            beam.Position.RotationOffset = 0.0;
+
             return beam;
         }
 

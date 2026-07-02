@@ -22,7 +22,8 @@ namespace Apibim.Plugins.BuiltUpColumn
         private double _l_MinRemainder = 0.0; private int _l_MergePanels = 2; private int _l_RemainPanels = 2;
         private int _l_Invert = 0; private string _l_Exclude = ""; private int _l_HoldPhase = 0;
         private double _l_Rasc = 50.0; private double _l_Rasc_Base = 50.0; private double _l_Rasc_Top = 50.0; private string _l_RascOverrides = "";
-        private int _l_Type = 1; private int _l_Preset = 1; private double _l_Offset = 0.0;
+        private int _l_Type = 1; //private int _l_Preset = 1;
+        private double _l_Offset = 0.0;
 
         private int _s_Base_Preset = 2; private int _s_Top_Preset = 2; private int _s_Splice_Preset = 2; private int _s_KeyElev_Preset = 0; private int _s_Preset = 1;
         private string _s_NodesAngle = ""; private string _s_NodesAnglePlate = ""; private string _s_NodesD1 = ""; private string _s_NodesD2 = ""; private string _s_NodesExcludePlate = ""; private string _s_NodesExclude = "";
@@ -107,7 +108,7 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresDialog("L_Rasc_Top", typeof(TD.Double))] public double L_Rasc_Top { get => _l_Rasc_Top; set => Set(ref _l_Rasc_Top, value); }
         [StructuresDialog("L_RascOverrides", typeof(TD.String))] public string L_RascOverrides { get => _l_RascOverrides; set => Set(ref _l_RascOverrides, value); }
         [StructuresDialog("L_Type", typeof(TD.Integer))] public int L_Type { get => _l_Type; set => Set(ref _l_Type, value); }
-        [StructuresDialog("L_Preset", typeof(TD.Integer))] public int L_Preset { get => _l_Preset; set => Set(ref _l_Preset, value); }
+        //[StructuresDialog("L_Preset", typeof(TD.Integer))] public int L_Preset { get => _l_Preset; set => Set(ref _l_Preset, value); }
         [StructuresDialog("L_Offset", typeof(TD.Double))] public double L_Offset { get => _l_Offset; set => Set(ref _l_Offset, value); }
 
         [StructuresDialog("S_Base_Preset", typeof(TD.Integer))] public int S_Base_Preset { get => _s_Base_Preset; set => Set(ref _s_Base_Preset, value); }
@@ -272,5 +273,67 @@ namespace Apibim.Plugins.BuiltUpColumn
 
         [StructuresDialog("HB_T2_Comp", typeof(TD.String))] public string HB_T2_Comp { get => _hb_T2_Comp; set => Set(ref _hb_T2_Comp, value); }
         [StructuresDialog("HB_T2_Attr", typeof(TD.String))] public string HB_T2_Attr { get => _hb_T2_Attr; set => Set(ref _hb_T2_Attr, value); }
+        // =========================================================
+        // --- ALPHA 2.01: УМНЫЕ ПРЕСЕТЫ ПОЗИЦИОНИРОВАНИЯ ---
+        // =========================================================
+        private string _l_Single_Angle = "";
+        [StructuresDialog("L_Single_Angle", typeof(Tekla.Structures.Datatype.String))]
+        public string L_Single_Angle { get => _l_Single_Angle; set => Set(ref _l_Single_Angle, value); }
+
+        private string _l_Single_Pipe = "";
+        [StructuresDialog("L_Single_Pipe", typeof(Tekla.Structures.Datatype.String))]
+        public string L_Single_Pipe { get => _l_Single_Pipe; set => Set(ref _l_Single_Pipe, value); }
+
+        private string _l_Single_Flange = "";
+        [StructuresDialog("L_Single_Flange", typeof(Tekla.Structures.Datatype.String))]
+        public string L_Single_Flange { get => _l_Single_Flange; set => Set(ref _l_Single_Flange, value); }
+
+        private string _l_Double_P1 = "";
+        [StructuresDialog("L_Double_P1", typeof(Tekla.Structures.Datatype.String))]
+        public string L_Double_P1 { get => _l_Double_P1; set => Set(ref _l_Double_P1, value); }
+
+        private string _l_Double_P2 = "";
+        [StructuresDialog("L_Double_P2", typeof(Tekla.Structures.Datatype.String))]
+        public string L_Double_P2 { get => _l_Double_P2; set => Set(ref _l_Double_P2, value); }
+
+        private string _l_Double_P3 = "";
+        [StructuresDialog("L_Double_P3", typeof(Tekla.Structures.Datatype.String))]
+        public string L_Double_P3 { get => _l_Double_P3; set => Set(ref _l_Double_P3, value); }
+
+        private string _l_Double_P4 = "";
+        [StructuresDialog("L_Double_P4", typeof(Tekla.Structures.Datatype.String))]
+        public string L_Double_P4 { get => _l_Double_P4; set => Set(ref _l_Double_P4, value); }
+
+        private string _s_Pos_Angle = "";
+        [StructuresDialog("S_Pos_Angle", typeof(Tekla.Structures.Datatype.String))]
+        public string S_Pos_Angle { get => _s_Pos_Angle; set => Set(ref _s_Pos_Angle, value); }
+
+        private string _s_Pos_Pipe = "";
+        [StructuresDialog("S_Pos_Pipe", typeof(Tekla.Structures.Datatype.String))]
+        public string S_Pos_Pipe { get => _s_Pos_Pipe; set => Set(ref _s_Pos_Pipe, value); }
+
+        //private int _ls_Preset;
+        //[StructuresDialog("LS_Preset", typeof(Tekla.Structures.Datatype.Integer))]
+        //public int LS_Preset { get => _ls_Preset; set => Set(ref _ls_Preset, value); }
+
+        private double _ls_Offset;
+        [StructuresDialog("LS_Offset", typeof(Tekla.Structures.Datatype.Double))]
+        public double LS_Offset { get => _ls_Offset; set => Set(ref _ls_Offset, value); }
+
+        private int _l_Preset_Single;
+        [StructuresDialog("L_Preset_Single", typeof(Tekla.Structures.Datatype.Integer))]
+        public int L_Preset_Single { get => _l_Preset_Single; set => Set(ref _l_Preset_Single, value); }
+
+        private int _l_Preset_Double;
+        [StructuresDialog("L_Preset_Double", typeof(Tekla.Structures.Datatype.Integer))]
+        public int L_Preset_Double { get => _l_Preset_Double; set => Set(ref _l_Preset_Double, value); }
+
+        private int _ls_Preset_Single;
+        [StructuresDialog("LS_Preset_Single", typeof(Tekla.Structures.Datatype.Integer))]
+        public int LS_Preset_Single { get => _ls_Preset_Single; set => Set(ref _ls_Preset_Single, value); }
+
+        private int _ls_Preset_Double;
+        [StructuresDialog("LS_Preset_Double", typeof(Tekla.Structures.Datatype.Integer))]
+        public int LS_Preset_Double { get => _ls_Preset_Double; set => Set(ref _ls_Preset_Double, value); }
     }
 }

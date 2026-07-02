@@ -47,7 +47,7 @@ namespace Apibim.Plugins.BuiltUpColumn.Models
         public string L_RascOverrides { get; set; }
 
         public int L_Type { get; set; }
-        public int L_Preset { get; set; }
+        //public int L_Preset { get; set; }
         public double L_Offset { get; set; }
 
         public int S_Base_Preset { get; set; }
@@ -139,5 +139,27 @@ namespace Apibim.Plugins.BuiltUpColumn.Models
 
 		public string HB_T2_Comp { get; set; }
 		public string HB_T2_Attr { get; set; }
-	}
+
+        // Alpha 2.01 - Строки пресетов
+        public string L_Single_Angle { get; set; }
+        public string L_Single_Pipe { get; set; }
+        public string L_Single_Flange { get; set; }
+        public string L_Double_P1 { get; set; }
+        public string L_Double_P2 { get; set; }
+        public string L_Double_P3 { get; set; }
+        public string L_Double_P4 { get; set; }
+        public string S_Pos_Angle { get; set; }
+        public string S_Pos_Pipe { get; set; }
+
+        //public int LS_Preset { get; set; }
+        public double LS_Offset { get; set; }
+
+        // --- ПРЕСЕТЫ И СМЕЩЕНИЯ РЕШЕТКИ (Базовые и Стыковые) ---
+        public int L_Preset_Single { get; set; }
+        public int L_Preset_Double { get; set; }
+
+        public int LS_Preset_Single { get; set; }
+        public int LS_Preset_Double { get; set; }
+
+    }
 }

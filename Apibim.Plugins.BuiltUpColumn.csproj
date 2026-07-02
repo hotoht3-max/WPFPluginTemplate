@@ -112,6 +112,12 @@
     <Compile Include="UIControls\HeaderSystemControl.xaml.cs">
       <DependentUpon>HeaderSystemControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UIControls\HelpTooltipControl.xaml.cs">
+      <DependentUpon>HelpTooltipControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UIControls\MacroTextRowControl.xaml.cs">
+      <DependentUpon>MacroTextRowControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UIControls\MaterialSelectorControl.xaml.cs">
       <DependentUpon>MaterialSelectorControl.xaml</DependentUpon>
     </Compile>
@@ -191,6 +197,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UIControls\HeaderSystemControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UIControls\HelpTooltipControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UIControls\MacroTextRowControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

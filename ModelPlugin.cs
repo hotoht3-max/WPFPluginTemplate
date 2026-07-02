@@ -57,7 +57,7 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresField("L_RascOverrides")] public string L_RascOverrides = "";
 
         [StructuresField("L_Type")] public int L_Type = 1;
-        [StructuresField("L_Preset")] public int L_Preset = 1;
+        // [StructuresField("L_Preset")] public int L_Preset = 1;
         [StructuresField("L_Offset")] public double L_Offset = 0.0;
 
         // Каскад планок
@@ -166,6 +166,31 @@ namespace Apibim.Plugins.BuiltUpColumn
 
         [StructuresField("HB_T2_Comp")] public string HB_T2_Comp = ""; // Правый торец
         [StructuresField("HB_T2_Attr")] public string HB_T2_Attr = "";
+
+        // =========================================================
+        // --- ALPHA 2.01: УМНЫЕ ПРЕСЕТЫ ПОЗИЦИОНИРОВАНИЯ ---
+        // =========================================================
+        [StructuresField("L_Single_Angle")] public string L_Single_Angle = "";
+        [StructuresField("L_Single_Pipe")] public string L_Single_Pipe = "";
+        [StructuresField("L_Single_Flange")] public string L_Single_Flange = "";
+
+        [StructuresField("L_Double_P1")] public string L_Double_P1 = "";
+        [StructuresField("L_Double_P2")] public string L_Double_P2 = "";
+        [StructuresField("L_Double_P3")] public string L_Double_P3 = "";
+        [StructuresField("L_Double_P4")] public string L_Double_P4 = "";
+
+        [StructuresField("S_Pos_Angle")] public string S_Pos_Angle = "";
+        [StructuresField("S_Pos_Pipe")] public string S_Pos_Pipe = "";
+
+        // [StructuresField("LS_Preset")] public int LS_Preset;
+        [StructuresField("LS_Offset")] public double LS_Offset;
+        // Базовые
+        [StructuresField("L_Preset_Single")] public int L_Preset_Single;
+        [StructuresField("L_Preset_Double")] public int L_Preset_Double;
+
+        // Стыковые
+        [StructuresField("LS_Preset_Single")] public int LS_Preset_Single;
+        [StructuresField("LS_Preset_Double")] public int LS_Preset_Double;
     }
 
     [Plugin("Apibim_BuiltUpColumn")]
@@ -378,12 +403,28 @@ namespace Apibim.Plugins.BuiltUpColumn
 
         private void BuildLacing(List<LineSegment> lacingLines, List<double> splices, BuiltUpColumnData colData, Vector localY, double autoBaseDist)
         {
-            // ПАРСИМ СПИСОК УДАЛЯЕМЫХ РАСКОСОВ (Механика п. 4.4)
             var excludeList = StringParserService.ParseNodes(colData.L_Exclude, lacingLines.Count);
+
+            // --- УРОВЕНЬ 3: Карта точечных переопределений (Парсер) ---
+            Dictionary<int, (int PresetId, double? Offset)> overrideMap;
+            if (colData.L_Type == 0)
+            {
+                overrideMap = ResolvePositions(lacingLines.Count,
+                    (colData.L_Single_Angle, 1),
+                    (colData.L_Single_Pipe, 2),
+                    (colData.L_Single_Flange, 3));
+            }
+            else
+            {
+                overrideMap = ResolvePositions(lacingLines.Count,
+                    (colData.L_Double_P1, 1),
+                    (colData.L_Double_P2, 2),
+                    (colData.L_Double_P3, 3),
+                    (colData.L_Double_P4, 4));
+            }
 
             for (int i = 0; i < lacingLines.Count; i++)
             {
-                // ЗАЩИТА: Если раскос в списке на удаление, просто переходим к следующему
                 if (excludeList.Contains(i)) continue;
 
                 var line = lacingLines[i];
@@ -397,30 +438,49 @@ namespace Apibim.Plugins.BuiltUpColumn
                     if (spliceZ >= minZ && spliceZ <= maxZ) { isSpliceDiagonal = true; break; }
                 }
 
-                // Выбор настроек (Стыковой раскос или Рядовой)
                 PartSettings settings = isSpliceDiagonal && !string.IsNullOrWhiteSpace(colData.LacingSplice.Profile)
                     ? colData.LacingSplice
                     : colData.Lacing;
 
-                int activePreset = colData.L_Type == 1 ? 1 : colData.L_Preset;
+                // --- УРОВЕНЬ 1 и 2: Базовые и Стыковые настройки ---
+                int activePreset = 1;
 
                 if (colData.L_Type == 0) // Одинарная решетка
                 {
-                    TeklaPartBuilder.CreateLacing(line.Point1, line.Point2, settings, activePreset, colData.L_Offset).Insert();
+                    activePreset = isSpliceDiagonal ? colData.LS_Preset_Single : colData.L_Preset_Single;
                 }
-                else // Сдвоенная решетка (Tekla.Extension)
+                else // Сдвоенная решетка
+                {
+                    activePreset = isSpliceDiagonal ? colData.LS_Preset_Double : colData.L_Preset_Double;
+                }
+
+                // КОРРЕКЦИЯ: Переводим 0-based индекс из ComboBox в 1-based ID
+                activePreset = activePreset >= 0 ? activePreset + 1 : 1;
+
+                double activeOffset = isSpliceDiagonal ? colData.LS_Offset : colData.L_Offset;
+
+                // --- УРОВЕНЬ 3: Накатываем точечное переопределение (если есть) ---
+                if (overrideMap.TryGetValue(i, out var overrideData))
+                {
+                    activePreset = overrideData.PresetId;
+                    activeOffset = overrideData.Offset ?? activeOffset;
+                }
+
+                if (colData.L_Type == 0) // Одинарная
+                {
+                    TeklaPartBuilder.CreateLacing(line.Point1, line.Point2, settings, colData.L_Type, activePreset, activeOffset).Insert();
+                }
+                else // Сдвоенная
                 {
                     Vector shift = localY * (autoBaseDist / 2.0);
 
-                    // Ветвь А
                     Point p1_A = new Point(line.Point1); p1_A.Translate(shift);
                     Point p2_A = new Point(line.Point2); p2_A.Translate(shift);
-                    TeklaPartBuilder.CreateLacing(p1_A, p2_A, settings, activePreset, colData.L_Offset).Insert();
+                    TeklaPartBuilder.CreateLacing(p1_A, p2_A, settings, colData.L_Type, activePreset, activeOffset).Insert();
 
-                    // Ветвь Б
                     Point p1_B = new Point(line.Point1); p1_B.Translate(shift.Negative());
                     Point p2_B = new Point(line.Point2); p2_B.Translate(shift.Negative());
-                    TeklaPartBuilder.CreateLacing(p2_B, p1_B, settings, activePreset, colData.L_Offset).Insert();
+                    TeklaPartBuilder.CreateLacing(p2_B, p1_B, settings, colData.L_Type, activePreset, activeOffset).Insert();
                 }
             }
         }
@@ -429,7 +489,6 @@ namespace Apibim.Plugins.BuiltUpColumn
         {
             int totalNodes = strutLines.Count;
 
-            // --- 1. ПАРСИНГ И ПОДГОТОВКА ---
             var idxAngle = StringParserService.ParseNodes(colData.S_NodesAngle, totalNodes);
             var idxAnglePlate = StringParserService.ParseNodes(colData.S_NodesAnglePlate, totalNodes);
             var idxD1 = StringParserService.ParseNodes(colData.S_NodesD1, totalNodes);
@@ -440,26 +499,30 @@ namespace Apibim.Plugins.BuiltUpColumn
             var spliceNodes = ColumnGeometryBuilder.GetSpliceAdjacentNodes(zNodes, splices);
             var keyElevNodes = ColumnGeometryBuilder.GetKeyElevationNodes(colData, zNodes);
 
-            // --- 2. ЦИКЛ ОРКЕСТРАЦИИ СЛОТОВ ---
+            var strutMap = ResolvePositions(totalNodes,
+                (colData.S_Pos_Angle, 1),
+                (colData.S_Pos_Pipe, 2));
+
+            // --- ИСПРАВЛЕНИЕ: Вычисляем базовый пресет с учетом новых разделенных списков ---
+            int baseLacingPreset = colData.L_Type == 0 ? colData.L_Preset_Single : colData.L_Preset_Double;
+            baseLacingPreset = baseLacingPreset >= 0 ? baseLacingPreset + 1 : 1;
+
             for (int i = 0; i < totalNodes; i++)
             {
                 int currentLevel = i + 1;
                 int slotType = 0;
 
-                // Фоновая заливка
                 if (i == 0) slotType = colData.S_Base_Preset;
                 else if (i == totalNodes - 1) slotType = colData.S_Top_Preset;
                 else if (spliceNodes.Contains(i)) slotType = colData.S_Splice_Preset;
                 else if (keyElevNodes.Contains(i)) slotType = colData.S_KeyElev_Preset;
                 else slotType = colData.S_Preset;
 
-                // Ручное созидание
                 if (idxAngle.Contains(i)) slotType = 1;
                 if (idxAnglePlate.Contains(i)) slotType = 2;
                 if (idxD1.Contains(i)) slotType = 3;
                 if (idxD2.Contains(i)) slotType = 4;
 
-                // Деградация и Аннигиляция
                 if (idxExcPlate.Contains(i) && slotType == 2) slotType = 1;
                 if (idxExclude.Contains(i)) slotType = 0;
 
@@ -467,17 +530,25 @@ namespace Apibim.Plugins.BuiltUpColumn
 
                 var line = strutLines[i];
 
-                // --- 3. ВЫЗОВЫ СТРОИТЕЛЕЙ (Инкапсуляция) ---
                 if (slotType == 1 || slotType == 2)
                 {
-                    BuildStrutSlot(line, slotType, currentLevel, colData, localY, autoBaseDist, distBetweenAxes, branchWidth, branchWebThick);
+                    int activePresetId = 1; // Пресет по умолчанию
+                    double? customOffset = null;
+
+                    if (strutMap.TryGetValue(i, out var overrideData))
+                    {
+                        activePresetId = overrideData.PresetId;
+                        customOffset = overrideData.Offset;
+                    }
+
+                    BuildStrutSlot(line, slotType, currentLevel, colData, localY, autoBaseDist, distBetweenAxes, branchWidth, branchWebThick, activePresetId, customOffset);
                 }
                 else if (slotType == 3)
                 {
                     var ctxD1 = new DiaphragmSlotContext
                     {
                         LType = colData.L_Type,
-                        LPreset = colData.L_Preset,
+                        LPreset = baseLacingPreset, // <-- Передаем вычисленный пресет вместо L_Preset
                         LOffset = colData.L_Offset,
                         Plane = colData.D1_PosPlane,
                         PlaneOff = colData.D1_PosPlaneOff,
@@ -496,7 +567,7 @@ namespace Apibim.Plugins.BuiltUpColumn
                     var ctxD2 = new DiaphragmSlotContext
                     {
                         LType = colData.L_Type,
-                        LPreset = colData.L_Preset,
+                        LPreset = baseLacingPreset, // <-- Передаем вычисленный пресет вместо L_Preset
                         LOffset = colData.L_Offset,
                         Plane = colData.D2_PosPlane,
                         PlaneOff = colData.D2_PosPlaneOff,
@@ -516,17 +587,17 @@ namespace Apibim.Plugins.BuiltUpColumn
         // ==================================================================================================
         // Вспомогательный метод: Построение Распорки (+ Лист)
         // ==================================================================================================
-        private void BuildStrutSlot(LineSegment line, int slotType, int currentLevel, BuiltUpColumnData colData, Vector localY, double autoBaseDist, double distBetweenAxes, double branchWidth, double branchWebThick)
+        private void BuildStrutSlot(LineSegment line, int slotType, int currentLevel, BuiltUpColumnData colData, Vector localY, double autoBaseDist, double distBetweenAxes, double branchWidth, double branchWebThick, int presetId, double? customOffset)
         {
             if (string.IsNullOrWhiteSpace(colData.Strut.Profile))
                 throw new Exception($"Узел {currentLevel}: Назначена Распорка, но её 'Профиль' пуст во вкладке Атрибуты!");
 
-            int activePreset = colData.L_Type == 1 ? 1 : colData.L_Preset;
+            double activeOffset = customOffset ?? colData.L_Offset;
             Beam strutA = null;
 
             if (colData.L_Type == 0)
             {
-                strutA = TeklaPartBuilder.CreateLacing(line.Point1, line.Point2, colData.Strut, activePreset, colData.L_Offset);
+                strutA = TeklaPartBuilder.CreateLacing(line.Point1, line.Point2, colData.Strut, colData.L_Type, presetId, activeOffset);
                 strutA.Insert();
             }
             else
@@ -535,12 +606,12 @@ namespace Apibim.Plugins.BuiltUpColumn
 
                 Point p1_A = new Point(line.Point1); p1_A.Translate(shift);
                 Point p2_A = new Point(line.Point2); p2_A.Translate(shift);
-                strutA = TeklaPartBuilder.CreateLacing(p1_A, p2_A, colData.Strut, activePreset, colData.L_Offset);
+                strutA = TeklaPartBuilder.CreateLacing(p1_A, p2_A, colData.Strut, colData.L_Type, presetId, activeOffset);
                 strutA.Insert();
 
                 Point p1_B = new Point(line.Point1); p1_B.Translate(shift.Negative());
                 Point p2_B = new Point(line.Point2); p2_B.Translate(shift.Negative());
-                TeklaPartBuilder.CreateLacing(p2_B, p1_B, colData.Strut, activePreset, colData.L_Offset).Insert();
+                TeklaPartBuilder.CreateLacing(p2_B, p1_B, colData.Strut, colData.L_Type, presetId, activeOffset).Insert();
             }
 
             // МАТЕМАТИКА ЛИСТА
@@ -553,7 +624,6 @@ namespace Apibim.Plugins.BuiltUpColumn
                 string prof = colData.GussetPlate.Profile.ToUpper().Replace("PL", "");
                 if (prof.Contains("*") && double.TryParse(prof.Split('*')[0], out double parsedT)) t = parsedT;
 
-                // --- ИСПРАВЛЕНИЕ ПО SOLID: Защита входных данных от мутации ---
                 string computedProfile = $"PL{t}*{Math.Round(W)}";
                 var plateSettings = new PartSettings
                 {
@@ -586,7 +656,6 @@ namespace Apibim.Plugins.BuiltUpColumn
                 strutA.GetReportProperty("PROFILE.WIDTH", ref angleWidth);
                 double zOffset = (angleWidth / 2.0) + (t / 2.0);
 
-                // Используем локальную копию plateSettings
                 Beam plate = TeklaPartBuilder.CreateGussetPlate(pStart, pEnd, plateSettings);
                 plate.Position.DepthOffset = zOffset;
                 plate.Position.Rotation = Tekla.Structures.Model.Position.RotationEnum.BACK;
@@ -594,16 +663,14 @@ namespace Apibim.Plugins.BuiltUpColumn
             }
         }
 
-        // ==================================================================================================
-        // Вспомогательный метод: Построение Диафрагмы (+ Внедренный Шаг 2: Позиционирование)
-        // ==================================================================================================
         private void BuildDiaphragmSlot(LineSegment line, PartSettings partSettings, int currentLevel, DiaphragmSlotContext ctx, System.Collections.Generic.List<Beam> branches, double distBetweenAxes, double branchWidth, double branchWebThick)
         {
             if (string.IsNullOrWhiteSpace(partSettings.Profile))
                 throw new Exception($"Узел {currentLevel}: Назначена Диафрагма, но её 'Профиль' пуст во вкладке Атрибуты!");
 
-            int activePreset = ctx.LType == 1 ? 1 : ctx.LPreset;
-            Beam diaphragm = TeklaPartBuilder.CreateLacing(line.Point1, line.Point2, partSettings, activePreset, ctx.LOffset);
+            // ИСПРАВЛЕНИЕ: Берем пресет напрямую из контекста
+            int activePreset = ctx.LPreset;
+            Beam diaphragm = TeklaPartBuilder.CreateLacing(line.Point1, line.Point2, partSettings, ctx.LType, activePreset, ctx.LOffset);
 
             diaphragm.Position.Plane = (Tekla.Structures.Model.Position.PlaneEnum)ctx.Plane;
             diaphragm.Position.PlaneOffset = ctx.PlaneOff;
@@ -616,7 +683,7 @@ namespace Apibim.Plugins.BuiltUpColumn
 
             diaphragm.Insert();
 
-            // --- ШАГ 3: SOLID ВЫРЕЗЫ ---
+            // --- SOLID ВЫРЕЗЫ ---
             if (ctx.CutMode != 0 && branches != null && branches.Count >= 2)
             {
                 Services.ICuttingStrategy strategy = Services.CuttingStrategyFactory.GetStrategy(ctx.CutMode, ctx.CompName, ctx.CompAttr);
@@ -626,7 +693,6 @@ namespace Apibim.Plugins.BuiltUpColumn
                 dir.Normalize();
                 colCenter.Translate(dir * (distBetweenAxes / 2.0));
 
-                // --- ФИКС БАГА "СТАРТОВОЙ ВЕТВИ" ---
                 int half = branches.Count / 2;
                 Beam targetLeft = branches[0];
                 Beam targetRight = branches[half];
@@ -826,6 +892,24 @@ namespace Apibim.Plugins.BuiltUpColumn
                 // Используем InsertDetail для правого торца по координатам bEnd
                 Services.TeklaComponentService.InsertDetail(colData.HB_T2_Comp, colData.HB_T2_Attr, headBeam, bEnd, null, out _);
             }
+        }
+        // =========================================================================
+        // МЕТОД-РЕШАТЕЛЬ: Логика "Кто последний (ниже в UI), тот и прав"
+        // =========================================================================
+        private Dictionary<int, (int PresetId, double? Offset)> ResolvePositions(int maxCount, params (string Text, int PresetId)[] fields)
+        {
+            var result = new Dictionary<int, (int PresetId, double? Offset)>();
+
+            foreach (var field in fields)
+            {
+                var parsed = StringParserService.ParsePresetNodesWithOffsets(field.Text, maxCount);
+                foreach (var kvp in parsed)
+                {
+                    result[kvp.Key] = (field.PresetId, kvp.Value);
+                }
+            }
+
+            return result;
         }
     }
 }

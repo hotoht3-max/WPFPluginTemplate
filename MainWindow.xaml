@@ -164,12 +164,14 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <Grid Margin="5">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto" MinWidth="25"/>
+                            <ColumnDefinition Width="150"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -195,87 +197,253 @@
 
                         <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="L_StepMode"/>
                         <Label Grid.Row="1" Grid.Column="1" Content="Режим шага решетки:"/>
-                        <ComboBox Grid.Row="1" Grid.Column="2" SelectedIndex="{Binding L_StepMode}">
+                        <ComboBox Grid.Row="1" Grid.Column="2" SelectedIndex="{Binding L_StepMode}" Height="24" Margin="2">
                             <ComboBoxItem Content="0 - Равномерный"/>
                             <ComboBoxItem Content="1 - Ввод размеров (Массив)"/>
                             <ComboBoxItem Content="2 - Кол-во панелей и отметки"/>
                         </ComboBox>
 
                         <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="L_StepText"/>
-                        <Label Grid.Row="2" Grid.Column="1" Content="Массив / Отметки (или шаг):"/>
-                        <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding L_StepText}"/>
+                        <Label Grid.Row="2" Grid.Column="1" Content="Массив / Отметки:"/>
+                        <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding L_StepText}" Height="24" Margin="2"/>
 
                         <UIControls:WpfFilterCheckBox Grid.Row="3" Grid.Column="0" AttributeName="L_MinRemainder"/>
-                        <Label Grid.Row="3" Grid.Column="1" Content="Мин. остаток (мм) [Для Реж.1]:"/>
-                        <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding L_MinRemainder}" ToolTip="Если 0, принимается ширина колонны"/>
+                        <Label Grid.Row="3" Grid.Column="1" Content="Мин. остаток (мм):"/>
+                        <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding L_MinRemainder}" Height="24" Margin="2"/>
 
                         <UIControls:WpfFilterCheckBox Grid.Row="4" Grid.Column="0" AttributeName="L_MergePanels"/>
-                        <Label Grid.Row="4" Grid.Column="1" Content="Захватить панелей (шт) [Для Реж.1]:"/>
-                        <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding L_MergePanels}" ToolTip="Сколько панелей сливаем? (Например: 2 = хвост + 1 нормальная)"/>
+                        <Label Grid.Row="4" Grid.Column="1" Content="Захватить панелей (шт):"/>
+                        <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding L_MergePanels}" Height="24" Margin="2"/>
 
                         <UIControls:WpfFilterCheckBox Grid.Row="5" Grid.Column="0" AttributeName="L_RemainPanels"/>
-                        <Label Grid.Row="5" Grid.Column="1" Content="Разбить хвост на (шт) [Для Реж.1]:"/>
-                        <TextBox Grid.Row="5" Grid.Column="2" Text="{Binding L_RemainPanels}" ToolTip="На сколько панелей разделить хвост (по умолч. 2)"/>
+                        <Label Grid.Row="5" Grid.Column="1" Content="Разбить хвост на (шт):"/>
+                        <TextBox Grid.Row="5" Grid.Column="2" Text="{Binding L_RemainPanels}" Height="24" Margin="2"/>
 
                         <TextBlock Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Text="Управление геометрией" FontWeight="Bold" Margin="0,15,0,5"/>
 
                         <UIControls:WpfFilterCheckBox Grid.Row="7" Grid.Column="0" AttributeName="L_Invert"/>
                         <Label Grid.Row="7" Grid.Column="1" Content="Старт решетки:"/>
-                        <ComboBox Grid.Row="7" Grid.Column="2" SelectedIndex="{Binding L_Invert}">
+                        <ComboBox Grid.Row="7" Grid.Column="2" SelectedIndex="{Binding L_Invert}" Height="24" Margin="2">
                             <ComboBoxItem Content="От левой ветви (По умолч.)"/>
                             <ComboBoxItem Content="От правой ветви (Инверсия)"/>
                         </ComboBox>
 
                         <UIControls:WpfFilterCheckBox Grid.Row="8" Grid.Column="0" AttributeName="L_Exclude"/>
-                        <Label Grid.Row="8" Grid.Column="1" Content="Удалить раскосы (напр. 1-3 5):"/>
-                        <TextBox Grid.Row="8" Grid.Column="2" Text="{Binding L_Exclude}"/>
+                        <Label Grid.Row="8" Grid.Column="1" Content="Удалить раскосы:"/>
+                        <TextBox Grid.Row="8" Grid.Column="2" Text="{Binding L_Exclude}" Height="24" Margin="2"/>
 
                         <UIControls:WpfFilterCheckBox Grid.Row="9" Grid.Column="0" AttributeName="L_HoldPhase"/>
-                        <Label Grid.Row="9" Grid.Column="1" Content="Поведение при удалении:"/>
-                        <ComboBox Grid.Row="9" Grid.Column="2" SelectedIndex="{Binding L_HoldPhase}">
-                            <ComboBoxItem Content="0 - Продолжать зигзаг (Скрытый)"/>
-                            <ComboBoxItem Content="1 - Сохранять стартовую ветвь"/>
+                        <Label Grid.Row="9" Grid.Column="1" Content="При удалении:"/>
+                        <ComboBox Grid.Row="9" Grid.Column="2" SelectedIndex="{Binding L_HoldPhase}" Height="24" Margin="2">
+                            <ComboBoxItem Content="0 - Продолжать зигзаг"/>
+                            <ComboBoxItem Content="1 - Сохранять ветвь"/>
                         </ComboBox>
 
                         <TextBlock Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" Text="Расцентровка узлов" FontWeight="Bold" Margin="0,15,0,5"/>
 
                         <UIControls:WpfFilterCheckBox Grid.Row="11" Grid.Column="0" AttributeName="L_Rasc"/>
                         <Label Grid.Row="11" Grid.Column="1" Content="Базовая расцентровка:"/>
-                        <TextBox Grid.Row="11" Grid.Column="2" Text="{Binding L_Rasc}"/>
+                        <TextBox Grid.Row="11" Grid.Column="2" Text="{Binding L_Rasc}" Height="24" Margin="2"/>
 
                         <UIControls:WpfFilterCheckBox Grid.Row="12" Grid.Column="0" AttributeName="L_Rasc_Base"/>
-                        <Label Grid.Row="12" Grid.Column="1" Content="Расцентровка базы (Узел 1):"/>
-                        <TextBox Grid.Row="12" Grid.Column="2" Text="{Binding L_Rasc_Base}"/>
+                        <Label Grid.Row="12" Grid.Column="1" Content="Расцентровка базы:"/>
+                        <TextBox Grid.Row="12" Grid.Column="2" Text="{Binding L_Rasc_Base}" Height="24" Margin="2"/>
 
                         <UIControls:WpfFilterCheckBox Grid.Row="13" Grid.Column="0" AttributeName="L_Rasc_Top"/>
-                        <Label Grid.Row="13" Grid.Column="1" Content="Расцентровка верха (Узел N):"/>
-                        <TextBox Grid.Row="13" Grid.Column="2" Text="{Binding L_Rasc_Top}"/>
+                        <Label Grid.Row="13" Grid.Column="1" Content="Расцентровка верха:"/>
+                        <TextBox Grid.Row="13" Grid.Column="2" Text="{Binding L_Rasc_Top}" Height="24" Margin="2"/>
 
                         <UIControls:WpfFilterCheckBox Grid.Row="14" Grid.Column="0" AttributeName="L_RascOverrides"/>
-                        <Label Grid.Row="14" Grid.Column="1" Content="Исключения (Узел:Вверх/Вниз):"/>
-                        <TextBox Grid.Row="14" Grid.Column="2" Text="{Binding L_RascOverrides}"/>
+                        <Label Grid.Row="14" Grid.Column="1" Content="Исключения (Узел:Знак):"/>
+                        <TextBox Grid.Row="14" Grid.Column="2" Text="{Binding L_RascOverrides}" Height="24" Margin="2"/>
 
                         <TextBlock Grid.Row="15" Grid.Column="1" Grid.ColumnSpan="2" Text="Параметры и позиционирование" FontWeight="Bold" Margin="0,15,0,5"/>
 
                         <UIControls:WpfFilterCheckBox Grid.Row="16" Grid.Column="0" AttributeName="L_Type"/>
                         <Label Grid.Row="16" Grid.Column="1" Content="Тип решетки:"/>
-                        <ComboBox Grid.Row="16" Grid.Column="2" SelectedIndex="{Binding L_Type}">
+                        <ComboBox Grid.Row="16" Grid.Column="2" SelectedIndex="{Binding L_Type, UpdateSourceTrigger=PropertyChanged}" Height="24" Margin="2">
                             <ComboBoxItem Content="0 - Одинарная"/>
                             <ComboBoxItem Content="1 - Сдвоенная"/>
                         </ComboBox>
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="17" Grid.Column="0" AttributeName="L_Preset"/>
-                        <Label Grid.Row="17" Grid.Column="1" Content="Вариант (Пресет):"/>
-                        <ComboBox Grid.Row="17" Grid.Column="2" SelectedIndex="{Binding L_Preset}">
-                            <ComboBoxItem Content="0 - Не используется" Visibility="Collapsed"/>
-                            <ComboBoxItem Content="1 - Полка по оси"/>
-                            <ComboBoxItem Content="2 - Уголок по обушку (Слева)"/>
-                            <ComboBoxItem Content="3 - Труба (По центру)"/>
-                        </ComboBox>
+                        <UIControls:WpfFilterCheckBox Grid.Row="17" Grid.Column="0" AttributeName="L_Offset"/>
+                        <Label Grid.Row="17" Grid.Column="1" Content="Рядовые раскосы:"/>
+                        <StackPanel Grid.Row="17" Grid.Column="2" Orientation="Horizontal" Margin="2">
 
-                        <UIControls:WpfFilterCheckBox Grid.Row="18" Grid.Column="0" AttributeName="L_Offset"/>
-                        <Label Grid.Row="18" Grid.Column="1" Content="Доп. смещение:"/>
-                        <TextBox Grid.Row="18" Grid.Column="2" Text="{Binding L_Offset}"/>
+                            <Grid Width="160" Height="24">
+
+                                <Grid>
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding L_Type}" Value="0">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Style>
+                                    <ComboBox SelectedIndex="{Binding L_Preset_Single}">
+                                        <ComboBoxItem Content="Пресет 1 (Полка)"/>
+                                        <ComboBoxItem Content="Пресет 2 (Уголок)"/>
+                                        <ComboBoxItem Content="Пресет 3 (Труба)"/>
+                                    </ComboBox>
+                                </Grid>
+
+                                <Grid>
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding L_Type}" Value="1">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Style>
+                                    <ComboBox SelectedIndex="{Binding L_Preset_Double}">
+                                        <ComboBoxItem Content="Пресет 1"/>
+                                        <ComboBoxItem Content="Пресет 2"/>
+                                        <ComboBoxItem Content="Пресет 3"/>
+                                        <ComboBoxItem Content="Пресет 4"/>
+                                    </ComboBox>
+                                </Grid>
+                            </Grid>
+
+                            <UIControls:WpfFilterCheckBox AttributeName="L_Offset" Margin="10,0,5,0" VerticalAlignment="Center"/>
+                            <Label Content="Смещение:" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding L_Offset}" Width="60" Height="24"/>
+                        </StackPanel>
+
+                        <UIControls:WpfFilterCheckBox Grid.Row="18" Grid.Column="0" AttributeName="LS_Offset"/>
+                        <Label Grid.Row="18" Grid.Column="1" Content="Стыковые раскосы:"/>
+                        <StackPanel Grid.Row="18" Grid.Column="2" Orientation="Horizontal" Margin="2">
+
+                            <Grid Width="160" Height="24">
+                                <Grid>
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding L_Type}" Value="0">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Style>
+                                    <ComboBox SelectedIndex="{Binding LS_Preset_Single}">
+                                        <ComboBoxItem Content="Пресет 1 (Полка)"/>
+                                        <ComboBoxItem Content="Пресет 2 (Уголок)"/>
+                                        <ComboBoxItem Content="Пресет 3 (Труба)"/>
+                                    </ComboBox>
+                                </Grid>
+
+                                <Grid>
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding L_Type}" Value="1">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Style>
+                                    <ComboBox SelectedIndex="{Binding LS_Preset_Double}">
+                                        <ComboBoxItem Content="Пресет 1"/>
+                                        <ComboBoxItem Content="Пресет 2"/>
+                                        <ComboBoxItem Content="Пресет 3"/>
+                                        <ComboBoxItem Content="Пресет 4"/>
+                                    </ComboBox>
+                                </Grid>
+                            </Grid>
+
+                            <UIControls:WpfFilterCheckBox AttributeName="LS_Offset" Margin="10,0,5,0" VerticalAlignment="Center"/>
+                            <Label Content="Смещение:" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding LS_Offset}" Width="60" Height="24"/>
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="19" Grid.Column="1" Grid.ColumnSpan="2" Text="Точечное переопределение (Узел:Смещение)" FontWeight="Bold" Margin="0,15,0,5"/>
+
+                        <StackPanel Grid.Row="20" Grid.Column="0" Grid.ColumnSpan="3">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding L_Type}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" MinWidth="25"/>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <UIControls:WpfFilterCheckBox Grid.Row="0" Grid.Column="0" AttributeName="L_Single_Angle"/>
+                                <Label Grid.Row="0" Grid.Column="1" Content="Пресет 1:"/>
+                                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding L_Single_Angle}" Height="24" Margin="2" ToolTip="Пример: 1-5:25"/>
+
+                                <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="L_Single_Pipe"/>
+                                <Label Grid.Row="1" Grid.Column="1" Content="Пресет 2:"/>
+                                <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding L_Single_Pipe}" Height="24" Margin="2"/>
+
+                                <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="L_Single_Flange"/>
+                                <Label Grid.Row="2" Grid.Column="1" Content="Пресет 3:"/>
+                                <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding L_Single_Flange}" Height="24" Margin="2"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="21" Grid.Column="0" Grid.ColumnSpan="3">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding L_Type}" Value="1">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" MinWidth="25"/>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <UIControls:WpfFilterCheckBox Grid.Row="0" Grid.Column="0" AttributeName="L_Double_P1"/>
+                                <Label Grid.Row="0" Grid.Column="1" Content="Пресет 1:"/>
+                                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding L_Double_P1}" Height="24" Margin="2" ToolTip="Пример: 1-5:25"/>
+
+                                <UIControls:WpfFilterCheckBox Grid.Row="1" Grid.Column="0" AttributeName="L_Double_P2"/>
+                                <Label Grid.Row="1" Grid.Column="1" Content="Пресет 2:"/>
+                                <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding L_Double_P2}" Height="24" Margin="2"/>
+
+                                <UIControls:WpfFilterCheckBox Grid.Row="2" Grid.Column="0" AttributeName="L_Double_P3"/>
+                                <Label Grid.Row="2" Grid.Column="1" Content="Пресет 3:"/>
+                                <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding L_Double_P3}" Height="24" Margin="2"/>
+
+                                <UIControls:WpfFilterCheckBox Grid.Row="3" Grid.Column="0" AttributeName="L_Double_P4"/>
+                                <Label Grid.Row="3" Grid.Column="1" Content="Пресет 4:"/>
+                                <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding L_Double_P4}" Height="24" Margin="2"/>
+                            </Grid>
+                        </StackPanel>
+
                     </Grid>
                 </ScrollViewer>
             </TabItem>

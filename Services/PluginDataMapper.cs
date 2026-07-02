@@ -40,7 +40,7 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                 L_Rasc_Top = data.L_Rasc_Top,
                 L_RascOverrides = data.L_RascOverrides,
                 L_Type = data.L_Type,
-                L_Preset = data.L_Preset,
+                //L_Preset = data.L_Preset,
                 L_Offset = data.L_Offset,
 
                 // --- МОСТ ALPHA 1.2 ЗАМКНУТ ---
@@ -126,7 +126,28 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
 				HB_T2_Comp = data.HB_T2_Comp,
 				HB_T2_Attr = data.HB_T2_Attr,
 
-				SupColumn = CreatePart(data.NK_Profile, data.NK_Material, data.NK_PartPref, data.NK_PartNo, data.NK_AssyPref, data.NK_AssyNo, data.NK_Name, data.NK_Class, data.NK_UDA),
+                // Alpha 2.01 - Маппинг
+                L_Single_Angle = data.L_Single_Angle,
+                L_Single_Pipe = data.L_Single_Pipe,
+                L_Single_Flange = data.L_Single_Flange,
+                L_Double_P1 = data.L_Double_P1,
+                L_Double_P2 = data.L_Double_P2,
+                L_Double_P3 = data.L_Double_P3,
+                L_Double_P4 = data.L_Double_P4,
+                S_Pos_Angle = data.S_Pos_Angle,
+                S_Pos_Pipe = data.S_Pos_Pipe,
+
+                //LS_Preset = data.LS_Preset,
+                LS_Offset = data.LS_Offset,
+
+                // --- МАППИНГ ПРЕСЕТОВ И СМЕЩЕНИЙ РЕШЕТКИ ---
+                L_Preset_Single = data.L_Preset_Single,
+                L_Preset_Double = data.L_Preset_Double,
+
+                LS_Preset_Single = data.LS_Preset_Single,
+                LS_Preset_Double = data.LS_Preset_Double,
+
+                SupColumn = CreatePart(data.NK_Profile, data.NK_Material, data.NK_PartPref, data.NK_PartNo, data.NK_AssyPref, data.NK_AssyNo, data.NK_Name, data.NK_Class, data.NK_UDA),
 				HeadBeam = CreatePart(data.HB_Profile, data.HB_Material, data.HB_PartPref, data.HB_PartNo, data.HB_AssyPref, data.HB_AssyNo, data.HB_Name, data.HB_Class, data.HB_UDA),
 				Branch = CreatePart(data.B_Profile, data.B_Material, data.B_PartPref, data.B_PartNo, data.B_AssyPref, data.B_AssyNo, data.B_Name, data.B_Class, data.B_UDA),
                 Diaphragm1 = CreatePart(data.D_Profile, data.D_Material, data.D_PartPref, data.D_PartNo, data.D_AssyPref, data.D_AssyNo, data.D_Name, data.D_Class, data.D_UDA),

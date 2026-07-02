@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Apibim.Plugins.BuiltUpColumn.Services
 {
@@ -125,6 +126,51 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                 }
             }
             return dict;
+        }
+
+        /// <summary>
+        /// Разбирает строку вида "(1-4 6):15", "1-3:20" или "5:-10.5" на словарь с кастомными смещениями.
+        /// </summary>
+        public static Dictionary<int, double?> ParsePresetNodesWithOffsets(string text, int maxCount)
+        {
+            var result = new Dictionary<int, double?>();
+            if (string.IsNullOrWhiteSpace(text)) return result;
+
+            text = text.Trim();
+
+            // Новый паттерн: ищет либо скобки (1 2), либо просто числа/тире 1-3, затем двоеточие и число смещения
+            var regex = new Regex(@"(?:\(([^)]+)\)|([\d\s-]+))\s*:\s*(-?\d+(?:[.,]\d+)?)");
+            var matches = regex.Matches(text);
+
+            foreach (Match match in matches)
+            {
+                // Вытаскиваем узлы либо из первой группы (со скобками), либо из второй (без скобок)
+                string nodesStr = !string.IsNullOrEmpty(match.Groups[1].Value) ? match.Groups[1].Value : match.Groups[2].Value;
+
+                // Нормализуем разделитель для парсинга double
+                string offsetStr = match.Groups[3].Value.Replace(',', '.');
+
+                if (double.TryParse(offsetStr, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double offset))
+                {
+                    var nodes = ParseNodes(nodesStr, maxCount);
+                    foreach (var node in nodes)
+                    {
+                        result[node] = offset;
+                    }
+                }
+
+                // Вырезаем найденный кусок, чтобы не мешал парсить обычные узлы (без смещений)
+                text = text.Replace(match.Value, " ");
+            }
+
+            // Оставшийся текст — это узлы без кастомного смещения (берем смещение из общей настройки)
+            var standaloneNodes = ParseNodes(text, maxCount);
+            foreach (var node in standaloneNodes)
+            {
+                result[node] = null;
+            }
+
+            return result;
         }
     }
 }
