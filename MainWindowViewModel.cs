@@ -22,7 +22,7 @@ namespace Apibim.Plugins.BuiltUpColumn
         private double _l_MinRemainder = 0.0; private int _l_MergePanels = 2; private int _l_RemainPanels = 2;
         private int _l_Invert = 0; private string _l_Exclude = ""; private int _l_HoldPhase = 0;
         private double _l_Rasc = 50.0; private double _l_Rasc_Base = 50.0; private double _l_Rasc_Top = 50.0; private string _l_RascOverrides = "";
-        private int _l_Type = 1; //private int _l_Preset = 1;
+        private int _l_Type = 1;
         private double _l_Offset = 0.0;
 
         private int _s_Base_Preset = 2; private int _s_Top_Preset = 2; private int _s_Splice_Preset = 2; private int _s_KeyElev_Preset = 0; private int _s_Preset = 1;
@@ -108,7 +108,6 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresDialog("L_Rasc_Top", typeof(TD.Double))] public double L_Rasc_Top { get => _l_Rasc_Top; set => Set(ref _l_Rasc_Top, value); }
         [StructuresDialog("L_RascOverrides", typeof(TD.String))] public string L_RascOverrides { get => _l_RascOverrides; set => Set(ref _l_RascOverrides, value); }
         [StructuresDialog("L_Type", typeof(TD.Integer))] public int L_Type { get => _l_Type; set => Set(ref _l_Type, value); }
-        //[StructuresDialog("L_Preset", typeof(TD.Integer))] public int L_Preset { get => _l_Preset; set => Set(ref _l_Preset, value); }
         [StructuresDialog("L_Offset", typeof(TD.Double))] public double L_Offset { get => _l_Offset; set => Set(ref _l_Offset, value); }
 
         [StructuresDialog("S_Base_Preset", typeof(TD.Integer))] public int S_Base_Preset { get => _s_Base_Preset; set => Set(ref _s_Base_Preset, value); }
@@ -304,18 +303,6 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresDialog("L_Double_P4", typeof(Tekla.Structures.Datatype.String))]
         public string L_Double_P4 { get => _l_Double_P4; set => Set(ref _l_Double_P4, value); }
 
-        private string _s_Pos_Angle = "";
-        [StructuresDialog("S_Pos_Angle", typeof(Tekla.Structures.Datatype.String))]
-        public string S_Pos_Angle { get => _s_Pos_Angle; set => Set(ref _s_Pos_Angle, value); }
-
-        private string _s_Pos_Pipe = "";
-        [StructuresDialog("S_Pos_Pipe", typeof(Tekla.Structures.Datatype.String))]
-        public string S_Pos_Pipe { get => _s_Pos_Pipe; set => Set(ref _s_Pos_Pipe, value); }
-
-        //private int _ls_Preset;
-        //[StructuresDialog("LS_Preset", typeof(Tekla.Structures.Datatype.Integer))]
-        //public int LS_Preset { get => _ls_Preset; set => Set(ref _ls_Preset, value); }
-
         private double _ls_Offset;
         [StructuresDialog("LS_Offset", typeof(Tekla.Structures.Datatype.Double))]
         public double LS_Offset { get => _ls_Offset; set => Set(ref _ls_Offset, value); }
@@ -335,5 +322,67 @@ namespace Apibim.Plugins.BuiltUpColumn
         private int _ls_Preset_Double;
         [StructuresDialog("LS_Preset_Double", typeof(Tekla.Structures.Datatype.Integer))]
         public int LS_Preset_Double { get => _ls_Preset_Double; set => Set(ref _ls_Preset_Double, value); }
+
+        // =========================================================
+        // --- ПОЗИЦИОНИРОВАНИЕ РАСПОРОК ПО ЗОНАМ ---
+        // =========================================================
+        private int _s_Base_Pos = 1;
+        [StructuresDialog("S_Base_Pos", typeof(TD.Integer))]
+        public int S_Base_Pos { get => _s_Base_Pos; set => Set(ref _s_Base_Pos, value); }
+
+        private double _s_Base_Offset = 0.0;
+        [StructuresDialog("S_Base_Offset", typeof(TD.Double))]
+        public double S_Base_Offset { get => _s_Base_Offset; set => Set(ref _s_Base_Offset, value); }
+
+        private int _s_Top_Pos = 1;
+        [StructuresDialog("S_Top_Pos", typeof(TD.Integer))]
+        public int S_Top_Pos { get => _s_Top_Pos; set => Set(ref _s_Top_Pos, value); }
+
+        private double _s_Top_Offset = 0.0;
+        [StructuresDialog("S_Top_Offset", typeof(TD.Double))]
+        public double S_Top_Offset { get => _s_Top_Offset; set => Set(ref _s_Top_Offset, value); }
+
+        private int _s_Splice_Pos = 1;
+        [StructuresDialog("S_Splice_Pos", typeof(TD.Integer))]
+        public int S_Splice_Pos { get => _s_Splice_Pos; set => Set(ref _s_Splice_Pos, value); }
+
+        private double _s_Splice_Offset = 0.0;
+        [StructuresDialog("S_Splice_Offset", typeof(TD.Double))]
+        public double S_Splice_Offset { get => _s_Splice_Offset; set => Set(ref _s_Splice_Offset, value); }
+
+        private int _s_KeyElev_Pos = 1;
+        [StructuresDialog("S_KeyElev_Pos", typeof(TD.Integer))]
+        public int S_KeyElev_Pos { get => _s_KeyElev_Pos; set => Set(ref _s_KeyElev_Pos, value); }
+
+        private double _s_KeyElev_Offset = 0.0;
+        [StructuresDialog("S_KeyElev_Offset", typeof(TD.Double))]
+        public double S_KeyElev_Offset { get => _s_KeyElev_Offset; set => Set(ref _s_KeyElev_Offset, value); }
+
+        private int _s_Main_Pos = 1;
+        [StructuresDialog("S_Main_Pos", typeof(TD.Integer))]
+        public int S_Main_Pos { get => _s_Main_Pos; set => Set(ref _s_Main_Pos, value); }
+
+        private double _s_Main_Offset = 0.0;
+        [StructuresDialog("S_Main_Offset", typeof(TD.Double))]
+        public double S_Main_Offset { get => _s_Main_Offset; set => Set(ref _s_Main_Offset, value); }
+
+        // =========================================================
+        // --- ТОЧЕЧНОЕ ПЕРЕОПРЕДЕЛЕНИЕ РАСПОРОК ---
+        // =========================================================
+        private string _s_Pos_Preset1 = "";
+        [StructuresDialog("S_Pos_Preset1", typeof(TD.String))]
+        public string S_Pos_Preset1 { get => _s_Pos_Preset1; set => Set(ref _s_Pos_Preset1, value); }
+
+        private string _s_Pos_Preset2 = "";
+        [StructuresDialog("S_Pos_Preset2", typeof(TD.String))]
+        public string S_Pos_Preset2 { get => _s_Pos_Preset2; set => Set(ref _s_Pos_Preset2, value); }
+
+        private string _s_Pos_Preset3 = "";
+        [StructuresDialog("S_Pos_Preset3", typeof(TD.String))]
+        public string S_Pos_Preset3 { get => _s_Pos_Preset3; set => Set(ref _s_Pos_Preset3, value); }
+
+        private string _s_Pos_Preset4 = "";
+        [StructuresDialog("S_Pos_Preset4", typeof(TD.String))]
+        public string S_Pos_Preset4 { get => _s_Pos_Preset4; set => Set(ref _s_Pos_Preset4, value); }
     }
 }

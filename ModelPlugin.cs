@@ -57,7 +57,6 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresField("L_RascOverrides")] public string L_RascOverrides = "";
 
         [StructuresField("L_Type")] public int L_Type = 1;
-        // [StructuresField("L_Preset")] public int L_Preset = 1;
         [StructuresField("L_Offset")] public double L_Offset = 0.0;
 
         // Каскад планок
@@ -178,11 +177,6 @@ namespace Apibim.Plugins.BuiltUpColumn
         [StructuresField("L_Double_P2")] public string L_Double_P2 = "";
         [StructuresField("L_Double_P3")] public string L_Double_P3 = "";
         [StructuresField("L_Double_P4")] public string L_Double_P4 = "";
-
-        [StructuresField("S_Pos_Angle")] public string S_Pos_Angle = "";
-        [StructuresField("S_Pos_Pipe")] public string S_Pos_Pipe = "";
-
-        // [StructuresField("LS_Preset")] public int LS_Preset;
         [StructuresField("LS_Offset")] public double LS_Offset;
         // Базовые
         [StructuresField("L_Preset_Single")] public int L_Preset_Single;
@@ -191,6 +185,24 @@ namespace Apibim.Plugins.BuiltUpColumn
         // Стыковые
         [StructuresField("LS_Preset_Single")] public int LS_Preset_Single;
         [StructuresField("LS_Preset_Double")] public int LS_Preset_Double;
+
+        // --- ПОЗИЦИОНИРОВАНИЕ РАСПОРОК ПО ЗОНАМ ---
+        [StructuresField("S_Base_Pos")] public int S_Base_Pos;
+        [StructuresField("S_Base_Offset")] public double S_Base_Offset;
+        [StructuresField("S_Top_Pos")] public int S_Top_Pos;
+        [StructuresField("S_Top_Offset")] public double S_Top_Offset;
+        [StructuresField("S_Splice_Pos")] public int S_Splice_Pos;
+        [StructuresField("S_Splice_Offset")] public double S_Splice_Offset;
+        [StructuresField("S_KeyElev_Pos")] public int S_KeyElev_Pos;
+        [StructuresField("S_KeyElev_Offset")] public double S_KeyElev_Offset;
+        [StructuresField("S_Main_Pos")] public int S_Main_Pos;
+        [StructuresField("S_Main_Offset")] public double S_Main_Offset;
+
+        // --- ТОЧЕЧНОЕ ПЕРЕОПРЕДЕЛЕНИЕ РАСПОРОК ---
+        [StructuresField("S_Pos_Preset1")] public string S_Pos_Preset1;
+        [StructuresField("S_Pos_Preset2")] public string S_Pos_Preset2;
+        [StructuresField("S_Pos_Preset3")] public string S_Pos_Preset3;
+        [StructuresField("S_Pos_Preset4")] public string S_Pos_Preset4;
     }
 
     [Plugin("Apibim_BuiltUpColumn")]
@@ -409,10 +421,11 @@ namespace Apibim.Plugins.BuiltUpColumn
             Dictionary<int, (int PresetId, double? Offset)> overrideMap;
             if (colData.L_Type == 0)
             {
+                // ИСПРАВЛЕНИЕ: Новый правильный порядок пресетов!
                 overrideMap = ResolvePositions(lacingLines.Count,
-                    (colData.L_Single_Angle, 1),
-                    (colData.L_Single_Pipe, 2),
-                    (colData.L_Single_Flange, 3));
+                    (colData.L_Single_Angle, 1),  // Пресет 1 (Уголок)
+                    (colData.L_Single_Flange, 2), // Пресет 2 (Полка)
+                    (colData.L_Single_Pipe, 3));  // Пресет 3 (Труба)
             }
             else
             {
@@ -442,30 +455,40 @@ namespace Apibim.Plugins.BuiltUpColumn
                     ? colData.LacingSplice
                     : colData.Lacing;
 
-                // --- УРОВЕНЬ 1 и 2: Базовые и Стыковые настройки ---
+                // --- УРОВЕНЬ 1 и 2: Базовые настройки и Наследование ---
                 int activePreset = 1;
+                double activeOffset = colData.L_Offset; // По умолчанию берем смещение базы
 
                 if (colData.L_Type == 0) // Одинарная решетка
                 {
-                    activePreset = isSpliceDiagonal ? colData.LS_Preset_Single : colData.L_Preset_Single;
+                    activePreset = colData.L_Preset_Single >= 0 ? colData.L_Preset_Single + 1 : 1;
+
+                    // Наследование: берем стыковые настройки, ТОЛЬКО если выбран пресет > 0 ("0 - Как рядовая")
+                    if (isSpliceDiagonal && colData.LS_Preset_Single > 0)
+                    {
+                        activePreset = colData.LS_Preset_Single; // Индексы 1, 2, 3 напрямую ложатся в Фабрику
+                        activeOffset = colData.LS_Offset;        // И только тогда переопределяем смещение
+                    }
                 }
                 else // Сдвоенная решетка
                 {
-                    activePreset = isSpliceDiagonal ? colData.LS_Preset_Double : colData.L_Preset_Double;
+                    activePreset = colData.L_Preset_Double >= 0 ? colData.L_Preset_Double + 1 : 1;
+
+                    if (isSpliceDiagonal && colData.LS_Preset_Double > 0)
+                    {
+                        activePreset = colData.LS_Preset_Double;
+                        activeOffset = colData.LS_Offset;
+                    }
                 }
 
-                // КОРРЕКЦИЯ: Переводим 0-based индекс из ComboBox в 1-based ID
-                activePreset = activePreset >= 0 ? activePreset + 1 : 1;
-
-                double activeOffset = isSpliceDiagonal ? colData.LS_Offset : colData.L_Offset;
-
-                // --- УРОВЕНЬ 3: Накатываем точечное переопределение (если есть) ---
+                // --- УРОВЕНЬ 3: Накатываем точечное переопределение (Парсер) ---
                 if (overrideMap.TryGetValue(i, out var overrideData))
                 {
                     activePreset = overrideData.PresetId;
                     activeOffset = overrideData.Offset ?? activeOffset;
                 }
 
+                // --- ГЕНЕРАЦИЯ ДЕТАЛИ ---
                 if (colData.L_Type == 0) // Одинарная
                 {
                     TeklaPartBuilder.CreateLacing(line.Point1, line.Point2, settings, colData.L_Type, activePreset, activeOffset).Insert();
@@ -499,24 +522,32 @@ namespace Apibim.Plugins.BuiltUpColumn
             var spliceNodes = ColumnGeometryBuilder.GetSpliceAdjacentNodes(zNodes, splices);
             var keyElevNodes = ColumnGeometryBuilder.GetKeyElevationNodes(colData, zNodes);
 
-            var strutMap = ResolvePositions(totalNodes,
-                (colData.S_Pos_Angle, 1),
-                (colData.S_Pos_Pipe, 2));
+            // --- УЗНАЕМ, ЧТО ДЕЛАЕТ РЕШЕТКА (Для наследования "0 - Как решетка") ---
+            Dictionary<int, (int PresetId, double? Offset)> lacingOverrideMap;
+            if (colData.L_Type == 0)
+                lacingOverrideMap = ResolvePositions(totalNodes, (colData.L_Single_Angle, 1), (colData.L_Single_Flange, 2), (colData.L_Single_Pipe, 3));
+            else
+                lacingOverrideMap = ResolvePositions(totalNodes, (colData.L_Double_P1, 1), (colData.L_Double_P2, 2), (colData.L_Double_P3, 3), (colData.L_Double_P4, 4));
 
-            // --- ИСПРАВЛЕНИЕ: Вычисляем базовый пресет с учетом новых разделенных списков ---
-            int baseLacingPreset = colData.L_Type == 0 ? colData.L_Preset_Single : colData.L_Preset_Double;
-            baseLacingPreset = baseLacingPreset >= 0 ? baseLacingPreset + 1 : 1;
+            // --- КАРТА ПЕРЕОПРЕДЕЛЕНИЙ САМИХ РАСПОРОК ---
+            var strutOverrideMap = ResolvePositions(totalNodes,
+                (colData.S_Pos_Preset1, 1),
+                (colData.S_Pos_Preset2, 2),
+                (colData.S_Pos_Preset3, 3),
+                (colData.S_Pos_Preset4, 4));
 
             for (int i = 0; i < totalNodes; i++)
             {
                 int currentLevel = i + 1;
                 int slotType = 0;
+                int strutPosZone = 0;
+                double strutOffsetZone = 0;
 
-                if (i == 0) slotType = colData.S_Base_Preset;
-                else if (i == totalNodes - 1) slotType = colData.S_Top_Preset;
-                else if (spliceNodes.Contains(i)) slotType = colData.S_Splice_Preset;
-                else if (keyElevNodes.Contains(i)) slotType = colData.S_KeyElev_Preset;
-                else slotType = colData.S_Preset;
+                if (i == 0) { slotType = colData.S_Base_Preset; strutPosZone = colData.S_Base_Pos; strutOffsetZone = colData.S_Base_Offset; }
+                else if (i == totalNodes - 1) { slotType = colData.S_Top_Preset; strutPosZone = colData.S_Top_Pos; strutOffsetZone = colData.S_Top_Offset; }
+                else if (spliceNodes.Contains(i)) { slotType = colData.S_Splice_Preset; strutPosZone = colData.S_Splice_Pos; strutOffsetZone = colData.S_Splice_Offset; }
+                else if (keyElevNodes.Contains(i)) { slotType = colData.S_KeyElev_Preset; strutPosZone = colData.S_KeyElev_Pos; strutOffsetZone = colData.S_KeyElev_Offset; }
+                else { slotType = colData.S_Preset; strutPosZone = colData.S_Main_Pos; strutOffsetZone = colData.S_Main_Offset; }
 
                 if (idxAngle.Contains(i)) slotType = 1;
                 if (idxAnglePlate.Contains(i)) slotType = 2;
@@ -530,15 +561,33 @@ namespace Apibim.Plugins.BuiltUpColumn
 
                 var line = strutLines[i];
 
+                // 1. Вычисляем точное состояние решетки в ЭТОМ узле
+                int activeLacingPreset = colData.L_Type == 0 ? (colData.L_Preset_Single >= 0 ? colData.L_Preset_Single + 1 : 1) : (colData.L_Preset_Double >= 0 ? colData.L_Preset_Double + 1 : 1);
+                double activeLacingOffset = colData.L_Offset;
+
+                if (spliceNodes.Contains(i))
+                {
+                    if (colData.L_Type == 0 && colData.LS_Preset_Single > 0) { activeLacingPreset = colData.LS_Preset_Single; activeLacingOffset = colData.LS_Offset; }
+                    else if (colData.L_Type == 1 && colData.LS_Preset_Double > 0) { activeLacingPreset = colData.LS_Preset_Double; activeLacingOffset = colData.LS_Offset; }
+                }
+
+                if (lacingOverrideMap.TryGetValue(i, out var lacingOverride))
+                {
+                    activeLacingPreset = lacingOverride.PresetId;
+                    activeLacingOffset = lacingOverride.Offset ?? activeLacingOffset;
+                }
+
+                // 2. Строим деталь
                 if (slotType == 1 || slotType == 2)
                 {
-                    int activePresetId = 1; // Пресет по умолчанию
-                    double? customOffset = null;
+                    // Если у распорки стоит "0", берем настройки решетки
+                    int activePresetId = strutPosZone == 0 ? activeLacingPreset : strutPosZone;
+                    double? customOffset = strutPosZone == 0 ? activeLacingOffset : strutOffsetZone;
 
-                    if (strutMap.TryGetValue(i, out var overrideData))
+                    if (strutOverrideMap.TryGetValue(i, out var overrideData))
                     {
                         activePresetId = overrideData.PresetId;
-                        customOffset = overrideData.Offset;
+                        customOffset = overrideData.Offset ?? customOffset;
                     }
 
                     BuildStrutSlot(line, slotType, currentLevel, colData, localY, autoBaseDist, distBetweenAxes, branchWidth, branchWebThick, activePresetId, customOffset);
@@ -548,8 +597,8 @@ namespace Apibim.Plugins.BuiltUpColumn
                     var ctxD1 = new DiaphragmSlotContext
                     {
                         LType = colData.L_Type,
-                        LPreset = baseLacingPreset, // <-- Передаем вычисленный пресет вместо L_Preset
-                        LOffset = colData.L_Offset,
+                        LPreset = activeLacingPreset, // <-- Диафрагма тоже наследует точное положение решетки!
+                        LOffset = activeLacingOffset,
                         Plane = colData.D1_PosPlane,
                         PlaneOff = colData.D1_PosPlaneOff,
                         Rot = colData.D1_PosRot,
@@ -567,8 +616,8 @@ namespace Apibim.Plugins.BuiltUpColumn
                     var ctxD2 = new DiaphragmSlotContext
                     {
                         LType = colData.L_Type,
-                        LPreset = baseLacingPreset, // <-- Передаем вычисленный пресет вместо L_Preset
-                        LOffset = colData.L_Offset,
+                        LPreset = activeLacingPreset,
+                        LOffset = activeLacingOffset,
                         Plane = colData.D2_PosPlane,
                         PlaneOff = colData.D2_PosPlaneOff,
                         Rot = colData.D2_PosRot,
@@ -617,8 +666,21 @@ namespace Apibim.Plugins.BuiltUpColumn
             // МАТЕМАТИКА ЛИСТА
             if (slotType == 2 && colData.L_Type == 1 && strutA != null)
             {
-                double W = autoBaseDist - 2 * colData.L_Offset - (colData.D_GapW * 2);
-                if (W < 10) W = 10;
+                double W = 0.0;
+
+                // --- 1. РАСЧЕТ ШИРИНЫ (ГАБАРИТА) ЛИСТА ---
+                if (presetId == 3 || presetId == 4)
+                {
+                    // Уголки смотрят наружу: габарит увеличивается
+                    W = autoBaseDist + (2 * activeOffset) + (colData.D_GapW * 2);
+                }
+                else // presetId == 1 или 2
+                {
+                    // Уголки смотрят внутрь: габарит уменьшается
+                    W = autoBaseDist - (2 * activeOffset) - (colData.D_GapW * 2);
+                }
+
+                if (W < 10) W = 10; // Защита от нулевого или отрицательного профиля
 
                 double t = 10.0;
                 string prof = colData.GussetPlate.Profile.ToUpper().Replace("PL", "");
@@ -654,10 +716,21 @@ namespace Apibim.Plugins.BuiltUpColumn
 
                 double angleWidth = 0.0;
                 strutA.GetReportProperty("PROFILE.WIDTH", ref angleWidth);
+
+                // --- 2. ПОЗИЦИОНИРОВАНИЕ ЛИСТА ПО Z ---
                 double zOffset = (angleWidth / 2.0) + (t / 2.0);
 
                 Beam plate = TeklaPartBuilder.CreateGussetPlate(pStart, pEnd, plateSettings);
-                plate.Position.DepthOffset = zOffset;
+
+                if (presetId == 1 || presetId == 3)
+                {
+                    plate.Position.DepthOffset = -zOffset; // Снизу
+                }
+                else // presetId == 2 или 4
+                {
+                    plate.Position.DepthOffset = zOffset;  // Сверху
+                }
+
                 plate.Position.Rotation = Tekla.Structures.Model.Position.RotationEnum.BACK;
                 plate.Insert();
             }

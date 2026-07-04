@@ -148,8 +148,6 @@ namespace Apibim.Plugins.BuiltUpColumn.Models
         public string L_Double_P2 { get; set; }
         public string L_Double_P3 { get; set; }
         public string L_Double_P4 { get; set; }
-        public string S_Pos_Angle { get; set; }
-        public string S_Pos_Pipe { get; set; }
 
         //public int LS_Preset { get; set; }
         public double LS_Offset { get; set; }
@@ -160,6 +158,24 @@ namespace Apibim.Plugins.BuiltUpColumn.Models
 
         public int LS_Preset_Single { get; set; }
         public int LS_Preset_Double { get; set; }
+
+        // --- ПОЗИЦИОНИРОВАНИЕ РАСПОРОК ПО ЗОНАМ ---
+        public int S_Base_Pos { get; set; }
+        public double S_Base_Offset { get; set; }
+        public int S_Top_Pos { get; set; }
+        public double S_Top_Offset { get; set; }
+        public int S_Splice_Pos { get; set; }
+        public double S_Splice_Offset { get; set; }
+        public int S_KeyElev_Pos { get; set; }
+        public double S_KeyElev_Offset { get; set; }
+        public int S_Main_Pos { get; set; }
+        public double S_Main_Offset { get; set; }
+
+        // --- ТОЧЕЧНОЕ ПЕРЕОПРЕДЕЛЕНИЕ РАСПОРОК ---
+        public string S_Pos_Preset1 { get; set; }
+        public string S_Pos_Preset2 { get; set; }
+        public string S_Pos_Preset3 { get; set; }
+        public string S_Pos_Preset4 { get; set; }
 
     }
 }

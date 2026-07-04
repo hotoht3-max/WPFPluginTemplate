@@ -40,7 +40,6 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                 L_Rasc_Top = data.L_Rasc_Top,
                 L_RascOverrides = data.L_RascOverrides,
                 L_Type = data.L_Type,
-                //L_Preset = data.L_Preset,
                 L_Offset = data.L_Offset,
 
                 // --- МОСТ ALPHA 1.2 ЗАМКНУТ ---
@@ -134,11 +133,26 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
                 L_Double_P2 = data.L_Double_P2,
                 L_Double_P3 = data.L_Double_P3,
                 L_Double_P4 = data.L_Double_P4,
-                S_Pos_Angle = data.S_Pos_Angle,
-                S_Pos_Pipe = data.S_Pos_Pipe,
 
-                //LS_Preset = data.LS_Preset,
                 LS_Offset = data.LS_Offset,
+
+                // --- ПОЗИЦИОНИРОВАНИЕ РАСПОРОК ПО ЗОНАМ ---
+                S_Base_Pos = data.S_Base_Pos,
+                S_Base_Offset = data.S_Base_Offset,
+                S_Top_Pos = data.S_Top_Pos,
+                S_Top_Offset = data.S_Top_Offset,
+                S_Splice_Pos = data.S_Splice_Pos,
+                S_Splice_Offset = data.S_Splice_Offset,
+                S_KeyElev_Pos = data.S_KeyElev_Pos,
+                S_KeyElev_Offset = data.S_KeyElev_Offset,
+                S_Main_Pos = data.S_Main_Pos,
+                S_Main_Offset = data.S_Main_Offset,
+
+                // --- ТОЧЕЧНОЕ ПЕРЕОПРЕДЕЛЕНИЕ РАСПОРОК ---
+                S_Pos_Preset1 = data.S_Pos_Preset1,
+                S_Pos_Preset2 = data.S_Pos_Preset2,
+                S_Pos_Preset3 = data.S_Pos_Preset3,
+                S_Pos_Preset4 = data.S_Pos_Preset4,
 
                 // --- МАППИНГ ПРЕСЕТОВ И СМЕЩЕНИЙ РЕШЕТКИ ---
                 L_Preset_Single = data.L_Preset_Single,

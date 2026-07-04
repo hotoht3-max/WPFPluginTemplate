@@ -57,7 +57,6 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
             beam.Profile.ProfileString = settings.Profile;
             beam.Material.MaterialString = settings.Material;
 
-            // <-- Убрали парсинг, так как свойства уже имеют тип int
             beam.PartNumber.Prefix = settings.PartPrefix;
             beam.PartNumber.StartNumber = settings.PartStartNo;
             beam.AssemblyNumber.Prefix = settings.AssemblyPrefix;
@@ -71,17 +70,17 @@ namespace Apibim.Plugins.BuiltUpColumn.Services
             {
                 switch (preset)
                 {
-                    case 2: // Труба (по центру)
+                    case 2: // Полка по оси (Бывший 3-й пресет)
+                        beam.Position.Plane = Position.PlaneEnum.RIGHT;
+                        beam.Position.Depth = Position.DepthEnum.MIDDLE;
+                        beam.Position.Rotation = Position.RotationEnum.BACK; // Заменили TOP на BACK
+                        break;
+                    case 3: // Труба по центру (Бывший 2-й пресет)
                         beam.Position.Plane = Position.PlaneEnum.MIDDLE;
                         beam.Position.Depth = Position.DepthEnum.MIDDLE;
                         beam.Position.Rotation = Position.RotationEnum.BELOW;
                         break;
-                    case 3: // Полка по оси
-                        beam.Position.Plane = Position.PlaneEnum.RIGHT;
-                        beam.Position.Depth = Position.DepthEnum.MIDDLE;
-                        beam.Position.Rotation = Position.RotationEnum.TOP;
-                        break;
-                    case 1: // Уголок по обушку (По умолчанию)
+                    case 1: // Уголок по обушку (Остался правильным)
                     default:
                         beam.Position.Plane = Position.PlaneEnum.LEFT;
                         beam.Position.Depth = Position.DepthEnum.MIDDLE;
